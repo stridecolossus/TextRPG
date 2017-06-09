@@ -1,0 +1,111 @@
+sarn.ford {
+	route road
+	terrain scrubland
+
+	sarn.ford.bend {	
+		e sarn.ford.forest route
+	}
+	
+	sarn.ford.forest forest {
+		s sarn.ford.cutting route
+		e sarn.ford.secret.path hidden {
+			name tree
+			vis hard
+		}	
+	}
+	
+	sarn.ford.secret.path forest {
+		e baranduin.south one-way
+	}
+	
+	sarn.ford.cutting forest {	
+		e sarn.ford.west route
+	}
+	
+	sarn.ford.west {
+		u sarn.ford.cliffs.west climb {
+			sarn.ford.cliffs.west quiet
+		}
+	}
+	
+	sarn.ford.island {
+		w sarn.ford.west portal {
+			sarn.ford.gate fixed {
+				pick hard
+				reset 00:01:00
+			}
+		}
+		e sarn.ford.east sarn.ford.gate
+	}
+	
+	sarn.ford.east {	
+		e sarn.ford.descent route
+		u sarn.ford.cliffs.east climb {
+			sarn.ford.cliffs.east quiet
+		}
+	}
+
+	sarn.ford.descent hill {
+		n sarn.ford.path hidden simple {
+			name sarn.ford.path
+			vis hard
+		}
+		u sarn.ford.path climb one-way {
+			sarn.ford.scree quiet
+		}
+	}
+
+	sarn.ford.path hill {	
+		w baranduin.south one-way
+	}
+	
+	sarn.ford.cliffs.east hill {
+		plank {
+			size large
+			weight large
+		}
+	}
+
+	sarn.ford.cliffs.west hill {
+		e sarn.ford.cliffs.east container {
+			name sarn.ford.gorge
+			object plank
+			size large
+		}
+	}
+
+	baranduin area {
+		terrain water
+		route river
+		
+		baranduin.nw {		
+			e baranduin.ne route
+			s baranduin.sw
+		}
+		
+		baranduin.ne {		
+			s baranduin.se route
+		}
+		
+		baranduin.se {		
+			w baranduin.sw route
+			s sarn.ford.path hidden one-way {
+				vis easy
+				name rushes
+			}
+		}
+		
+		baranduin.sw {		
+			s baranduin.south route
+			w sarn.ford.secret.path hidden one-way {
+				vis hard
+				name rushes
+				reverse-dir n
+			}
+		}
+		
+		baranduin.south {		
+			s sarn.ford.island
+		}
+	}
+}

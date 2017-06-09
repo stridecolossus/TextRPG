@@ -1,0 +1,80 @@
+<area name="midgewater" default-terrain="marsh" default-route="trail">
+
+<location name="midgewater.trail.north" terrain="marsh">
+	<links>
+		<route dir="s" dest="midgewater.trail.central" />
+		<route dir="e" dest="midgewater.trail.east" reverse="one-way" />
+		<route dir="w" dest="combe" />
+	</links>
+</location>
+
+<location name="midgewater.trail.east" terrain="marsh">
+	<links>
+		<link dir="w" dest="midgewater.marsh.north" reverse="one-way" />
+		<link dir="e" dest="midgewater.marsh.east" reverse="one-way" />
+		<link dir="s" dest="midgewater.marsh.north" reverse="one-way" />
+	</links>
+</location>
+
+<location name="midgewater.trail.central" terrain="marsh">
+	<links>
+		<route dir="s" dest="midgewater.trail.south" />
+		<hidden dir="e" dest="midgewater.island" name="rushes" vis="90" reverse="one-way" />
+	</links>
+</location>
+
+<location name="midgewater.trail.south" terrain="marsh">
+	<links>
+		<route dir="s" dest="east.road.west" />
+		<link dir="e" dest="midgewater.marsh.south" reverse="one-way" />
+		<route dir="w" dest="combe.path" />
+	</links>
+</location>
+
+<location name="midgewater.marsh.north" terrain="water">
+	<links>
+		<link dir="n" dest="midgewater.marsh.south" reverse-direction="n" />
+		<link dir="s" dest="midgewater.marsh.south" />
+		<link dir="e" dest="midgewater.marsh.south" reverse-direction="w" />
+		<hidden dir="w" dest="midgewater.island" vis="90" name="bull.rushes" reverse="one-way" />
+	</links>
+</location>
+
+<location name="midgewater.island" terrain="marsh">
+	<links>
+		<link dir="n" dest="midgewater.trail.central" reverse="one-way" />
+		<link dir="s" dest="midgewater.marsh.south" reverse="one-way" />
+		<link dir="e" dest="midgewater.marsh.east" reverse="one-way" />
+		<link dir="w" dest="midgewater.marsh.east" reverse="one-way" />
+		<door dir="d" dest="midgewater.hideout" type="trap.door" vis="90" />
+	</links>
+</location>
+
+<location name="midgewater.hideout" terrain="underground">
+	<links>
+	</links>
+</location>
+
+<location name="midgewater.marsh.south" terrain="water">
+	<links>
+		<link dir="e" dest="midgewater.marsh.east" reverse="one-way" />
+	</links>
+</location>
+
+<location name="midgewater.marsh.east" terrain="water">
+	<links>
+		<link dir="n" dest="midgewater.marsh.east" reverse="one-way" />
+		<hidden dir="s" dest="midgewater.south" reverse="one-way" name="rushes" vis="90" />
+		<link dir="e" dest="midgewater.marsh.south" reverse="one-way" />
+		<link dir="w" dest="midgewater.trail.south" reverse="one-way" />
+	</links>
+</location>
+
+<location name="midgewater.south" terrain="marsh">
+	<links>
+		<route dir="s" dest="east.road.east" reverse="one-way" />
+		<route dir="w" dest="midgewater.marsh.south" reverse="one-way" />
+	</links>
+</location>
+
+</area>

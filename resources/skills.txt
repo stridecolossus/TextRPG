@@ -1,0 +1,16 @@
+skills {
+	ride
+	swim
+	cook
+	wilderness.lore
+	track
+	butcher
+	archery
+	sneak
+	pick.lock
+	backstab
+	herblore
+	bandage
+	fish
+	westron
+}

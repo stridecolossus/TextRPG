@@ -1,0 +1,72 @@
+area shire {
+	terrain	farmland
+	race	hobbit
+	route	lane
+
+	three.farthing.stone {
+		w shire.east.road road
+		e shire.east.road.junction road
+	}
+	
+	shire.east.road.junction {	
+		n oatbarton.road
+		e frogmorton road
+	}
+	
+	oatbarton.road {	
+		n arnorian.ruins ford
+	}
+	
+	arnorian.ruins
+	
+	frogmorton {
+		cart
+		haywain
+	}
+	
+	whitfurrows {	
+		w frogmorton road
+	}
+	
+	brandywine.bridge {	
+		w whitfurrows road	
+		creature bounder {
+			group 3
+		}
+	}
+	
+	waymoot {	
+		s south.road road	
+		bounder {
+			manager {
+				routes {
+					road
+				}
+			}
+		}
+	}
+	
+	shire.east.road {	
+		w waymoot road	
+		shire.milestone
+	}
+
+	south.road {	
+		s shire.south.road.junction road
+		e tookbank
+	}
+	
+	shire.south.road.junction {	
+		e longbottom
+		s shire.south.gate road
+	}
+
+	longbottom
+	
+	shire.south.gate {	
+		s sarn.ford.bend road gate	
+		bounder {
+			group 2
+		}
+	}	
+}

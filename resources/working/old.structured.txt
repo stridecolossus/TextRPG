@@ -1,0 +1,14 @@
+parent parent.value {
+	one: value.one
+	two: value.two
+	three
+	child child.value {
+		four: value.four
+		five
+	}
+	sibling sibling.value {
+		leaf {
+			six: value.six
+		}
+	}
+}

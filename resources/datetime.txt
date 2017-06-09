@@ -1,0 +1,13 @@
+Season		Westron		Sindarin	Dawn	Dusk
+Winter		Afteryule	Narwain		8		18
+			Solmath		Nínui		9		17
+			Rethe		Gwaeron		8		18
+Spring		Astron		Gwirith		7		19
+			Thrimidge	Lothron		7		20
+			Forelithe	Nórui		6		20
+Summer		Afterlithe	Cerveth		5		21
+			Wedmath		Urui		4		22
+			Halimath	Ivanneth	5		21
+Autumn		Winterfilth	Narbeleth	6		20
+			Blotmath	Hithui		7		20
+			Foreyule	Girithron	7		19

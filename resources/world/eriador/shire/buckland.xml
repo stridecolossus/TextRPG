@@ -1,0 +1,82 @@
+<area name="buckland">
+
+<location name="buckland.gate">
+	<links>
+		<route dir="w" dest="brandywine.bridge" route="road" />
+		<route dir="e" dest="bree.road.west" route="road" />
+	</links>
+</location>
+
+<location name="buckland.lane.north">
+	<links>
+		<gate dir="n" dest="buckland.gate" />
+	</links>
+	<contents>
+		<creature name="buckland.gate.keeper" group="2" />
+	</contents>
+</location>
+
+<location name="newbury" terrain="urban">
+	<links>
+		<route dir="w" dest="buckland.lane.north" />
+	</links>
+</location>
+
+<location name="buckland.market" terrain="urban">
+	<links>
+		<route dir="n" dest="buckland.lane.north" />
+	</links>
+</location>
+
+<location name="crickhollow" terrain="urban">
+	<links>
+		<link dir="n" dest="newbury" />
+		<route dir="w" dest="buckland.market" />
+	</links>
+</location>
+
+<location name="buckland.forest.gate">
+	<links>
+		<route dir="w" dest="crickhollow" />
+		<door dir="e" dest="old.forest.gate" name="buckland.forest.gate" key="forest.gate.key" pick="hard" reset="00:00:10" />
+	</links>
+	<contents>
+		<factory>
+			<key name="forest.gate.key" />
+		</factory>
+		<character name="bounder.brandybuck" />
+	</contents>
+</location>
+
+<location name="brandy.hall" terrain="urban">
+	<links>
+		<route dir="n" dest="buckland.market" />
+		<route dir="s" dest="buckland.lane.south" />
+	</links>
+</location>
+
+<location name="brandy.hall.inside" terrain="indoors">
+	<links>
+		<route dir="w" dest="brandy.hall" />
+	</links>
+</location>
+
+<moveable name="bucklebury.ferry">
+	<location name="bucklebury.ferry.west" period="00:01:00" />
+	<location name="bucklebury.ferry.central" period="00:00:30" />
+	<location name="bucklebury.ferry.east" period="00:01:00" />
+</moveable>
+
+<location name="buckland.lane.south">
+	<links>
+		<link dir="w" dest="bucklebury.ferry.east" />
+		<route dir="s" dest="standelf" />
+	</links>
+</location>
+
+<location name="standelf" terrain="urban">
+	<links>
+	</links>
+</location>
+
+</area>

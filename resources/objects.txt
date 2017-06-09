@@ -1,0 +1,6 @@
+name			weight	value	armour	light	strength	durability
+very.low		1		1		1		20		1			1
+low				5		5		3		30		5			25
+medium			50		25		10		50		25			100
+high			75		1000	15		65		50			250
+very.high		100		10000	25		80		100			1000
