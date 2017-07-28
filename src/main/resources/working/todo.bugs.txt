@@ -1,0 +1,18 @@
+DONE misleading location name on ferry, should be <ferry> <loc.name>
+DONE forget known hidden event, where get duration from?
+DONE can tie a rope without carrying it? drink receptacle, light/snuff
+
+formatter for plural: has -> have, is -> are
+setParentAncestor - should only be used when initiated by player, replace with setLocation()?
+
+take all - no errors?
+move link-test stuff out of movement controller to action, no point for NPCs
+Race.isCorporeal = Size.NONE?
+default-race not working, should be transient -> context
+no move cost for terrain if same as current, e.g. hill -> hill is low, grass -> hill = hill, hill -> grass = grass?
+passive effects do not need a duration!
+loading openable uses string rather than descriptor
+group of creatures - need to enable entity-manager if becomes leader
+sort out loader dependencies, loader context?
+dot separator helpers using varargs
+moveable location stages should be locations in their own right, patches on pass 2, otherwise stagecoach will not work?

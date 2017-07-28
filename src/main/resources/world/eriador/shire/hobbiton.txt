@@ -1,0 +1,218 @@
+hobbiton {
+	terrain urban
+	
+area bag.end {
+	terrain indoors
+	
+	secret.room {
+		bag.end.glint reveal {
+			replaces
+			fixture
+			reset: 01:00:00
+			jool {
+				value 100
+				category treasure
+			}
+		}
+	}
+			
+	kitchen {
+		e bag.end.secret.room {
+			vis 50
+			name flagstone
+			reverse simple
+		}
+	}
+	
+	sitting.room {
+		d secret.room {
+			reverse simple
+			name secret door
+			vis 0
+			reset 00:01:00
+		}
+
+		picture reveal {
+			replaces
+			fixture
+			reset 00:10:00
+			message reveal.secret.door
+			panel {
+				reset 00:10:00
+				open {
+					reveal secret.door
+				}
+			}
+		}
+	}
+	
+	hall {
+		n kitchen
+		w sitting.room
+		s garden {
+			door {
+				key bag.end.key
+				pick 75
+				reset 00:01:00
+			}
+		}
+	}
+	
+	garden {
+		s bagshot.row
+		w bagshot.lane.north {
+			message low.place.hedge
+		}
+	}
+}
+
+the.hill {
+	terrain hill
+	e overhill.lane
+}
+
+overhill {
+	s overhill.lane
+}
+
+overhill.lane {	
+	s hobbiton.lane.north
+}
+
+bagshot.lane.north {	
+	s bagshot.lane.south
+}
+
+bagshot.lane.south {
+	s hobbiton.fields.west
+}	
+
+hobbiton.fields.west {
+	s plank.bridge route=bridge
+}	
+
+plank.bridge {
+	s shire.east.road
+}
+
+bagshot.row {
+	w bagshot.lane.south
+	gaffer {
+		topics {
+			taters {
+				message taters
+			}
+		}
+	}
+	bag.end.key key
+}
+
+party.field {	
+	party.tree plant {
+		cardinality unique
+	}
+}
+
+hobbiton.lane.north {
+	w bagshot.row {
+		route path
+	}
+	e party.field {
+		route path
+	}
+} 
+
+hobbiton.mill
+
+hobbiton.bridge {
+	n hobbiton.lane.north route=bridge
+	e hobbiton.mill
+	creature fisherman
+}	
+
+hobbiton.general.store {
+	terrain indoors
+	rosie.cotton shop {
+		stock {
+			reapir 1
+			duration 1
+			discard 1
+			carrot {
+				num 25
+			}
+		}
+	}
+}
+
+ivy.bush {
+	terrain indoors
+	sally.cotton shop {
+		stock {
+			beer {
+				num 100
+			}
+		}
+	}
+}
+
+hobbiton.centre {
+	e hobbiton.general.store {
+		door
+	}
+	w ivy.bush
+	n hobbiton.bridge
+	well
+}
+
+hobbiton.lane.south {
+	e hobbiton.fields.east
+	n hobbiton.centre
+	s three.farthing.stone
+} 
+
+hobbiton.fields.east {	
+	sheep creature
+	sheep creature
+	sheep creature
+	hobbit.shepherd character
+}
+
+cotton.farm
+
+green.dragon {
+	terrain indoors
+	innkeeper shop {
+		stock {
+			beer {
+				num 100
+			}
+		}
+		robin.smallburrow bounder
+	}
+}
+
+bywater.post.office {
+	terrain indoors
+}
+
+bywater {
+	n green.dragon {
+		door
+	}
+	s bywater.post.office {
+		door
+	}
+} 
+
+bywater.lane {
+	w hobbiton.mill
+	e bywater
+	n bywater.pool
+	s cotton.farm
+}
+
+bywater.pool {
+	water
+}
+
+}

@@ -1,0 +1,101 @@
+easy/important
+~~~~~~~~~~~~~~
+
+is a hidden link just a hidden object + openable model as a controller?
+
+(DONE) hold auto-lights
+crossbow bolts/bolt-case, recover ~ ammo type
+weed/weed pouch
+cook broth, i.e. meat + veg + spices (pepper, salt) + leaves + berries
+
+(DONE?) hold, can hold two objects? wield auto removes held object, can only use light if held or equipped?
+
+(DONE) IT object
+
+vehicles
+- mining cart (tracks)
+- driven, mounts
+- wheelbarrow (only objects) (DONE)
+
+(DONE)
+interaction object
+- examine -> transforms, e.g. glint OR reveals (fixture) OR generates (non-fixture)
+- control (script, not examine)
+- move/push/pull -> removes, e.g. blocked link
+
+(DONE) move action ~ strength, e.g. a blockage
+
+collapse inventory, e.g. TWO loaves of bread -> plurals! numerals <--> text, e.g. twenty-one = 21
+
+unknown objects, e.g. phial -> Cordial of Imladris -> identify action, skill/knowledge test, taste? smell?
+
+test reveal/interaction
+ferry is a vehicle? board = enter?
+look behind/under?
+wounds - binding: poor, ok, good - tick effect, duration, etc, infections?
+entity-manager-action description key, e.g. Nob bustles in ...
+periodic entity manager
+decide whether to allow good/evil in same world -> NPC invunerability? i.e. IDLE essentially = invunerable
+sneak ~ number in room, blocked after flee
+
+
+medium
+~~~~~~
+
+archery targets for practice
+staffs, two-handed
+pyre, burn <corpse>
+moneybag/purse -> harder to pick-pocket
+milk <beast>
+rapids, prevent boats
+dodge, parry
+bury corpse, object -> mound
+ 
+thirst/hunger over time -> world broadcast every game-hour, register repeating warning, register death from hunger/thirst
+stretchy container, e.g. a sack
+command parser
+- argument consumer? e.g. list worn <slot> -> consumes "worn"
+- integer transformer
+- money?  G/S/C -> amount, give 12 silver pennies to...
+- various TODOs to improve performance
+event queues auto-register?
+NPC	auto-use lantern if equipped at day/night -> world broadcast
+world broadcast on clock change -> world = players
+noise only if combat or vehicles? listen is a toggle? clothing/armour generates noise?
+default manager for races, e.g. bounders
+tracks, tracking
+skills - separate into groups, tiers
+weather
+daylight affected by season
+factions -> gates
+knock <portal>
+lamp-lighter -> path follower, actually toggles lamps?
+weight -> move cost
+location descriptions, optional, copied
+omit player from actions!
+achievements, e.g. discover set of locations, kill n,  
+
+
+hard/future
+~~~~~~~~~~~
+
+imladris/shire/dwarven locale - https://en.wikipedia.org/wiki/Middle-earth_calendar
+drag corpse <dir>
+horse trader, remove LEAD action? rent horses, pay for stabling [SHOP uses objects!]
+player houses -> doors that lead to instanced locations
+river current
+hide in furniture, e.g. closet
+platforms, out-of-reach objects
+jump, jump <chasm>
+A* goto
+compound objects?  e.g. desk drawer
+combat, AI, if killed:
+- remove queue
+- re-spawn event -> entity-manager needs world/context
+console
+mount saddles
+bribe gate
+follow entity -> doesn't want you to
+entity persistence, log in/out, persist non-transient events, e.g. food decay (lembas)
+tutorial
+character creator

@@ -1,0 +1,101 @@
+bree {
+	terrain urban
+	route street
+	race man
+	
+	west.gate {
+		w west.gate.outside gate {
+			hours {
+				7
+				19
+			}
+		}
+		harry.goatleaf character
+	}
+	
+	prancing.pony.sign urban lit {	
+		w bree.west.gate route
+		lamp.post
+	}
+	
+	area prancing.pony {
+		terrain indoors
+		
+		reception {
+			w common.room
+			u pony.bedrooms
+			e pony.stables
+			n fake {
+				destination kitchen
+				message kitchen.message
+			}
+			s prancing.pony.sign door
+			barliman character {
+				manager {
+					period 00:00:30
+				}
+				topics {
+					beer {
+						message beer
+					}
+				}
+			}
+		}
+	
+		common.room {		
+			nob character hobbit {
+				manager {
+					period 00:00:15
+					description nob.bustle
+				}
+			}
+			bar.stool funiture {
+				stances {
+					rest
+				}
+				limits {
+					number 1
+				}
+			}
+		}
+		
+		bedrooms {
+		}
+		
+		stables urban {
+			n bree.hill hidden trail {
+				name pony.hedge
+				vis 50
+				forget 00:00:10
+			}
+			creature horse
+			nob character hobbit
+		}
+	}		
+
+	town.square {	
+		n prancing.pony.sign
+		well
+	}
+	
+	common {	
+		w bree.town.square
+		creature sheep {
+			group 3
+		}
+	}	
+
+	market {	
+		n bree.town.square
+	}
+	
+	south.gate {	
+		n bree.common
+		w bree.market
+		s south.gate.outside gate
+	}
+	
+	bill.fernys.house indoors dark {	
+		w bree.south.gate door
+	}
+}

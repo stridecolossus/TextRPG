@@ -1,0 +1,54 @@
+<area name="moria.west">
+
+<!-- TODO lit -->
+<location name="durins.threshold" terrain="indoors">
+	<links>
+		<object dir="s" dest="durins.threshold.stores" reason="description.slab" reverse="simple">
+			<interact name="slab" fixture="true" str="10" removes="true" reset="00:10:00" description="slab">
+				<interactions>
+					<move />
+				</interactions>
+			</interact>
+		</object>
+		<object dir="w" dest="moria.walls" key="fixed">
+			<interact name="moria.doors" cardinality="unique" reset="00:10:00">
+				<interactions>
+					<push />
+				</interactions>
+			</interact>
+		</object>
+		<route dir="e" dest="landing" route="stair" />
+	</links>
+	
+	<!-- TODO -->
+	<contents>
+		<factory type="lantern" />
+		<factory type="tinderbox" />
+	</contents>	
+</location>
+
+<location name="durins.threshold.stores">
+	<contents>
+		<reveal name="glint" reset="01:00:00" fixture="true" description="glint">
+			<money name="coins" amount="1000" />
+		</reveal>
+		<factory type="miruvor" reset="01:00:00" />
+	</contents>
+</location>
+
+<location name="landing">
+	<links>
+		<link dir="n" dest="guard.room" />
+		<route dir="e" dest="durins.way.west" />
+	</links>
+</location>
+
+<location name="guard.room">
+	<links>
+		<rope dir="d" dest="foot.well" length="very.long" quiet="true">
+			<fixture name="guard.room.well" />
+		</rope>
+	</links>
+</location>
+
+</area>

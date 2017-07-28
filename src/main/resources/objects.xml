@@ -1,0 +1,98 @@
+<objects>
+
+<object name="fire.wood" weight="tiny" cardinality="some" category="fire.wood" />
+
+<object name="bandage" cardinality="some" category="bandage" />
+
+<receptacle name="well" fixture="true" liquid="water" max="infinite" description="built" />
+
+<receptacle name="oil.flask" weight="tiny" size="small" value="5" slot="belt" liquid="oil" max="10" />
+
+<receptacle name="miruvor" weight="tiny" size="tiny" value="high" max="10" potion="true">
+	<liquid name="miruvor">
+		<value name="miruvor" value="sta" size="25" duration="00:10:00" />
+		<attribute name="miruvor" attribute="end" size="1" duration="00:10:00" />
+	</liquid>
+</receptacle>
+
+<light name="torch" weight="small" size="large" value="1" slot="main_hand" lifetime="00:02:00" description="dust">
+	<emission type="light" intensity="low" />
+</light>
+
+<light name="lantern" weight="small" size="small" value="10" slot="belt" lifetime="00:25:00" lantern="true" description="placed">
+	<emission type="light" intensity="medium" />
+</light>
+
+<light name="camp.fire" fixture="true" lifetime="00:30:00" type="campfire" description="campfire" category="cooking.fire">
+	<emission type="light" intensity="low" />
+</light>
+
+<object name="pan" weight="small" size="small" slot="belt" value="5" category="cooking.utensil" />
+
+<object name="tinderbox" weight="1" size="tiny" value="5" slot="belt" category="tinderbox" />
+
+<durable name="lockpicks" weight="1" value="25" cardinality="some" slot="belt" durability="10" />
+
+<durable name="sickle" weight="small" size="small" value="25" slot="belt" durability="10" />
+
+<readable name="book" weight="small" size="small" value="10" lang="westron">
+	<chapter title="title">
+		text
+	</chapter>
+</readable>
+
+<rope name="rope" weight="medium" size="large" value="10" durability="high" length="10" />
+
+<object name="door" reset="00:01:00" />
+<object name="gate" reset="00:00:05" />
+
+<food name="carrot" weight="1" nutrition="1" size="tiny" lifetime="01:00:00" />
+
+<receptacle name="beer" weight="1" size="small" value="1" liquid="beer" max="2" description="placed" />
+
+<container name="chest" weight="large" size="huge" openable="true" reset="00:02:30">
+</container>
+
+<light name="lamp.post" fixture="true" lifetime="00:00:01" type="lamp_post" description="lamp.post">
+	<emission type="light" intensity="100" />
+</light>
+
+<object name="trap.door" fixture="true" reset="00:01:00" />
+
+<object name="ladder" weight="large" size="huge" description="ladder" />
+
+<container name="quiver" weight="small" size="medium">
+	<equipment slot="back" />
+	<limit type="category" category="arrow" />
+</container>
+
+<object name="walking.stick" weight="tiny" size="medium" slot="main_hand">
+	<passive>
+		<value value="move_cost" size="1" duration="1" />
+	</passive>
+</object>
+
+<container name="bounder.belt" weight="small" slot="waist" size="small" contents-slot="belt">
+</container>
+
+<weapon name="bounder.club" size="medium" slot="main_hand" durability="1" speed="1">
+	<damage damage="crushing" amount="1" />
+</weapon>
+
+<vehicle name="cart" fixture="true" mod="1">
+	<route>
+		<road />
+		<lane />
+		<street />
+	</route>
+</vehicle>
+
+<vehicle name="haywain" mod="1" fixture="true" />
+
+<vehicle name="boat" type="boat" fixture="true" mod="0.5">
+</vehicle>
+
+<object name="pipe" slot="pocket" category="pipe" />
+<object name="weed" cardinality="some" category="weed" />
+
+</objects>

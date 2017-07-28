@@ -1,0 +1,95 @@
+You fasten a lantern on your belt.
+You light a lantern.
+
+You fasten a hunting knife on your belt.
+
+You put a piece of raw meat in a large sack.
+You put a cup in a large sack.
+You put a fortune-cookie in a large sack.
+
+You stop using a large sack.
+
+You fasten a small wooden shield on your arm, becoming very impressive.
+
+You awkwardly wield a backsword, ready to fight evil.
+
+You wear a pair of trousers on your legs.
+
+You are using:
+<held>               a torch; it is lit
+
+North - Western End of Market Square
+East  - Market Square
+South - Craftsmen's Alley
+West  - The Grocery
+
+You are a male Eriadorian.
+You are 18 years old. It's your birthday today!
+You have played no time (real time).
+This ranks you as Fuor the Man Apprentice (level 1).
+You are five feet seven and weigh eleven stone and five pounds.
+Perception: vision 40, hearing -10, smell -25. Alertness: normal.
+You are a well-meaning person, always glad to help your friends.
+You are carrying 0 pounds of equipment. Peanuts.
+Your base abilities are: Str:17 Int:12 Wis:11 Dex:17 Con:15 Wil:14 Per:15.
+Offensive Bonus: 8%, Dodging Bonus: 24%, Parrying Bonus: 0%.
+You are not wearing any armour.
+You have 24/24 hit, 76/76 mana, and 114/114 movement points.
+Your mood is wimpy. You will fight to the death.
+You have scored 1 experience points and you have 0 travel points.
+You are not known for any acts of war.
+You need 999 exp. points and 0 travel points to reach the next level.
+You have 0 copper.
+You are speaking Westron.
+
+This is a loud place! You hear harsh voices, shrill laughter and the high sound
+of glasses clinking. An endless stream of beer finds its way into the bellies
+of the rough men who frequent this room. The swords are removed, however, and
+it's usually very peaceful here. A sign hangs on one of the walls.
+A large bulletin board is mounted on a wall here.
+A fine marble chessboard with ivory and ebony pieces is set here.
+A large stone fireplace with a roaring fire warms the room.
+A barman watches you calmly, while skillfully mixing a drink.
+A domesticated pony, beast of burden to many, stands here.
+Tundur the Lamplighter is resting here.
+A man passes by, intent on his business.
+Exits: [North] =East= South West.
+
+Market Square
+There is an old street-lamp on the border of the street.
+A rugged-looking man is standing here.
+Tundur the lamplighter is walking around here with a lantern in his hand.
+Exits: North East South West.
+
+You are carrying:
+a thick, soft leather jerkin (brand new)
+a pair of trousers (brand new)
+a thin pair of rigid leather boots (brand new)
+a small wooden shield (brand new)
+a backsword (brand new)
+a map of Fornost
+a plain leather belt
+a hunting knife (brand new)
+a large biscuit
+a large biscuit
+a loaf of bread
+a loaf of bread
+a lantern
+a map of Bree
+a quiver
+a shortbow
+a fortune-cookie
+a cup
+a large sack
+a piece of raw meat
+
+You are using:
+<wielded>            a backsword (brand new)
+<held>               a large sack
+<worn on body>       a thick, soft leather jerkin (brand new)
+<worn on legs>       a pair of trousers (brand new)
+<worn on feet>       a thin pair of rigid leather boots (brand new)
+<worn on back>       a shortbow
+<worn across back>   a quiver
+<worn as belt>       a plain leather belt
+

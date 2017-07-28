@@ -1,0 +1,9 @@
+liquids {
+	beer {
+		alcohol 1
+	}
+	
+	wine {
+		alcohol 2
+	}
+}
