@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -59,9 +58,9 @@ public class ShopAction extends AbstractAction {
 	/**
 	 * List all stock.
 	 */
-	public ActionResponse list(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse list(Entity actor) throws ActionException {
 		if(op != Operation.LIST) return INVALID;
-		return execute(ctx, actor, ObjectFilter.ALL);
+		return execute(actor, ObjectFilter.ALL);
 	}
 
 	/**
@@ -71,7 +70,7 @@ public class ShopAction extends AbstractAction {
 	 * @param str
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, ObjectFilter filter) throws ActionException {
+	public ActionResponse execute(Entity actor, ObjectFilter filter) throws ActionException {
 		// List stock
 		final Shop shop = find(actor);
 		final Stream<StockEntry> stock = shop.list(filter);
@@ -110,7 +109,7 @@ public class ShopAction extends AbstractAction {
 	 * Buys an object by index.
 	 */
 	@SuppressWarnings("unused")
-	public ActionResponse buy(ActionContext ctx, Entity actor, Integer index) throws ActionException {
+	public ActionResponse buy(Entity actor, Integer index) throws ActionException {
 		final Shop shop = find(actor);
 		if(op != Operation.BUY) return INVALID;
 		final ObjectDescriptor descriptor = shop.getDescriptor(index).orElseThrow(() -> new ActionException("buy.invalid.index"));
@@ -142,7 +141,7 @@ public class ShopAction extends AbstractAction {
 	 * Sell or repair.
 	 */
 	@SuppressWarnings("unused")
-	public ActionResponse execute(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+	public ActionResponse execute(Entity actor, WorldObject obj) throws ActionException {
 		final Shop shop = find(actor);
 		verifyCarried(actor, obj);
 		switch(op) {

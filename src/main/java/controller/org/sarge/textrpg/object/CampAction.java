@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -63,7 +62,7 @@ public class CampAction extends AbstractAction {
 	 * @param actor
 	 * @throws ActionException
 	 */
-	public ActionResponse camp(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse camp(Entity actor) throws ActionException {
 		// Check camp can be built in this location
 		final Location loc = actor.getLocation();
 		switch(loc.getTerrain()) {

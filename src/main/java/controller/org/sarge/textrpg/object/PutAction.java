@@ -1,7 +1,6 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -15,7 +14,6 @@ import org.sarge.textrpg.world.ReverseLink;
  * Action to put an object into a {@link Container} or an {@link ContainerLink}.
  * @author Sarge
  */
-@SuppressWarnings("unused")
 public class PutAction extends AbstractAction {
 	@Override
 	public boolean isLightRequiredAction() {
@@ -30,7 +28,7 @@ public class PutAction extends AbstractAction {
 	/**
 	 * Put object into container.
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, WorldObject obj, Container c) throws ActionException {
+	public ActionResponse execute(Entity actor, WorldObject obj, Container c) throws ActionException {
 		// Move object to container
 		verifyCarried(actor, obj);
 		obj.take(actor);
@@ -48,7 +46,7 @@ public class PutAction extends AbstractAction {
 	/**
 	 * Put object into an object-link.
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, WorldObject obj, Hidden hidden) throws ActionException {
+	public ActionResponse execute(Entity actor, WorldObject obj, Hidden hidden) throws ActionException {
 		// Find object link
 		final Link result = actor.getLocation().getExits().values().stream()
 			.map(Exit::getLink)

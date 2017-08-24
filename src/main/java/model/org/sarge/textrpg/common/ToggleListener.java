@@ -2,8 +2,8 @@ package org.sarge.textrpg.common;
 
 import java.util.function.Consumer;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 
 /**
  * Clock listener to toggle the state of something such as shop opening times.

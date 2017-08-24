@@ -1,6 +1,5 @@
 package org.sarge.textrpg.loader;
 
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.entity.CharacterEntity;
 import org.sarge.textrpg.entity.Race;
 import org.sarge.textrpg.entity.Skill;
@@ -20,15 +19,6 @@ public class World {
 	private final Registry<WorldObject> objects = new Registry<>(WorldObject::getName);
 	private final Registry<Location> locations = new Registry<>(Location::getName);
 	private final Registry<CharacterEntity> chars = new Registry<>(CharacterEntity::getName);
-	private final ActionContext ctx;
-	
-	public World(ActionContext ctx) {
-		this.ctx = ctx;
-	}
-	
-	public ActionContext getContext() {
-		return ctx;
-	}
 	
 	/**
 	 * @return Skill definitions

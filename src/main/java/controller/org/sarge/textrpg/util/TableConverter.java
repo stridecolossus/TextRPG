@@ -6,10 +6,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.sarge.lib.collection.MapBuilder;
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
 import org.sarge.lib.util.Converter;
-import org.sarge.lib.util.MapBuilder;
-import org.sarge.lib.util.ToString;
 
 /**
  * Adapter for a converter that can also use a lookup table.

@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.sarge.lib.collection.StrictMap;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.StrictMap;
 import org.sarge.lib.util.StringUtil;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.Contents;

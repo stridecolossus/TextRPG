@@ -6,7 +6,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -31,7 +30,7 @@ public class InfoAction extends AbstractAction {
 			private final EnumSet<EntityValue> KEYS = EnumSet.of(EntityValue.HEALTH, EntityValue.POWER, EntityValue.STAMINA);
 			
 			@Override
-			public Description execute(ActionContext ctx, Entity player) {
+			public Description execute(Entity player) {
 				final Description.Builder desc = new Description.Builder("info.stats");
 				final IntegerMap<EntityValue> values = player.getValues();
 				for(EntityValue key : KEYS) {
@@ -57,7 +56,7 @@ public class InfoAction extends AbstractAction {
 			private final int GOLD  = 20 * SILVER;
 			
 			@Override
-			public Description execute(ActionContext ctx, Entity player) {
+			public Description execute(Entity player) {
 				// Add character info
 				final Description.Builder info = new Description.Builder("character.info");
 				info.add("name", player.getName());
@@ -133,7 +132,7 @@ public class InfoAction extends AbstractAction {
 		 */
 		INVENTORY {
 			@Override
-			protected Description execute(ActionContext ctx, Entity player) {
+			protected Description execute(Entity player) {
 				final List<Description> inv = player.getContents().stream()
 					.map(t -> (WorldObject) t)
 					.map(WorldObject::describeShort)
@@ -147,7 +146,7 @@ public class InfoAction extends AbstractAction {
 		 */
 		EQUIPMENT {
 			@Override
-			public Description execute(ActionContext ctx, Entity player) {
+			public Description execute(Entity player) {
 				return Description.create("info.equipment", player.getEquipment().describe());
 			}
 		},
@@ -157,12 +156,12 @@ public class InfoAction extends AbstractAction {
 		 */
 		SKILLS {
 			@Override
-			public Description execute(ActionContext ctx, Entity player) {
+			public Description execute(Entity player) {
 				return Description.create("info.skills", player.getSkills().describe());
 			}
 		};
 		
-		protected abstract Description execute(ActionContext ctx, Entity player) throws ActionException;
+		protected abstract Description execute(Entity player) throws ActionException;
 	}
 
 	private final Operation op;
@@ -215,8 +214,8 @@ public class InfoAction extends AbstractAction {
 	 * @param actor
 	 * @throws ActionException
 	 */
-	public ActionResponse info(ActionContext ctx, Player actor) throws ActionException {
-		final Description desc = op.execute(ctx, actor);
+	public ActionResponse info(Player actor) throws ActionException {
+		final Description desc = op.execute(actor);
 		return new ActionResponse(desc);
 	}
 }

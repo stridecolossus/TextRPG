@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.sarge.lib.collection.MapBuilder;
 import org.sarge.lib.util.Converter;
-import org.sarge.lib.util.MapBuilder;
 
 public class TableConverterTest {
 	private Converter<Integer> converter;

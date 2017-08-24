@@ -8,16 +8,7 @@ import java.util.List;
 
 import org.sarge.lib.util.Check;
 import org.sarge.lib.util.StreamUtil;
-import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
-import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.ActionResponse;
-import org.sarge.textrpg.common.Description;
-import org.sarge.textrpg.common.Event;
-import org.sarge.textrpg.common.EventQueue;
-import org.sarge.textrpg.common.Notification;
-import org.sarge.textrpg.common.RevealNotification;
-import org.sarge.textrpg.common.Thing;
+import org.sarge.textrpg.common.*;
 import org.sarge.textrpg.object.WorldObject;
 import org.sarge.textrpg.util.Percentile;
 import org.sarge.textrpg.world.Location;
@@ -75,11 +66,10 @@ public class SearchAction extends AbstractAction {
 
 	/**
 	 * Search location for hidden objects or entities.
-	 * @param ctx
 	 * @param actor
 	 * @throws ActionException
 	 */
-	public ActionResponse search(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse search(Entity actor) throws ActionException {
 		// Calculate search score
 		final Location loc = actor.getLocation();
 		final int per = actor.getAttributes().get(Attribute.PERCEPTION) * mod;

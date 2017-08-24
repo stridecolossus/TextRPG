@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -61,11 +60,10 @@ public class GatherAction extends AbstractAction {
 
 	/**
 	 * Gather resources.
-	 * @param ctx
 	 * @param actor
 	 * @throws ActionException
 	 */
-	public ActionResponse gather(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse gather(Entity actor) throws ActionException {
 		// Check can gather in the current location
 		final Location loc = actor.getLocation();
 		if(!isValidLocation(loc)) throw new ActionException("gather.invalid.location");

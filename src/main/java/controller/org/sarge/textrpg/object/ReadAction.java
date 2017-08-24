@@ -1,7 +1,6 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -27,15 +26,14 @@ public class ReadAction extends AbstractAction {
 	
 	/**
 	 * Reads something with a single chapter.
-	 * @param ctx
 	 * @param actor
 	 * @param readable
 	 * @throws ActionException
 	 */
-	public ActionResponse read(ActionContext ctx, Entity actor, Readable readable) throws ActionException {
+	public ActionResponse read(Entity actor, Readable readable) throws ActionException {
 		final Descriptor descriptor = readable.getDescriptor();
 		if(descriptor.getSize() == 1) {
-			return read(descriptor.getChapter(0), descriptor.getLanguage(), actor);
+			return readChapter(descriptor.getChapter(0), descriptor.getLanguage(), actor);
 		}
 		else {
 			throw new ActionException("read.requires.index");
@@ -44,16 +42,15 @@ public class ReadAction extends AbstractAction {
 	
 	/**
 	 * Read specified chapter.
-	 * @param ctx
 	 * @param actor
 	 * @param readable
 	 * @param index
 	 * @throws ActionException
 	 */
-	public ActionResponse read(ActionContext ctx, Entity actor, Readable readable, Integer index) throws ActionException {
+	public ActionResponse read(Entity actor, Readable readable, Integer index) throws ActionException {
 		final Descriptor descriptor = readable.getDescriptor();
 		if((index < 1) || (index >= descriptor.getSize())) throw new ActionException("read.invalid.chapter");
-		return read(descriptor.getChapter(index - 1), descriptor.getLanguage(), actor);
+		return readChapter(descriptor.getChapter(index - 1), descriptor.getLanguage(), actor);
 	}
 
 	/**
@@ -63,7 +60,7 @@ public class ReadAction extends AbstractAction {
 	 * @param actor		Actor
 	 * @throws ActionException if the actor does not possess the language
 	 */
-	private ActionResponse read(Chapter c, String lang, Entity actor) throws ActionException {
+	private static ActionResponse readChapter(Chapter c, String lang, Entity actor) throws ActionException {
 		// Check language
 		// TODO - just need one point? readable has difficulty?
 		//getSkillLevel(actor, lang);

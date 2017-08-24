@@ -39,13 +39,14 @@ public class Light extends WorldObject {
 	public static enum Operation {
 		LIGHT {
 			@Override
-			protected void execute(Light light, long time) throws ActionException {
+			protected void execute(Light light) throws ActionException {
 				// Check can be lit
 				if(light.lit) throw new ActionException("light.already.lit");
 				if(light.lifetime == 0) throw new ActionException("light.lit.expired");
 				assert light.lifetime > 0;
 
 				// Light
+				final long time = EventQueue.getTime();
 				light.lit = true;
 				light.start = time;
 
@@ -68,10 +69,10 @@ public class Light extends WorldObject {
 
 		SNUFF {
 			@Override
-			protected void execute(Light light, long time) throws ActionException {
+			protected void execute(Light light) throws ActionException {
 				if(!light.lit) throw new ActionException("snuff.not.lit");
 				light.lit = false;
-				light.lifetime -= time - light.start;
+				light.lifetime -= EventQueue.getTime() - light.start;
 				light.expiry.cancel();
 				light.warning.cancel();
 			}
@@ -79,7 +80,7 @@ public class Light extends WorldObject {
 
 		COVER {
 			@Override
-			protected void execute(Light light, long time) throws ActionException {
+			protected void execute(Light light) throws ActionException {
 				if(!light.isLantern()) throw new ActionException("cover.not.lantern");
 				if(light.covered) throw new ActionException("cover.already.covered");
 				light.covered = true;
@@ -88,7 +89,7 @@ public class Light extends WorldObject {
 
 		UNCOVER {
 			@Override
-			protected void execute(Light light, long time) throws ActionException {
+			protected void execute(Light light) throws ActionException {
 				if(!light.isLantern()) throw new ActionException("uncover.not.lantern");
 				if(!light.covered) throw new ActionException("uncover.not.covered");
 				light.covered = false;
@@ -97,11 +98,10 @@ public class Light extends WorldObject {
 
 		/**
 		 * Performs this operation on the given light.
-		 * @param ctx		Context
-		 * @param time		Current time
+		 * @param light Light
 		 * @throws ActionException if the operation cannot be performed
 		 */
-		protected abstract void execute(Light light, long time) throws ActionException;
+		protected abstract void execute(Light light) throws ActionException;
 	}
 
 	/**
@@ -265,14 +265,13 @@ public class Light extends WorldObject {
 
 	/**
 	 * Performs the given operation on this light.
-	 * @param op		Operation
-	 * @param time		Current time
+	 * @param time Current time
 	 * @throws ActionException if the operation cannot be performed
 	 */
 	// TODO - public
-	public void execute(Operation op, long time) throws ActionException {
+	public void execute(Operation op) throws ActionException {
 		if(type == Type.LAMP_POST) throw new ActionException("light.lamp.post");
-		op.execute(this, time);
+		op.execute(this);
 		assert lifetime >= 0;
 	}
 

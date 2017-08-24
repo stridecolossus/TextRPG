@@ -1,7 +1,6 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Thing;
 import org.sarge.textrpg.entity.Entity;
@@ -22,7 +21,7 @@ public class ThrowAction extends AbstractAction {
 	 * Discard an object.
 	 * @throws ActionException
 	 */
-	public void throwObject(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+	public void throwObject(Entity actor, WorldObject obj) throws ActionException {
 		verifyCarried(actor, obj);
 		final Location loc = actor.getLocation();
 		obj.setParentAncestor(loc);
@@ -31,7 +30,7 @@ public class ThrowAction extends AbstractAction {
 	/**
 	 * Throws at someone.
 	 */
-	public void throwObjectEntity(ActionContext ctx, Entity actor, WorldObject obj, Thing target) {
+	public void throwObjectEntity(Entity actor, WorldObject obj, Thing target) {
 		// TODO - ???
 	}
 }

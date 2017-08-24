@@ -6,13 +6,15 @@ import static java.util.stream.Collectors.toSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
+import org.sarge.lib.collection.Pair;
 import org.sarge.lib.util.Check;
 import org.sarge.lib.util.Converter;
-import org.sarge.lib.util.Pair;
 import org.sarge.lib.util.Util;
+import org.sarge.lib.xml.Element;
 import org.sarge.textrpg.common.DamageType;
 import org.sarge.textrpg.common.LoaderException;
 import org.sarge.textrpg.common.Openable;
@@ -21,34 +23,14 @@ import org.sarge.textrpg.common.Value;
 import org.sarge.textrpg.entity.DamageEffect;
 import org.sarge.textrpg.entity.Effect;
 import org.sarge.textrpg.entity.Stance;
-import org.sarge.textrpg.object.Boat;
-import org.sarge.textrpg.object.Container;
-import org.sarge.textrpg.object.Control;
-import org.sarge.textrpg.object.DeploymentSlot;
-import org.sarge.textrpg.object.DurableObject;
-import org.sarge.textrpg.object.Fixture;
-import org.sarge.textrpg.object.Food;
+import org.sarge.textrpg.object.*;
 import org.sarge.textrpg.object.Food.Type;
-import org.sarge.textrpg.object.Furniture;
-import org.sarge.textrpg.object.InteractObject;
-import org.sarge.textrpg.object.Light;
-import org.sarge.textrpg.object.Liquid;
-import org.sarge.textrpg.object.Money;
-import org.sarge.textrpg.object.ObjectDescriptor;
 import org.sarge.textrpg.object.ObjectDescriptor.Equipment;
 import org.sarge.textrpg.object.ObjectDescriptor.EquipmentBuilder;
-import org.sarge.textrpg.object.Readable;
-import org.sarge.textrpg.object.Receptacle;
-import org.sarge.textrpg.object.RevealObject;
-import org.sarge.textrpg.object.Rope;
-import org.sarge.textrpg.object.ScriptLoader;
-import org.sarge.textrpg.object.TrackedContents;
-import org.sarge.textrpg.object.Vehicle;
-import org.sarge.textrpg.object.Weapon;
 import org.sarge.textrpg.object.WorldObject.Interaction;
+import org.sarge.textrpg.object.Readable;
 import org.sarge.textrpg.util.Percentile;
 import org.sarge.textrpg.util.TableConverter;
-import org.sarge.textrpg.util.TextNode;
 import org.sarge.textrpg.world.Route;
 
 /**
@@ -106,7 +88,7 @@ public class ObjectLoader {
 	public static enum Loader {
 		OBJECT {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
 				return descriptor;
 			}
 		},
@@ -115,10 +97,10 @@ public class ObjectLoader {
 			private final Converter<Integer> LEVEL_CONVERTER = new TableConverter<>(Converter.INTEGER, "infinite", Receptacle.INFINITE);
 
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
 				final Liquid liquid = loader.liquidLoader.load(node);
-				final int max = node.getAttribute("max", null, LEVEL_CONVERTER);
-				final boolean potion = node.getBoolean("potion", false);
+				final int max = node.attributes().toValue("max", null, LEVEL_CONVERTER);
+				final boolean potion = node.attributes().toBoolean("potion", false);
 				return new Receptacle.Descriptor(descriptor, liquid, max, potion);
 			}
 		},
@@ -127,23 +109,23 @@ public class ObjectLoader {
 			private final Converter<Light.Type> LIGHT_TYPE = Converter.enumeration(Light.Type.class);
 
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
-				final long lifetime = node.getAttribute("lifetime", null, Converter.DURATION).toMillis();
-				final Light.Type type = node.getAttribute("type", Light.Type.GENERAL, LIGHT_TYPE);
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
+				final long lifetime = node.attributes().toValue("lifetime", null, Converter.DURATION).toMillis();
+				final Light.Type type = node.attributes().toValue("type", Light.Type.GENERAL, LIGHT_TYPE);
 				return new Light.Descriptor(descriptor, lifetime, type);
 			}
 		},
 
 		CONTAINER {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
 				return loader.loadContainer(node, descriptor);
 			}
 		},
 
 		KEY {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
 				final Equipment key = new EquipmentBuilder().slot(DeploymentSlot.KEYRING).build();
 				return new ObjectDescriptor.Builder(descriptor.getName()).category("key").equipment(key).build();
 			}
@@ -151,18 +133,18 @@ public class ObjectLoader {
 
 		DURABLE {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
-				final int durability = node.getAttribute("durability", null, loader.durabilityConverter);
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
+				final int durability = node.attributes().toValue("durability", null, loader.durabilityConverter);
 				return new DurableObject.Descriptor(descriptor, durability);
 			}
 		},
 
 		CONTROL {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
-				final Interaction op = node.getAttribute("op", Interaction.PUSH, INTERACTION);
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
+				final Interaction op = node.attributes().toValue("op", Interaction.PUSH, INTERACTION);
 				final Script open = loader.scriptLoader.load(node.child("open"));
-				final Script close = node.optionalChild("close").map(TextNode::child).map(loader.scriptLoader::load).orElse(Script.NONE);
+				final Script close = node.optionalChild("close").map(Element::child).map(loader.scriptLoader::load).orElse(Script.NONE);
 				return new Control.ControlDescriptor(descriptor, op, open, close);
 			}
 		},
@@ -171,39 +153,39 @@ public class ObjectLoader {
 			private final Converter<Food.Type> FOOD_TYPE = Converter.enumeration(Food.Type.class);
 
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
-				final Food.Type type = node.getAttribute("food-type", Type.COOKED, FOOD_TYPE);
-				final int level = node.getInteger("nutrition", null);
-				final long lifetime = node.getAttribute("lifetime", null, Converter.DURATION).toMillis();
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
+				final Food.Type type = node.attributes().toValue("food-type", Type.COOKED, FOOD_TYPE);
+				final int level = node.attributes().toInteger("nutrition", null);
+				final long lifetime = node.attributes().toValue("lifetime", null, Converter.DURATION).toMillis();
 				return new Food.Descriptor(descriptor, type, level, lifetime);
 			}
 		},
 
 		READABLE {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
-				final String lang = node.getString("lang", null);
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
+				final String lang = node.attributes().toString("lang", null);
 				final List<Readable.Chapter> chapters = node.children().map(this::loadChapter).collect(toList());
 				return new Readable.Descriptor(descriptor, lang, chapters);
 			}
 
-			private Readable.Chapter loadChapter(TextNode node) {
-				final String title = node.getString("title", null);
-				final String text = node.getString("text", null);
+			private Readable.Chapter loadChapter(Element node) {
+				final String title = node.attributes().toString("title", null);
+				final String text = node.attributes().toString("text", null);
 				return new Readable.Chapter(title, text);
 			}
 		},
 
 		FIXTURE {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
 				return new Fixture(descriptor);
 			}
 		},
 
 		FURNITURE {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
 				final Set<Stance> stances = LoaderHelper.loadEnumeration(node, "stances", LoaderHelper.STANCE);
 				final Map<TrackedContents.Limit, String> limits = loadLimits(node);
 				if(stances.isEmpty()) throw node.exception("Expected one-or-more stances");
@@ -214,20 +196,20 @@ public class ObjectLoader {
 
 		REVEAL {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
-				final Interaction action = node.getAttribute("action", Interaction.EXAMINE, INTERACTION);
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
+				final Interaction action = node.attributes().toValue("action", Interaction.EXAMINE, INTERACTION);
 				final ObjectDescriptor delegate = loader.load(node.child());
-				final boolean replaces = node.getBoolean("replaces", true);
+				final boolean replaces = node.attributes().toBoolean("replaces", true);
 				return new RevealObject.Descriptor(descriptor, Collections.singleton(action), delegate, replaces);
 			}
 		},
 
 		INTERACT {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
 				final Set<Interaction> interactions = LoaderHelper.loadEnumeration(node, "interactions", INTERACTION);
-				final int str = node.getInteger("str", 0);
-				final boolean removes = node.getBoolean("removes", true);
+				final int str = node.attributes().toInteger("str", 0);
+				final boolean removes = node.attributes().toBoolean("removes", true);
 				if(interactions.isEmpty()) throw node.exception("Expected one-or-more interactions");
 				return new InteractObject.Descriptor(descriptor, interactions, str, removes);
 			}
@@ -235,26 +217,26 @@ public class ObjectLoader {
 
 		WEAPON {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
 				return loadWeaponDescriptor(node, descriptor, loader.durabilityConverter);
 			}
 		},
 
 		ROPE {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
-				final int durability = node.getAttribute("durability", null, loader.durabilityConverter);
-				final int len = node.getInteger("length", null);
-				final boolean magical = node.getBoolean("magical", false);
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
+				final int durability = node.attributes().toValue("durability", null, loader.durabilityConverter);
+				final int len = node.attributes().toInteger("length", null);
+				final boolean magical = node.attributes().toBoolean("magical", false);
 				return new Rope.Descriptor(descriptor, durability, len, magical);
 			}
 		},
 
 		VEHICLE {
 			@Override
-			protected ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader) {
-				final float mod = node.getFloat("mod", null);
-				final String type = node.getString("type", "vehicle");
+			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
+				final float mod = node.attributes().toFloat("mod", null);
+				final String type = node.attributes().toString("type", "vehicle");
 				switch(type) {
 				case "vehicle":
 					final Set<Route> routes = LoaderHelper.loadEnumeration(node, "route", LoaderHelper.ROUTE);
@@ -270,7 +252,7 @@ public class ObjectLoader {
 			}
 		};
 
-		protected abstract ObjectDescriptor load(TextNode node, ObjectDescriptor descriptor, ObjectLoader loader);
+		protected abstract ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader);
 	}
 
 	/**
@@ -278,7 +260,7 @@ public class ObjectLoader {
 	 * @param xml XML
 	 * @return Object descriptor
 	 */
-	public ObjectDescriptor load(TextNode node) {
+	public ObjectDescriptor load(Element node) {
 		// Special case for money
 		if(node.name().equals("money")) {
 			return Money.DESCRIPTOR;
@@ -292,7 +274,7 @@ public class ObjectLoader {
 		try {
 			return loader.load(node, descriptor, this);
 		}
-		catch(final LoaderException e) {
+		catch(LoaderException e) {
 			throw e;
 		}
 		catch(final Exception e) {
@@ -304,19 +286,21 @@ public class ObjectLoader {
 	 * Helper - Loads an openable descriptor.
 	 * @param def Whether default is openable
 	 */
-	protected Openable.Lock loadLock(TextNode node, boolean def) {
-		if(node.getBoolean("openable", def)) {
-			final String key = node.getValue("key");
-			if(key == null) {
-				return Openable.UNLOCKABLE;
-			}
-			else
-			if(key.equals("fixed")) {
-				return Openable.FIXED;
+	protected Openable.Lock loadLock(Element node, boolean def) {
+		if(node.attributes().toBoolean("openable", def)) {
+			final Optional<String> key = node.attributes().getOptional("key", Converter.STRING);
+			if(key.isPresent()) {
+				final String name = key.get();
+				if(key.equals("fixed")) {
+					return Openable.FIXED;
+				}
+				else {
+					final Percentile pick = node.attributes().toValue("pick", null, difficultyConverter);
+					return new Openable.Lock(name, pick);
+				}
 			}
 			else {
-				final Percentile pick = node.getAttribute("pick", null, difficultyConverter);
-				return new Openable.Lock(key, pick);
+				return Openable.UNLOCKABLE;
 			}
 		}
 		else {
@@ -331,37 +315,37 @@ public class ObjectLoader {
 	 * @param durabilityConverter		Converter for durability or <tt>null</tt> to ignore
 	 * @return Weapon descriptor
 	 */
-	public static Weapon loadWeaponDescriptor(TextNode node, ObjectDescriptor descriptor, Converter<Integer> durabilityConverter) {
+	public static Weapon loadWeaponDescriptor(Element node, ObjectDescriptor descriptor, Converter<Integer> durabilityConverter) {
 		final int durability;
 		if(durabilityConverter == null) {
 			durability = Integer.MAX_VALUE;
 		}
 		else {
-			durability = node.getAttribute("durability", null, durabilityConverter);
+			durability = node.attributes().toValue("durability", null, durabilityConverter);
 		}
-		final int speed = node.getInteger("speed", null);
+		final int speed = node.attributes().toInteger("speed", null);
 		final DamageEffect damage = loadDamage(node.child("damage"));
 		final Effect.Descriptor effect = node.optionalChild("effect").map(EFFECT_LOADER::load).orElse(null);
-		final String ammo = node.getValue("ammo");
+		final String ammo = node.attributes().getOptional("ammo", Converter.STRING).orElse(null); // TODO - nasty
 		return new Weapon(descriptor, durability, speed, damage, effect, ammo);
 	}
 
 	/**
 	 * Loads a damage effect.
 	 */
-	private static DamageEffect loadDamage(TextNode node) {
-		final DamageType type = node.getAttribute("damage", DamageType.PIERCING, DAMAGE_CONVERTER);
+	private static DamageEffect loadDamage(Element node) {
+		final DamageType type = node.attributes().toValue("damage", DamageType.PIERCING, DAMAGE_CONVERTER);
 		final Value amount = VALUE_LOADER.load(node, "amount");
-		final boolean wound = node.getBoolean("wound", false);
+		final boolean wound = node.attributes().toBoolean("wound", false);
 		return new DamageEffect(type, amount, wound);
 	}
 
 	/**
 	 * Loads a container.
 	 */
-	public Container.Descriptor loadContainer(TextNode node, ObjectDescriptor descriptor) {
+	public Container.Descriptor loadContainer(Element node, ObjectDescriptor descriptor) {
 		final Openable.Lock lock = loadLock(node, false);
-		final Container.Placement placement = node.getAttribute("place", Container.Placement.IN, PLACEMENT);
+		final Container.Placement placement = node.attributes().toValue("place", Container.Placement.IN, PLACEMENT);
 		final DeploymentSlot slot = loadSlot(node);
 		return new Container.Descriptor(descriptor, placement, lock, loadLimits(node), slot);
 	}
@@ -369,24 +353,18 @@ public class ObjectLoader {
 	/**
 	 * Loads the optional deployment slot.
 	 */
-	private static DeploymentSlot loadSlot(TextNode node) {
-		final String slot = node.getValue("contents-slot");
-		if(slot == null) {
-			return null;
-		}
-		else {
-			return SLOT_CONVERTER.convert(slot);
-		}
+	private static DeploymentSlot loadSlot(Element node) {
+		return node.attributes().getOptional("contents-slot", SLOT_CONVERTER).orElse(null);
 	}
 
 	/**
 	 * Loads tracked contents limits.
 	 * TODO - move to loader-helper
 	 */
-	private static Map<TrackedContents.Limit, String> loadLimits(TextNode node) {
-		final Function<TextNode, Pair<TrackedContents.Limit, String>> mapper = child -> {
+	private static Map<TrackedContents.Limit, String> loadLimits(Element node) {
+		final Function<Element, Pair<TrackedContents.Limit, String>> mapper = child -> {
 			final TrackedContents.Limit limit = loadLimit(child);
-			final String reason = child.getString("reason", null);
+			final String reason = child.attributes().toString("reason");
 			return new Pair<>(limit, reason);
 		};
 		return node.children("limit").map(mapper).collect(Pair.toMap());
@@ -395,8 +373,8 @@ public class ObjectLoader {
 	/**
 	 * Loads a container limit.
 	 */
-	private static TrackedContents.Limit loadLimit(TextNode node) {
-		final String type = node.getString("type", null);
+	private static TrackedContents.Limit loadLimit(Element node) {
+		final String type = node.attributes().toString("type", null);
 		switch(type) {
 		case "size":
 			return loadIntegerLimit(node, TrackedContents.Limit::number);
@@ -408,14 +386,14 @@ public class ObjectLoader {
 			return loadIntegerLimit(node, TrackedContents.Limit::number);
 
 		case "category":
-			final String name = node.getValue("category");
 			final Set<String> cats;
-			if(name == null) {
-				cats = node.children().map(TextNode::name).collect(toSet());
-				if(cats.isEmpty()) throw node.exception("Empty categories");
+			final Optional<String> name = node.attributes().getOptional("category", Converter.STRING);
+			if(name.isPresent()) {
+				cats = Collections.singleton(name.get());
 			}
 			else {
-				cats = Collections.singleton(name);
+				cats = node.children().map(Element::name).collect(toSet());
+				if(cats.isEmpty()) throw node.exception("Empty categories");
 			}
 			return Container.categoryLimit(cats);
 
@@ -427,8 +405,8 @@ public class ObjectLoader {
 	/**
 	 * Loads an integer-based limit.
 	 */
-	private static TrackedContents.Limit loadIntegerLimit(TextNode node, Function<Integer, TrackedContents.Limit> mapper) {
-		final int max = node.getInteger("max", null);
+	private static TrackedContents.Limit loadIntegerLimit(Element node, Function<Integer, TrackedContents.Limit> mapper) {
+		final int max = node.attributes().toInteger("max", null);
 		return mapper.apply(max);
 	}
 }

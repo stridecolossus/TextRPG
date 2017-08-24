@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.sarge.lib.util.StrictMap;
+import org.sarge.lib.collection.StrictMap;
 import org.sarge.textrpg.common.Description;
 
 /**

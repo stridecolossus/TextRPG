@@ -2,7 +2,6 @@ package org.sarge.textrpg.entity;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -36,12 +35,11 @@ public class SneakAction extends AbstractAction {
 
 	/**
 	 * Toggle sneaking.
-	 * @param ctx
 	 * @param actor
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse sneak(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse sneak(Entity actor) throws ActionException {
 		if(actor.getStance() == Stance.SNEAKING) {
 			// Stop sneaking
 			actor.setStance(Stance.DEFAULT);

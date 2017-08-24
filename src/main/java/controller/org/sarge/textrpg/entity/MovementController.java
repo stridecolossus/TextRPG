@@ -1,8 +1,10 @@
 package org.sarge.textrpg.entity;
 
+import static org.sarge.lib.util.Check.notNull;
+
 import org.sarge.lib.util.Check;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
+import org.sarge.textrpg.common.Clock;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.common.Emission;
 import org.sarge.textrpg.common.EnvironmentNotification;
@@ -23,25 +25,37 @@ import org.sarge.textrpg.world.Tracks;
 
 /**
  * Entity movement controller.
+ * <p>
+ * The controller is responsible for:
+ * <ul>
+ * <li>consuming stamina</li>
+ * <li>moving the entity (and any parent container such as a vehicle) to the new location</li>
+ * <li>adding tracks</li>
+ * <li>generating environmental notifications, e.g. noise</li>
+ * <li>auto-moving the associated group if the entity is the leader</li>
+ * </ul>
  * @author Sarge
  */
 public class MovementController {
 	private static final Emission.Type[] EMISSIONS = {Emission.Type.LIGHT, Emission.Type.SMOKE, Emission.Type.SOUND};
-	
+
+	private final Clock clock;
 	private final DataTableCalculator move;
 	private final DataTableCalculator tracks;
 	private final long lifetime;
 
 	/**
 	 * Constructor.
+	 * @param clock			Game-time clock
 	 * @param move			Movement cost calculator
 	 * @param tracks		Tracks visibility calculator
 	 * @param lifetime		Tracks lifetime
 	 */
-	public MovementController(DataTableCalculator move, DataTableCalculator tracks, long lifetime) {
+	public MovementController(Clock clock, DataTableCalculator move, DataTableCalculator tracks, long lifetime) {
 		Check.notNull(move);
 		Check.notNull(tracks);
 		Check.oneOrMore(lifetime);
+		this.clock = notNull(clock);
 		this.move = move;
 		this.tracks = tracks;
 		this.lifetime = lifetime;
@@ -49,7 +63,6 @@ public class MovementController {
 
 	/**
 	 * Moves an entity in the given direction and generates notifications.
-	 * @param ctx		Context
 	 * @param actor		Actor
 	 * @param dir		Direction to move
 	 * @param mod		Cost multiplier
@@ -57,8 +70,9 @@ public class MovementController {
 	 * @return Move description
 	 * @throws ActionException if the actor cannot move in the given direction, is in an invalid state, or has insufficient stamina
 	 * @see Entity#move(Link, int)
+	 * TODO - several bits should be moved to MoveAction (for player-only stuff)
 	 */
-	public Description move(ActionContext ctx, Entity actor, Direction dir, float mod, boolean player) throws ActionException {
+	public Description move(Entity actor, Direction dir, float mod, boolean player) throws ActionException {
 		if(mod < 1) throw new IllegalArgumentException("Movement cost modifier must be one-or-more");
 
 		// Check can traverse
@@ -68,6 +82,7 @@ public class MovementController {
 		final Vehicle vehicle = ActionHelper.getVehicle(actor);
 		assert exit.perceivedBy(actor);
 		if(player) {
+			// TODO - move to MoveAction
 			checkLink(actor, vehicle, exit);
 		}
 		
@@ -77,6 +92,7 @@ public class MovementController {
 		
 		// Traverse link
 		if(player) {
+			// TODO - move to MoveAction
 			exit.getLink().getScript().execute(actor);
 		}
 		if(vehicle == null) {
@@ -93,15 +109,17 @@ public class MovementController {
 		
 		// Update ambient events
 		if(player) {
+			// TODO - move to MoveAction
 			generateAmbientEvents(loc, dest, actor);
 		}
 		
 		// Move group members if leader
-		moveGroup(ctx, actor, dir);
+		moveGroup(actor, dir);
 		
 		// Describe destination
+		// TODO - move to MoveAction
 		if(player) {
-			return dest.describe(ctx.isDaylight(), actor);
+			return dest.describe(clock.isDaylight(), actor);
 		}
 		else {
 			return null;
@@ -228,15 +246,16 @@ public class MovementController {
 	/**
 	 * Moves group and followers.
 	 */
-	private void moveGroup(ActionContext ctx, Entity actor, Direction dir) {
+	private void moveGroup(Entity actor, Direction dir) {
 		// Move group
+		// TODO - this seems convoluted? just if..then check for whether actor is leader?
 		actor.getGroup()
 			.filter(g -> g.getLeader() == actor)
 			.map(Group::getMembers)
-			.ifPresent(members -> members.forEach(e -> move(ctx, e, dir)));
+			.ifPresent(members -> members.forEach(e -> move(e, dir)));
 
 		// Move followers
-		actor.getFollowers().forEach(e -> move(ctx, e, dir));
+		actor.getFollowers().forEach(e -> move(e, dir));
 	}
 	
 	/**
@@ -244,9 +263,9 @@ public class MovementController {
 	 * @param entities		Entity to move
 	 * @param dir			Direction
 	 */
-	private void move(ActionContext ctx, Entity actor, Direction dir) {
+	private void move(Entity actor, Direction dir) {
 		try {
-			move(ctx, actor, dir, 1, actor instanceof Player);
+			move(actor, dir, 1, actor instanceof Player);
 		}
 		catch(ActionException ex) {
 			actor.getNotificationHandler().handle(new Message(ex.getMessage()));

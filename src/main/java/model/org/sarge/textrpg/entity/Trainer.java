@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.sarge.lib.util.ToString;
+import org.sarge.lib.object.ToString;
 import org.sarge.textrpg.common.ActionException;
 
 /**

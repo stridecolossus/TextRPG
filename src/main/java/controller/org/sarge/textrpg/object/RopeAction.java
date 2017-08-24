@@ -1,7 +1,6 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -22,7 +21,7 @@ public class RopeAction extends AbstractAction {
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse attach(ActionContext ctx, Entity actor, Rope rope, Anchor anchor) throws ActionException {
+	public ActionResponse attach(Entity actor, Rope rope, Anchor anchor) throws ActionException {
 		verifyCarried(actor, rope);
 		rope.attach(actor, anchor);
 		return response("rope.attach.response", rope, anchor);
@@ -36,7 +35,7 @@ public class RopeAction extends AbstractAction {
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse remove(ActionContext ctx, Entity actor, Rope rope) throws ActionException {
+	public ActionResponse remove(Entity actor, Rope rope) throws ActionException {
 		final Anchor anchor = rope.getAnchor();
 		rope.remove(actor);
 		return response("rope.remove.response", rope, anchor);

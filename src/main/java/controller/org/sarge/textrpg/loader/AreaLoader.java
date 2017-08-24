@@ -14,15 +14,16 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import org.sarge.lib.collection.Pair;
 import org.sarge.lib.util.Check;
 import org.sarge.lib.util.Converter;
-import org.sarge.lib.util.Pair;
+import org.sarge.lib.util.ConverterAdapter;
 import org.sarge.lib.util.StreamUtil;
+import org.sarge.lib.xml.Element;
+import org.sarge.lib.xml.ElementLoader;
 import org.sarge.textrpg.common.LoaderException;
 import org.sarge.textrpg.entity.Race;
 import org.sarge.textrpg.object.LootFactory;
-import org.sarge.textrpg.util.TextNode;
-import org.sarge.textrpg.util.TextParser;
 import org.sarge.textrpg.world.Area;
 import org.sarge.textrpg.world.Area.Ambient;
 import org.sarge.textrpg.world.Area.Resource;
@@ -43,16 +44,16 @@ public class AreaLoader {
 
 	// TODO - nasty
 	private static final Collection<String> NAMES = Arrays.asList("area", "resource", "ambient");
-	private static final Predicate<TextNode> FILTER = StreamUtil.not(node -> NAMES.contains(node.name()));
+	private static final Predicate<Element> FILTER = StreamUtil.not(node -> NAMES.contains(node.name()));
 
-	private static final TextParser LOADER = new TextParser();
+	private static final ElementLoader LOADER = new ElementLoader();
 
 	/**
 	 * Helper - Opens an XML file.
 	 */
-	private static TextNode open(Path path) {
+	private static Element open(Path path) {
 		try {
-			return LOADER.parse(Files.newBufferedReader(path));
+			return LOADER.load(Files.newBufferedReader(path));
 		}
 		catch(final IOException e) {
 			throw new RuntimeException("Error opening file: " + path, e);
@@ -83,7 +84,7 @@ public class AreaLoader {
 	 * Loader pass.
 	 */
 	private interface Pass {
-		Area load(TextNode node, Area parent);
+		Area load(Element node, Area parent);
 	}
 
 	/**
@@ -91,9 +92,10 @@ public class AreaLoader {
 	 */
 	private final Pass locationPass = (node, parent) -> {
 		// Load area
-		final String name = node.getString("name", null);
-		final Terrain terrain = node.getAttribute("default-terrain", parent.getTerrain(), TERRAIN);
-		final Route route = node.getAttribute("default-route", parent.getRouteType(), ROUTE);
+		final ConverterAdapter attrs = node.attributes();
+		final String name = attrs.toString("name");
+		final Terrain terrain = attrs.toValue("default-terrain", parent.getTerrain(), TERRAIN);
+		final Route route = attrs.toValue("default-route", parent.getRouteType(), ROUTE);
 
 		// Load resources in this area
 		final Map<Resource, LootFactory> resources = node.children("resource").map(AreaLoader.this::loadResourceFactory).collect(Pair.toMap());
@@ -114,8 +116,8 @@ public class AreaLoader {
 	/**
 	 * Loads a resource factory.
 	 */
-	private Pair<Resource, LootFactory> loadResourceFactory(TextNode node) {
-		final Resource res = node.getAttribute("res", null, RESOURCE);
+	private Pair<Resource, LootFactory> loadResourceFactory(Element node) {
+		final Resource res = node.attributes().toValue("res", null, RESOURCE);
 		final LootFactory f = locationLoader.getLootLoader().load(node.child());
 		return new Pair<>(res, f);
 	}
@@ -123,10 +125,11 @@ public class AreaLoader {
 	/**
 	 * Loads an ambient event descriptor.
 	 */
-	private static Ambient loadAmbient(TextNode node) {
-		final String name = node.getString("name", null);
-		final long period = node.getAttribute("period", null, Converter.DURATION).toMillis();
-		final boolean repeat = node.getBoolean("repeat", true);
+	private static Ambient loadAmbient(Element node) {
+		final ConverterAdapter attrs = node.attributes();
+		final String name = attrs.toString("name", null);
+		final long period = attrs.toValue("period", null, Converter.DURATION).toMillis();
+		final boolean repeat = attrs.toBoolean("repeat", true);
 		return new Ambient(name, period, repeat);
 	}
 
@@ -149,26 +152,26 @@ public class AreaLoader {
 	/**
 	 * Loads links and contents.
 	 */
-	private void loadContents(TextNode node) {
+	private void loadContents(Element node) {
 		// Retrieve location
-		final String name = node.getString("name", null);
+		final String name = node.attributes().toString("name");
 		final Location loc = world.getLocations().find(name);
 		if(loc == null) throw new RuntimeException();
 
 		// Load links
 		final Route route = loc.getArea().getRouteType();
 		node.optionalChild("links")
-			.map(TextNode::children)
+			.map(Element::children)
 			.orElse(Stream.empty())
 			.map(e -> linkLoader.loadLinkWrapper(e, route, loc))
 			.forEach(loc::add);
 
 		// Load default race
-		final Race race = node.getAttribute("default-race", def, world.getRaces()::find);
+		final Race race = node.attributes().toValue("default-race", def, world.getRaces()::find);
 
 		// Load contents
 		node.optionalChild("contents")
-			.map(TextNode::children)
+			.map(Element::children)
 			.orElse(Stream.empty())
 			.forEach(e -> locationLoader.loadContents(e, race, loc));
 	}
@@ -210,7 +213,7 @@ public class AreaLoader {
 		}
 	}
 
-	private static Area load(TextNode node, Area parent, Pass pass) {
+	private static Area load(Element node, Area parent, Pass pass) {
 		final Area area = pass.load(node, parent);
 		node.children("area").forEach(e -> load(e, area, pass));
 		return area;

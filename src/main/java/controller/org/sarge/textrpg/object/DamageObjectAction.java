@@ -1,7 +1,6 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.DamageType;
@@ -27,7 +26,7 @@ public class DamageObjectAction extends AbstractAction {
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse smash(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+	public ActionResponse smash(Entity actor, WorldObject obj) throws ActionException {
 		// Check can damage this object
 		final Weapon weapon = (Weapon) actor.getWeapon().getDescriptor();
 		final DamageEffect damage = weapon.getDamage();

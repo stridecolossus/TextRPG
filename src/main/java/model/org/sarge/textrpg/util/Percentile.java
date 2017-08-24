@@ -1,8 +1,8 @@
 package org.sarge.textrpg.util;
 
+import org.sarge.lib.object.EqualsBuilder;
 import org.sarge.lib.util.Check;
 import org.sarge.lib.util.Converter;
-import org.sarge.lib.util.EqualsBuilder;
 
 /**
  * Percentile value.

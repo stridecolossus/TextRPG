@@ -5,12 +5,12 @@ import static java.util.stream.Collectors.toList;
 import org.sarge.lib.util.Check;
 import org.sarge.lib.util.Converter;
 import org.sarge.lib.util.Util;
+import org.sarge.lib.xml.Element;
 import org.sarge.textrpg.common.Condition;
 import org.sarge.textrpg.common.Openable;
 import org.sarge.textrpg.common.Script;
 import org.sarge.textrpg.loader.ConditionLoader;
 import org.sarge.textrpg.loader.World;
-import org.sarge.textrpg.util.TextNode;
 
 /**
  * Loader for a {@link Script}.
@@ -39,7 +39,7 @@ public class ScriptLoader {
 	 * @param node XML
 	 * @return Script
 	 */
-	public Script load(TextNode node) {
+	public Script load(Element node) {
 		final Loader loader = Util.getEnumConstant(node.name(), Loader.class, () -> node.exception("Invalid script loader: " + node.name()));
 		return loader.load(node, this);
 	}
@@ -50,21 +50,21 @@ public class ScriptLoader {
 	private enum Loader {
 		MESSAGE {
 			@Override
-			protected Script load(TextNode node, ScriptLoader loader) {
-				return Script.message(node.value());
+			protected Script load(Element node, ScriptLoader loader) {
+				return Script.message(node.text());
 			}
 		},
 		
 		COMPOUND {
 			@Override
-			protected Script load(TextNode node, ScriptLoader loader) {
+			protected Script load(Element node, ScriptLoader loader) {
 				return Script.compound(node.children().map(loader::load).collect(toList()));
 			}
 		},
 		
 		CONDITION {
 			@Override
-			protected Script load(TextNode node, ScriptLoader loader) {
+			protected Script load(Element node, ScriptLoader loader) {
 				final Condition condition = loader.conditionLoader.load(node.child("condition"));
 				final Script trueScript = loader.load(node.child("true"));
 				final Script falseScript = node.optionalChild("false").map(loader::load).orElse(null);
@@ -74,20 +74,20 @@ public class ScriptLoader {
 		
 		PORTAL {
 			@Override
-			protected Script load(TextNode node, ScriptLoader loader) {
-				final WorldObject obj = loader.world.getObjects().find(node.getString("name", null));
-				final Openable.Operation op = node.getAttribute("op", null, OPENABLE);
+			protected Script load(Element node, ScriptLoader loader) {
+				final WorldObject obj = loader.world.getObjects().find(node.attributes().toString("name"));
+				final Openable.Operation op = node.attributes().toValue("op", null, OPENABLE);
 				return new PortalScript(obj, op);
 			}
 		},
 		
 		REVEAL {
 			@Override
-			protected Script load(TextNode node, ScriptLoader loader) {
-				final String name = node.getString("name", null);
+			protected Script load(Element node, ScriptLoader loader) {
+				final String name = node.attributes().toString("name", null);
 				final WorldObject obj = loader.world.getObjects().find(name);
 				if(obj == null) throw node.exception("Unknown object: " + name);
-				final String key = node.getString("message", null);
+				final String key = node.attributes().toString("message", null);
 				return new RevealScript(obj, key);
 			}
 		};
@@ -109,7 +109,7 @@ public class ScriptLoader {
 		 * @param loader	Loader
 		 * @return Script
 		 */
-		protected abstract Script load(TextNode node, ScriptLoader loader);
+		protected abstract Script load(Element node, ScriptLoader loader);
 	}
 }
 	

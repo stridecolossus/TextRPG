@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.sarge.lib.util.ToString;
+import org.sarge.lib.object.ToString;
 
 /**
  * Iterator that continually cycles backwards-and-forwards through a list.

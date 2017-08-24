@@ -1,7 +1,6 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Parent;
@@ -29,7 +28,7 @@ public class EmptyAction extends AbstractAction {
 	 * @param rec
 	 * @throws ActionException
 	 */
-	public ActionResponse empty(ActionContext ctx, Entity actor, Receptacle rec) throws ActionException {
+	public ActionResponse empty(Entity actor, Receptacle rec) throws ActionException {
 		rec.empty();
 		return response(rec);
 	}
@@ -41,7 +40,7 @@ public class EmptyAction extends AbstractAction {
 	 * @param container
 	 * @throws ActionException
 	 */
-	public ActionResponse empty(ActionContext ctx, Entity actor, Container container) throws ActionException {
+	public ActionResponse empty(Entity actor, Container container) throws ActionException {
 		empty(container, container.getParent());
 		return response(container);
 	}
@@ -54,7 +53,7 @@ public class EmptyAction extends AbstractAction {
 	 * @param dest
 	 * @throws ActionException
 	 */
-	public ActionResponse empty(ActionContext ctx, Entity actor, Container container, Container dest) throws ActionException {
+	public ActionResponse empty(Entity actor, Container container, Container dest) throws ActionException {
 		empty(container, dest);
 		return response(container);
 	}

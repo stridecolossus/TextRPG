@@ -11,7 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Contents;
@@ -31,17 +30,17 @@ public class CommandParserTest {
 		}
 		
 		@Override
-		public ActionResponse execute(ActionContext ctx, Entity actor) {
+		public ActionResponse execute(Entity actor) {
 			return null;
 		}
 
 		@SuppressWarnings("unused")
-		public void execute(ActionContext ctx, Entity actor, WorldObject obj) {
+		public void execute(Entity actor, WorldObject obj) {
 			// Empty
 		}
 
 		@SuppressWarnings("unused")
-		public void execute(ActionContext ctx, Entity actor, String decoration) {
+		public void execute(Entity actor, String decoration) {
 			// Empty
 		}
 	}
@@ -85,7 +84,7 @@ public class CommandParserTest {
 	public void parse() throws Exception {
 		final Command cmd = parser.parse(player, "action");
 		assertEquals(action, cmd.getAction());
-		assertEquals(cmd, new Command(action, MockAction.class.getMethod("execute", new Class<?>[]{ActionContext.class, Entity.class}), new Object[]{}));
+		assertEquals(cmd, new Command(action, MockAction.class.getMethod("execute", new Class<?>[]{Entity.class}), new Object[]{}));
 	}
 
 	@Test
@@ -126,7 +125,7 @@ public class CommandParserTest {
 	
 	private void verify(Command cmd, Class<?> clazz, Object arg) throws Exception {
 		assertEquals(action, cmd.getAction());
-		assertEquals(cmd, new Command(action, MockAction.class.getMethod("execute", new Class<?>[]{ActionContext.class, Entity.class, clazz}), new Object[]{arg}));
+		assertEquals(cmd, new Command(action, MockAction.class.getMethod("execute", new Class<?>[]{Entity.class, clazz}), new Object[]{arg}));
 	}
 	
 	@Test

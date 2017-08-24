@@ -2,8 +2,8 @@ package org.sarge.textrpg.world;
 
 import java.util.Comparator;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.entity.Entity;
 import org.sarge.textrpg.entity.Follower;
 

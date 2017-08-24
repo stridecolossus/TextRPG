@@ -1,0 +1,59 @@
+races {
+
+	bear {
+		gender neuter
+		align neutral
+		size large
+		butcher {
+			bear.skin {
+				weight 10
+				size large
+				value 5
+			}
+		}
+	}
+
+	man {
+		size medium
+		attributes {
+			end 25
+		}
+	}
+
+	hobbit {
+		size small
+		attributes {
+			end 25
+		}
+	}
+
+	bounder {
+		gender male
+		align good
+		size small
+		attributes {
+			str 25
+			end 25
+			agi 25
+			wil 25
+			per 25
+		}
+		equipment {
+			bounder.club
+			bounder.belt
+			lantern
+		}
+	}
+	
+	sheep {
+		size small
+	}
+
+	horse mount {
+		size large
+	}
+
+	badger {
+		size small
+	}
+}

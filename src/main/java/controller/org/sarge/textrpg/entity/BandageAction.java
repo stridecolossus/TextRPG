@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -57,8 +56,8 @@ public class BandageAction extends AbstractAction {
 	 * @throws ActionException
 	 */
 	@Override
-	public ActionResponse execute(ActionContext ctx, Entity actor) throws ActionException {
-		return execute(ctx, actor, actor);
+	public ActionResponse execute(Entity actor) throws ActionException {
+		return execute(actor, actor);
 	}
 	
 	/**
@@ -68,7 +67,7 @@ public class BandageAction extends AbstractAction {
 	 * @param entity
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, Entity entity) throws ActionException {
+	public ActionResponse execute(Entity actor, Entity entity) throws ActionException {
 		// Check can bandage the entity
 		if(ActionHelper.isValidTarget(actor, entity)) throw new ActionException("bandage.invalid.target");
 		

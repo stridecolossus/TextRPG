@@ -2,8 +2,9 @@ package org.sarge.textrpg.common;
 
 import java.util.function.Function;
 
+import org.sarge.lib.util.Converter;
 import org.sarge.lib.xml.Element;
-import org.sarge.lib.xml.Element.ElementException;
+import org.sarge.lib.xml.ElementException;
 
 /**
  * Custom XML exception to render <b>name</b> attributes when present.
@@ -14,13 +15,9 @@ public class LoaderException extends ElementException {
 	 * Maps an element to its <b>name</b> attribute where available.
 	 */
 	private static final Function<Element, String> MAPPER = e -> {
-		final String name = e.getAttributes().get("name");
-		if(name == null) {
-			return Element.ELEMENT_NAME.apply(e);
-		}
-		else {
-			return name;
-		}
+		return e.attributes()
+			.getOptional("name", Converter.STRING)
+			.orElse(ElementException.ELEMENT_NAME.apply(e));
 	};
 	
 	public LoaderException(Element element, String reason) {

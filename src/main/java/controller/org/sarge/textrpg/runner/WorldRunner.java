@@ -1,9 +1,10 @@
 package org.sarge.textrpg.runner;
 
-import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
+import static org.sarge.lib.util.Check.notNull;
+
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Util;
-import org.sarge.textrpg.common.ActionContext;
+import org.sarge.textrpg.common.Clock;
 import org.sarge.textrpg.common.EventQueue;
 
 /**
@@ -11,17 +12,16 @@ import org.sarge.textrpg.common.EventQueue;
  * @author Sarge
  */
 public class WorldRunner {
-	private final ActionContext ctx;
-
+	private final Clock clock;
+	
 	private Thread thread;
 
 	/**
 	 * Constructor.
-	 * @param ctx Context
+	 * @param clock Game-clock
 	 */
-	public WorldRunner(ActionContext ctx) {
-		Check.notNull(ctx);
-		this.ctx = ctx;
+	public WorldRunner(Clock clock) {
+		this.clock = notNull(clock);
 	}
 
 	/**
@@ -53,12 +53,11 @@ public class WorldRunner {
 	 * Main loop.
 	 */
 	private void run() {
-		while(thread != null) {
+		while(isRunning()) {
 			// Advance time
 			final long start = System.currentTimeMillis();
-			synchronized(ctx) {
-				EventQueue.update(start);
-			}
+			EventQueue.update(start);
+			clock.update(start);
 
 			// Sleep for remainder of frame
 			final long duration = 50 - (System.currentTimeMillis() - start);

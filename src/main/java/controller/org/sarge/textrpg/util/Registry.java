@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.sarge.lib.util.StrictMap;
+import org.sarge.lib.collection.StrictMap;
 import org.sarge.lib.xml.Element;
 import org.sarge.textrpg.common.LoaderException;
 

@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.common.*;
 import org.sarge.textrpg.object.DeploymentSlot;
 import org.sarge.textrpg.object.WorldObject;
@@ -477,12 +477,11 @@ public abstract class Entity extends Thing implements Actor {
 
 	/**
 	 * Starts an induction.
-	 * @param ctx			Context
 	 * @param induction		Induction call-back
 	 * @param duration		Duration of this induction (ms)
 	 * @throws IllegalStateException if an induction is already active
 	 */
-	public void start(ActionContext ctx, Induction induction, long duration, boolean repeat) {
+	public void start(Induction induction, long duration, boolean repeat) {
 		Check.oneOrMore(duration);
 		if(this.induction != null) throw new IllegalStateException("Induction already started");
 		this.induction = induction;

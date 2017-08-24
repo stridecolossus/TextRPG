@@ -1,13 +1,13 @@
 package org.sarge.textrpg.entity;
 
 import static java.util.stream.Collectors.toList;
+import static org.sarge.lib.util.Check.notNull;
+import static org.sarge.lib.util.Check.oneOrMore;
 
 import java.util.Arrays;
 import java.util.List;
 
-import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -20,15 +20,17 @@ import org.sarge.textrpg.world.Location;
  * @author Sarge
  */
 public class FleeAction extends AbstractAction {
+	private final MovementController mover;
 	private final int mod;
 
 	/**
 	 * Constructor.
-	 * @param mod Movement cost modifier
+	 * @param mover		Movement controller
+	 * @param mod		Movement cost modifier
 	 */
-	public FleeAction(int mod) {
-		Check.oneOrMore(mod);
-		this.mod = mod;
+	public FleeAction(MovementController mover, int mod) {
+		this.mover = notNull(mover);
+		this.mod = oneOrMore(mod);
 	}
 	
 	@Override
@@ -54,7 +56,7 @@ public class FleeAction extends AbstractAction {
 	 * @throws ActionException
 	 */
 	@Override
-	public ActionResponse execute(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse execute(Entity actor) throws ActionException {
 		// Enumerate available links
 		final Location loc = actor.getLocation();
 		final List<Direction> available = loc
@@ -85,7 +87,7 @@ public class FleeAction extends AbstractAction {
 		}
 
 		// Traverse link
-		final Description desc = ctx.getMovementController().move(ctx, actor, dir, mod, true);
+		final Description desc = mover.move(actor, dir, mod, true);
 		
 		// TODO - inc panic
 		

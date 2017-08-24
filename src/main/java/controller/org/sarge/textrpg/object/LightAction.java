@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -43,24 +42,23 @@ public class LightAction extends AbstractAction {
 
 	/**
 	 * Light action.
-	 * @param ctx
 	 * @param actor
 	 * @param light
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, Light light) throws ActionException {
+	public ActionResponse execute(Entity actor, Light light) throws ActionException {
 		// Perform action
 		verifyCarried(actor, light);
 		switch(op) {
 		case LIGHT:
 			final WorldObject tinderbox = find(actor, TINDERBOX, false, "tinderbox");
-			light.execute(op, ctx.getTime());
+			light.execute(op);
 			tinderbox.wear();
 			break;
 			
 		default:
-			light.execute(op, ctx.getTime());
+			light.execute(op);
 			break;
 		}
 		

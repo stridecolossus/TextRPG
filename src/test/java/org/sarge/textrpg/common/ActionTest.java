@@ -11,10 +11,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.sarge.textrpg.entity.Entity;
-import org.sarge.textrpg.entity.EntityValueCalculator;
-import org.sarge.textrpg.entity.MovementController;
 import org.sarge.textrpg.entity.Stance;
-import org.sarge.textrpg.object.PostManager;
 import org.sarge.textrpg.world.Area;
 import org.sarge.textrpg.world.Location;
 import org.sarge.textrpg.world.Terrain;
@@ -31,14 +28,10 @@ public abstract class ActionTest {
 	public ExpectedException expected = ExpectedException.none();
 
 	protected Entity actor;
-	protected ActionContext ctx;
 	protected Location loc;
 	
 	@Before
 	public void beforeActionTest() {
-		// Create context
-		ctx = new ActionContext(mock(TimeCycle.class), mock(EntityValueCalculator.class), mock(MovementController.class), mock(PostManager.class));
-		
 		// Create a location
 		//final Contents contents = new Contents();
 		//loc = mock(Location.class);

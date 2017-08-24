@@ -2,7 +2,6 @@ package org.sarge.textrpg.entity;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -39,13 +38,12 @@ public class BackStabAction extends AbstractAction {
 	
 	/**
 	 * Back-stab.
-	 * @param ctx
 	 * @param actor
 	 * @param target
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse backstab(ActionContext ctx, Entity actor, Entity target) throws ActionException {
+	public ActionResponse backstab(Entity actor, Entity target) throws ActionException {
 		// Check required skill
 		final int level = getSkillLevel(actor, skill);
 		

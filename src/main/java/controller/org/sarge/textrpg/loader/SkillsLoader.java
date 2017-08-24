@@ -5,10 +5,10 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 
 import org.sarge.lib.util.Check;
+import org.sarge.lib.xml.Element;
 import org.sarge.textrpg.common.Condition;
 import org.sarge.textrpg.entity.Skill;
 import org.sarge.textrpg.entity.Skill.Tier;
-import org.sarge.textrpg.util.TextNode;
 
 /**
  * Loader for skill descriptors.
@@ -27,8 +27,8 @@ public class SkillsLoader {
 	 * @param xml XML
 	 * @return Skill
 	 */
-	public Skill load(TextNode node) {
-		final String name = node.getString("name", null);
+	public Skill load(Element node) {
+		final String name = node.attributes().toString("name", null);
 		final List<Tier> tiers = node.children().map(this::loadTier).collect(toList());
 		return new Skill(name, tiers);
 	}
@@ -36,9 +36,9 @@ public class SkillsLoader {
 	/**
 	 * Loads a skill-tier descriptor.
 	 */
-	private Tier loadTier(TextNode node) {
+	private Tier loadTier(Element node) {
 		final Condition condition = node.optionalChild().map(conditionLoader::load).orElse(Condition.TRUE);
-		final int cost = node.getInteger("cost", null);
+		final int cost = node.attributes().toInteger("cost", null);
 		return new Tier(condition, cost);
 	}
 }

@@ -1,7 +1,7 @@
 package org.sarge.textrpg.common;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.util.Percentile;
 
 /**

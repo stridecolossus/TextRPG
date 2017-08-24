@@ -3,8 +3,8 @@ package org.sarge.textrpg.entity;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.common.Condition;
 import org.sarge.textrpg.util.Percentile;
 

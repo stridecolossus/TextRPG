@@ -1,45 +1,15 @@
 package org.sarge.textrpg.common;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
+import org.sarge.lib.object.ToString;
 
 /**
  * Game clock.
- * <p>
- * The <tt>hour.duration</tt> system property defines the real-time duration of a game-hour (ms), default is 5 minutes.
- * <p>
  * @author Sarge
  */
-public final class Clock {
-	/**
-	 * Duration of a game-hour (ms).
-	 */
-	public static final long HOUR;
-	
-	// TODO - seems a bit kludgy?
-	static {
-		final String value = System.getProperties().getProperty("hour.duration");
-		if(value == null) {
-			HOUR = Duration.ofMinutes(5).toMillis();
-		}
-		else {
-			HOUR = Long.parseLong(value);
-			Check.oneOrMore(HOUR);
-		}
-	}
-	
-	/**
-	 * Singleton clock.
-	 */
-	public static final Clock CLOCK = new Clock();
-	
+public class Clock {
 	/**
 	 * Listener on this clock.
 	 */
@@ -54,43 +24,47 @@ public final class Clock {
 	
 	private final Set<Listener> listeners = new HashSet<>();
 	
-	private LocalDateTime datetime = LocalDateTime.now();
+	private final long period;
+	
+	private int hour;
 
 	/**
 	 * Constructor.
+	 * @param period Duration of an in-game hour (ms)
 	 */
-	private Clock() {
-		final Timer timer = new Timer(true);
-		final TimerTask task = new TimerTask() {
-			@Override
-			public void run() {
-				next();
-			}
-		};
-		timer.schedule(task, HOUR, HOUR);
+	public Clock(long period) {
+		if(period < 1) throw new IllegalArgumentException("Period must be one-or-more");
+		this.period = period;
 	}
 
 	/**
-	 * Sets the current world time.
-	 * @param datetime World-time
+	 * Updates the current hour-of-day.
+	 * @param time Current time
 	 */
-	public void setDateTime(LocalDateTime datetime) {
-		Check.notNull(datetime);
-		this.datetime = datetime;
-	}
-	
-	/**
-	 * @return Current world-time
-	 */
-	public LocalDateTime getWorldTime() {
-		return datetime;
+	public void update(long time) {
+		// Calculate game-time hour-of-day
+		final int next = (int) ((time % (period * 24)) / period);
+
+		// Notify change of hour
+		if(hour != next) {
+			hour = next;
+			listeners.forEach(listener -> listener.update(hour));
+		}
 	}
 	
 	/**
 	 * @return Current hour-of-day 0..23
 	 */
 	public int getHour() {
-		return datetime.getHour();
+		return hour;
+	}
+	
+	/**
+	 * @param hour Current hour
+	 * @return Whether is day-light at the given hour
+	 */
+	public boolean isDaylight() {
+		return (hour > 5) && (hour < 21);
 	}
 	
 	/**
@@ -99,33 +73,6 @@ public final class Clock {
 	 */
 	public void add(Listener listener) {
 		listeners.add(listener);
-	}
-
-	/**
-	 * Removes a listener on this clock.
-	 * @param listener Listener to remove
-	 */
-	public void remove(Listener listener) {
-		listeners.remove(listener);
-	}
-
-	/**
-	 * Move to next hour.
-	 */
-	public void next() {
-		// Advance time
-		datetime = datetime.plusHours(1);
-		
-		// Notify listeners
-		final int hour = datetime.getHour();
-		listeners.forEach(listener -> listener.update(hour));
-	}
-	
-	/**
-	 * Resets this clock.
-	 */
-	public void reset() {
-		listeners.clear();
 	}
 
 	@Override

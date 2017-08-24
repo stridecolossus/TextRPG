@@ -2,7 +2,6 @@ package org.sarge.textrpg.object;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -49,26 +48,24 @@ public class InteractAction extends AbstractAction {
 
 	/**
 	 * Use a control.
-	 * @param ctx
 	 * @param actor
 	 * @param control
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, Control control) throws ActionException {
+	public ActionResponse execute(Entity actor, Control control) throws ActionException {
 		control.apply(action, actor);
 		return build(control);
 	}
 
 	/**
 	 * Pulls a rope.
-	 * @param ctx
 	 * @param actor
 	 * @param rope
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, Rope rope) throws ActionException {
+	public ActionResponse execute(Entity actor, Rope rope) throws ActionException {
 		if(action == Interaction.PULL) {
 			rope.pull(actor);
 			return response("rope.pull");
@@ -80,13 +77,12 @@ public class InteractAction extends AbstractAction {
 
 	/**
 	 * Interact with an object.
-	 * @param ctx
 	 * @param actor
 	 * @param obj
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, InteractObject obj) throws ActionException {
+	public ActionResponse execute(Entity actor, InteractObject obj) throws ActionException {
 		// Check sufficient strength
 		final int str = obj.getRequiredStrength();
 		if(actor.getAttributes().get(Attribute.STRENGTH) < str) throw new ActionException("interact.insufficient.strength");
@@ -105,13 +101,12 @@ public class InteractAction extends AbstractAction {
 
 	/**
 	 * Interact with an object (that does nothing).
-	 * @param ctx
 	 * @param actor
 	 * @param obj
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+	public ActionResponse execute(Entity actor, WorldObject obj) throws ActionException {
 		return nothing();
 	}
 

@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.sarge.lib.collection.StrictMap;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.StrictMap;
 import org.sarge.textrpg.common.Contents;
 import org.sarge.textrpg.common.Parent;
 import org.sarge.textrpg.object.TrackedContents.Limit;

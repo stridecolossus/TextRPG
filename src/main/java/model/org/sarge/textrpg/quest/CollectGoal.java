@@ -2,8 +2,8 @@ package org.sarge.textrpg.quest;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.entity.Player;
 import org.sarge.textrpg.entity.Race;

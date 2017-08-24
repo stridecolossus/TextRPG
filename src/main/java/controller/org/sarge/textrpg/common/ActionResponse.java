@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.sarge.lib.object.EqualsBuilder;
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.EqualsBuilder;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.entity.Induction;
 
 /**

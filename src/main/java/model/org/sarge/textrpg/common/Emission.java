@@ -3,10 +3,10 @@ package org.sarge.textrpg.common;
 import java.util.Comparator;
 import java.util.function.Predicate;
 
+import org.sarge.lib.object.EqualsBuilder;
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.EqualsBuilder;
 import org.sarge.lib.util.StringUtil;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.util.Percentile;
 
 /**

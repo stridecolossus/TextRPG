@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import org.sarge.lib.util.StrictList;
+import org.sarge.lib.collection.StrictList;
 import org.sarge.textrpg.common.AbstractAction;
 import org.sarge.textrpg.common.Openable;
 import org.sarge.textrpg.entity.*;

@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.entity.Entity;
 import org.sarge.textrpg.entity.Follower;
 import org.sarge.textrpg.util.Randomiser;

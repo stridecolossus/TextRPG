@@ -5,9 +5,9 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.stream.Stream;
 
-import org.sarge.lib.util.EqualsBuilder;
-import org.sarge.lib.util.StrictSet;
-import org.sarge.lib.util.ToString;
+import org.sarge.lib.collection.StrictSet;
+import org.sarge.lib.object.EqualsBuilder;
+import org.sarge.lib.object.ToString;
 
 /**
  * Queue of pending events ordered by execution time.
@@ -35,7 +35,7 @@ public class EventQueue {
 		EventQueue.time = time;
 
 		// Execute pending events
-		for(final EventQueue q : QUEUES) {
+		for(EventQueue q : QUEUES) {
 			q.execute(time);
 		}
 	}
@@ -45,7 +45,7 @@ public class EventQueue {
 	 */
 	public class Entry implements Comparable<Entry> {
 		private final Event event;
-		private final long time;
+		private final long when;
 		private final boolean repeating;
 		private final long period;
 
@@ -61,14 +61,14 @@ public class EventQueue {
 			this.event = event;
 			this.period = period;
 			this.repeating = repeating;
-			this.time = EventQueue.time + period;
+			this.when = EventQueue.time + period;
 		}
 
 		/**
 		 * @return Scheduled execution time
 		 */
 		public long getTime() {
-			return time;
+			return when;
 		}
 
 		/**
@@ -88,7 +88,7 @@ public class EventQueue {
 
 		@Override
 		public int compareTo(Entry that) {
-			return (int) (this.time - that.time);
+			return (int) (this.when - that.when);
 		}
 
 		@Override
@@ -147,7 +147,7 @@ public class EventQueue {
 	public synchronized void execute(long time) {
 		while(!queue.isEmpty()) {
 			// Stop when reach future events
-			if(queue.peek().time > time) {
+			if(queue.peek().when > time) {
 				break;
 			}
 

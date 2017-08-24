@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.entity.Player;
 import org.sarge.textrpg.quest.Goal.ActiveGoal;
 import org.sarge.textrpg.quest.Quest.Stage;

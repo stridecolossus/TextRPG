@@ -2,7 +2,6 @@ package org.sarge.textrpg.object;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -50,26 +49,24 @@ public class PortalAction extends AbstractAction {
 
 	/**
 	 * Manipulates a portal.
-	 * @param ctx
 	 * @param actor
 	 * @param portal
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, Portal portal) throws ActionException {
-		return execute(ctx, actor, portal, (Location) portal.getDestination());
+	public ActionResponse execute(Entity actor, Portal portal) throws ActionException {
+		return apply(actor, portal, (Location) portal.getDestination());
 	}
 
 	/**
 	 * Manipulates something that is {@link Openable}.
-	 * @param ctx
 	 * @param actor
 	 * @param obj
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+	public ActionResponse execute(Entity actor, WorldObject obj) throws ActionException {
 		obj.getOpenableModel().orElseThrow(() -> new ActionException("portal.not.openable", op));
-		return execute(ctx, actor, obj, null);
+		return apply(actor, obj, null);
 	}
 
 	/**
@@ -80,7 +77,7 @@ public class PortalAction extends AbstractAction {
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Player player, Hidden obj) throws ActionException {
+	public ActionResponse execute(Player player, Hidden obj) throws ActionException {
 		if(op != Operation.OPEN) return INVALID;
 		if(player.perceives(obj)) throw new ActionException("openable.already", op);
 		player.add(obj);
@@ -89,14 +86,13 @@ public class PortalAction extends AbstractAction {
 
 	/**
 	 * Applies action.
-	 * @param ctx
 	 * @param actor
 	 * @param obj
 	 * @param other
 	 * @return
 	 * @throws ActionException
 	 */
-	private ActionResponse execute(ActionContext ctx, Entity actor, WorldObject obj, Location dest) throws ActionException {
+	private ActionResponse apply(Entity actor, WorldObject obj, Location dest) throws ActionException {
 		// Check for required key
 		final Openable model = obj.getOpenableModel().get();
 		if(op.isLocking() && model.isLockable()) {

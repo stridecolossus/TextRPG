@@ -5,8 +5,8 @@ import static java.util.stream.Collectors.toList;
 import java.util.List;
 
 import org.sarge.lib.util.Converter;
+import org.sarge.lib.xml.Element;
 import org.sarge.textrpg.common.Value;
-import org.sarge.textrpg.util.TextNode;
 
 /**
  * Loader for a {@link Value}.
@@ -21,11 +21,11 @@ public class ValueLoader {
 	 * @param name		Value name
 	 * @return Value
 	 */
-	public Value load(TextNode node, String name) {
+	public Value load(Element node, String name) {
 		return node
 			.optionalChild(name)
 			.map(ValueLoader::load)
-			.orElseGet(() -> Value.literal(node.getInteger(name, null)));
+			.orElseGet(() -> Value.literal(node.attributes().toInteger(name, null)));
 	}
 
 	/**
@@ -34,11 +34,11 @@ public class ValueLoader {
 	 * @param name Child name
 	 * @return Duration value
 	 */
-	public Value loadDuration(TextNode node, String name) {
+	public Value loadDuration(Element node, String name) {
 		return node
 			.optionalChild(name)
 			.map(ValueLoader::load)
-			.orElseGet(() -> Value.literal((int) node.getAttribute(name, null, Converter.DURATION).toMillis()));
+			.orElseGet(() -> Value.literal((int) node.attributes().toValue(name, null, Converter.DURATION).toMillis()));
 	}
 
 	/**
@@ -46,18 +46,18 @@ public class ValueLoader {
 	 * @param node Text-node
 	 * @return Value
 	 */
-	public static Value load(TextNode node) {
+	public static Value load(Element node) {
 		switch(node.name()) {
 		case "literal":
-			return Value.literal(node.getInteger("value", null));
+			return Value.literal(node.attributes().toInteger("value", null));
 			
 		case "compound":
-			final Value.Operator op = node.getAttribute("op", Value.Operator.ADD, OPERATOR_CONVERTER);
+			final Value.Operator op = node.attributes().toValue("op", Value.Operator.ADD, OPERATOR_CONVERTER);
 			final List<Value> values = node.children().map(ValueLoader::load).collect(toList());
 			return Value.compound(op, values);
 			
 		case "random":
-			return Value.random(node.getInteger("range", null));
+			return Value.random(node.attributes().toInteger("range", null));
 			
 		default:
 			throw node.exception("Unknown value type: " + node.name());

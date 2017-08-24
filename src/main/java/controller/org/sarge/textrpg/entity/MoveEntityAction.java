@@ -1,11 +1,12 @@
 package org.sarge.textrpg.entity;
 
+import static org.sarge.lib.util.Check.notNull;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.world.Direction;
 
@@ -16,21 +17,20 @@ import org.sarge.textrpg.world.Direction;
 public class MoveEntityAction implements EntityManager.Action {
 	private static final Logger LOG = Logger.getLogger(MovementController.class.getName());
 
-	private final ActionContext ctx;
 	private final Follower follower;
+	private final MovementController mover;
 	private final boolean stop;
 	
 	/**
 	 * Constructor.
-	 * @param ctx			Context
 	 * @param follower		Follower
+	 * @param mover			Movement controller
 	 * @param stop			Whether to stop when the follower has finished
 	 */
-	public MoveEntityAction(ActionContext ctx, Follower follower, boolean stop) {
-		Check.notNull(ctx);
+	public MoveEntityAction(Follower follower, MovementController mover, boolean stop) {
 		Check.notNull(follower);
-		this.ctx = ctx;
 		this.follower = follower;
+		this.mover = notNull(mover);
 		this.stop = stop;
 	}
 
@@ -47,7 +47,7 @@ public class MoveEntityAction implements EntityManager.Action {
 		
 		// Move entity
 		try {
-			ctx.getMovementController().move(ctx, entity, dir, 1, false);
+			mover.move(entity, dir, 1, false);
 		}
 		catch(ActionException e) {
 			LOG.log(Level.SEVERE, "Error moving entity: " + entity, e);

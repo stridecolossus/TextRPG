@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.sarge.lib.util.Check;
+import org.sarge.lib.util.ConverterAdapter;
+import org.sarge.lib.xml.Element;
 import org.sarge.textrpg.common.Size;
 import org.sarge.textrpg.entity.Race.Builder;
 import org.sarge.textrpg.loader.LoaderHelper;
@@ -18,7 +20,6 @@ import org.sarge.textrpg.loader.SkillSetLoader;
 import org.sarge.textrpg.object.DeploymentSlot;
 import org.sarge.textrpg.object.ObjectDescriptor;
 import org.sarge.textrpg.object.Weapon;
-import org.sarge.textrpg.util.TextNode;
 
 /**
  * Loader for a {@link Race}.
@@ -43,18 +44,19 @@ public class RaceLoader {
 	 * @param xml XML
 	 * @return Race
 	 */
-	public Race load(TextNode node) {
+	public Race load(Element node) {
 		// Start race
-		final Builder builder = new Builder(node.getString("name", null));
+		final ConverterAdapter attrs = node.attributes();
+		final Builder builder = new Builder(attrs.toString("name", null));
 
 		// Load racial attributes
 		builder
-			.gender(node.getAttribute("gender", Gender.NEUTER, LoaderHelper.GENDER))
-			.alignment(node.getAttribute("align", Alignment.NEUTRAL, LoaderHelper.ALIGNMENT))
-			.size(node.getAttribute("size", Size.MEDIUM, Size.CONVERTER));
+			.gender(attrs.toValue("gender", Gender.NEUTER, LoaderHelper.GENDER))
+			.alignment(attrs.toValue("align", Alignment.NEUTRAL, LoaderHelper.ALIGNMENT))
+			.size(attrs.toValue("size", Size.MEDIUM, Size.CONVERTER));
 
 		// Load mount flag
-		if(node.getBoolean("mount", false)) {
+		if(attrs.toBoolean("mount", false)) {
 			builder.mount();
 		}
 
@@ -65,7 +67,7 @@ public class RaceLoader {
 		node.optionalChild("weapon").map(this::loadDefaultWeapon).ifPresent(builder::weapon);
 
 		// Load default equipment
-		final Collection<ObjectDescriptor> equipment = node.optionalChild("equipment").map(TextNode::children).orElse(Stream.empty()).map(objectLoader::loadDescriptor).collect(toList());
+		final Collection<ObjectDescriptor> equipment = node.optionalChild("equipment").map(Element::children).orElse(Stream.empty()).map(objectLoader::loadDescriptor).collect(toList());
 		final Set<DeploymentSlot> slots = new HashSet<>();
 		for(final ObjectDescriptor descriptor : equipment) {
 			final DeploymentSlot slot = descriptor.getEquipment().map(ObjectDescriptor.Equipment::getDeploymentSlot).orElseThrow(() -> node.exception("Cannot be equipped: " + descriptor));
@@ -81,7 +83,7 @@ public class RaceLoader {
 		node.optionalChild("butcher").map(lootFactoryLoader::load).ifPresent(builder::butcherFactory);
 
 		// Load corporeal flag
-		if(!node.getBoolean("corporeal", true)) {
+		if(!attrs.toBoolean("corporeal", true)) {
 			builder.notCorporeal();
 		}
 
@@ -92,8 +94,8 @@ public class RaceLoader {
 	/**
 	 * Loads the default weapon for this race.
 	 */
-	private Weapon loadDefaultWeapon(TextNode node) {
-		final String name = node.getString("name", null);
+	private Weapon loadDefaultWeapon(Element node) {
+		final String name = node.attributes().toString("name", null);
 		final ObjectDescriptor descriptor = new ObjectDescriptor(name);
 		return ObjectLoader.loadWeaponDescriptor(node, descriptor, null);
 	}

@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.sarge.lib.collection.StrictList;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.StrictList;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Topic;
 import org.sarge.textrpg.util.IntegerMap;

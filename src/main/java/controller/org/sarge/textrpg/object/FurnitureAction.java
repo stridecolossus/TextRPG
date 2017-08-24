@@ -1,7 +1,6 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.entity.Entity;
@@ -49,13 +48,12 @@ public class FurnitureAction extends AbstractAction {
 	
 	/**
 	 * Interacts with piece of furniture.
-	 * @param ctx
 	 * @param actor
 	 * @param furniture
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, Furniture furniture) throws ActionException {
+	public ActionResponse execute(Entity actor, Furniture furniture) throws ActionException {
 		// Check can use this furniture
 		if(!furniture.getDescriptor().isValid(stance)) throw new ActionException("furniture.invalid.stance", "action.furniture." + stance);
 		if((actor.getStance() == stance) && (actor.getParent() == furniture)) throw new ActionException("furniture.already");

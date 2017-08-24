@@ -1,7 +1,6 @@
 package org.sarge.textrpg.entity;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -26,7 +25,7 @@ public class ConsumeAction extends AbstractAction {
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse consume(ActionContext ctx, Entity actor, Food food) throws ActionException {
+	public ActionResponse consume(Entity actor, Food food) throws ActionException {
 		// Check carried
 		verifyCarried(actor, food);
 		

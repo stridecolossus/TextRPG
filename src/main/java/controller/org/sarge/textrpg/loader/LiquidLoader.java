@@ -3,10 +3,10 @@ package org.sarge.textrpg.loader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.sarge.lib.xml.Element;
 import org.sarge.textrpg.entity.Effect;
 import org.sarge.textrpg.object.Liquid;
 import org.sarge.textrpg.util.Registry;
-import org.sarge.textrpg.util.TextNode;
 
 /**
  * Loader for a {@link Liquid}.
@@ -30,7 +30,7 @@ public class LiquidLoader {
 	/**
 	 * Load pre-defined liquids.
 	 */
-	public void loadAll(TextNode node) {
+	public void loadAll(Element node) {
 		node.children().forEach(this::loadLiquid);
 	}
 	
@@ -39,7 +39,7 @@ public class LiquidLoader {
 	 * @param node Text-node
 	 * @return Liquid descriptor
 	 */
-	public Liquid load(TextNode node) {
+	public Liquid load(Element node) {
 		final String name = node.name();
 		final Liquid liquid = liquids.find(name);
 		if(liquid == null) {
@@ -50,8 +50,8 @@ public class LiquidLoader {
 		}
 	}
 	
-	private Liquid loadLiquid(TextNode node) {
-		final int alcohol = node.getInteger("alcohol", 0);
+	private Liquid loadLiquid(Element node) {
+		final int alcohol = node.attributes().toInteger("alcohol", 0);
 		final Effect.Descriptor effect = node.optionalChild().map(effectLoader::load).orElse(Effect.NONE);
 		final Liquid liquid = new Liquid(node.name(), alcohol, effect);
 		liquids.add(liquid);

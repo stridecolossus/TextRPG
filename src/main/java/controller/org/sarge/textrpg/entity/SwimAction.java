@@ -2,7 +2,6 @@ package org.sarge.textrpg.entity;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 
@@ -49,12 +48,11 @@ public class SwimAction extends AbstractAction {
 
 	/**
 	 * Toggle swimming.
-	 * @param ctx
 	 * @param actor
 	 * @return
 	 * @throws ActionException if the player does not have the swimming skill
 	 */
-	public ActionResponse swim(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse swim(Entity actor) throws ActionException {
 		final Player player = (Player) actor;
 		if(player.isSwimming()) {
 			// Stop swimming

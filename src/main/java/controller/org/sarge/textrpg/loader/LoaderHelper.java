@@ -8,13 +8,13 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import org.sarge.lib.util.Converter;
+import org.sarge.lib.xml.Element;
 import org.sarge.textrpg.common.ToggleListener;
 import org.sarge.textrpg.entity.Alignment;
 import org.sarge.textrpg.entity.Attribute;
 import org.sarge.textrpg.entity.Gender;
 import org.sarge.textrpg.entity.Stance;
 import org.sarge.textrpg.util.MutableIntegerMap;
-import org.sarge.textrpg.util.TextNode;
 import org.sarge.textrpg.world.Route;
 import org.sarge.textrpg.world.Terrain;
 
@@ -40,12 +40,12 @@ public class LoaderHelper {
 	 * @param converter		Enumeration converter
 	 * @return Set of enumeration constants
 	 */
-	public static <E extends Enum<E>> Set<E> loadEnumeration(TextNode node, String name, Converter<E> converter) {
+	public static <E extends Enum<E>> Set<E> loadEnumeration(Element node, String name, Converter<E> converter) {
 		return node
 			.optionalChild(name)
-			.map(TextNode::children)
+			.map(Element::children)
 			.orElse(Stream.empty())
-			.map(TextNode::name)
+			.map(Element::name)
 			.map(converter::convert)
 			.collect(toSet());
 	}
@@ -63,10 +63,10 @@ public class LoaderHelper {
 	 * @param attrs		Attributes map
 	 * Loads a set of attributes.
 	 */
-	public static void loadAttributes(TextNode node, MutableIntegerMap<Attribute> attrs) {
+	public static void loadAttributes(Element node, MutableIntegerMap<Attribute> attrs) {
 		node.children().forEach(entry -> {
 			final Attribute attr = Attribute.CONVERTER.convert(entry.name());
-			final int value = Converter.INTEGER.convert(entry.value());
+			final int value = Converter.INTEGER.convert(entry.text());
 			attrs.set(attr, value);
 		});
 	}
@@ -85,9 +85,9 @@ public class LoaderHelper {
 	 * @param toggle	Toggle
 	 * @return Listener
 	 */
-	public static ToggleListener loadToggleListener(TextNode node, Consumer<Boolean> toggle) {
+	public static ToggleListener loadToggleListener(Element node, Consumer<Boolean> toggle) {
 		// Load list of hours
-		final String attr = node.getString("hours", "7, 19");
+		final String attr = node.attributes().toString("hours", "7, 19");
 		if(attr == null) throw node.exception("Expected list of hours");
 
 		try {

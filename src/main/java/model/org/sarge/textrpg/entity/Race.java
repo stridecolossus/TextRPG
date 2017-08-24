@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.DamageType;
 import org.sarge.textrpg.common.Size;

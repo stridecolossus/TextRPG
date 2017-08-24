@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -49,25 +48,23 @@ public class PickAction extends AbstractAction {
 
 	/**
 	 * Picks an openable object.
-	 * @param ctx
 	 * @param actor
 	 * @param obj
 	 * @throws ActionException
 	 */
-	public ActionResponse pick(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+	public ActionResponse pick(Entity actor, WorldObject obj) throws ActionException {
 		final Openable model = obj.getOpenableModel().orElseThrow(() -> new ActionException("pick.not.openable"));
-		return pick(ctx, actor, obj, model, null);
+		return pick(actor, obj, model, null);
 	}
 
 	/**
 	 * Picks a portal.
-	 * @param ctx
 	 * @param actor
 	 * @param portal
 	 * @throws ActionException
 	 */
-	public ActionResponse pick(ActionContext ctx, Entity actor, Portal portal) throws ActionException {
-		return pick(ctx, actor, portal, portal.getOpenableModel().get(), (Location) portal.getDestination());
+	public ActionResponse pick(Entity actor, Portal portal) throws ActionException {
+		return pick(actor, portal, portal.getOpenableModel().get(), (Location) portal.getDestination());
 	}
 
 	/**
@@ -79,7 +76,7 @@ public class PickAction extends AbstractAction {
 	 * @param dest		Destination for a portal
 	 * @throws ActionException
 	 */
-	private ActionResponse pick(ActionContext ctx, Entity actor, WorldObject obj, Openable model, Location dest) throws ActionException {
+	private ActionResponse pick(Entity actor, WorldObject obj, Openable model, Location dest) throws ActionException {
 		// Check can picked
 		if(model.isLockable()) throw new ActionException("pick.not.lockable");
 		if(model.getState() != State.LOCKED) throw new ActionException("pick.not.locked");

@@ -1,6 +1,7 @@
 package org.sarge.textrpg.object;
 
 import static java.util.stream.Collectors.toList;
+import static org.sarge.lib.util.Check.notNull;
 
 import java.util.List;
 import java.util.function.Predicate;
@@ -18,6 +19,12 @@ import org.sarge.textrpg.world.Link;
  */
 @SuppressWarnings("unused")
 public class LookAction extends AbstractAction {
+	private final Clock clock;
+	
+	public LookAction(Clock clock) {
+		this.clock = notNull(clock);
+	}
+
 	@Override
 	public boolean isParentBlockedAction() {
 		return false;
@@ -26,15 +33,15 @@ public class LookAction extends AbstractAction {
 	/**
 	 * Describes the current location.
 	 */
-	public ActionResponse look(ActionContext ctx, Entity actor) throws ActionException {
-		final Description desc = actor.getLocation().describe(ctx.isDaylight(), actor);
+	public ActionResponse look(Entity actor) throws ActionException {
+		final Description desc = actor.getLocation().describe(clock.isDaylight(), actor);
 		return new ActionResponse(desc);
 	}
 	
 	/**
 	 * Describes the given object.
 	 */
-	public ActionResponse look(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+	public ActionResponse look(Entity actor, WorldObject obj) throws ActionException {
 		final Description desc = ActionHelper.describe(actor, obj);
 		return new ActionResponse(desc);
 	}
@@ -42,14 +49,14 @@ public class LookAction extends AbstractAction {
 	/**
 	 * Looks at a decoration.
 	 */
-	public ActionResponse look(ActionContext ctx, Entity actor, String decoration) throws ActionException {
+	public ActionResponse look(Entity actor, String decoration) throws ActionException {
 		return new ActionResponse("examine.decoration");
 	}
 
 	/**
 	 * List contents of a container.
 	 */
-	public ActionResponse look(ActionContext ctx, Entity actor, Container c) throws ActionException {
+	public ActionResponse look(Entity actor, Container c) throws ActionException {
 		if(!c.getOpenableModel().map(Openable::isOpen).orElse(true)) throw new ActionException("list.container.closed");
 		// TODO - check for transparent container
 		final Predicate<Thing> filter = ContentsHelper.filter(actor);
@@ -60,14 +67,14 @@ public class LookAction extends AbstractAction {
 	/**
 	 * Look at an entity.
 	 */
-	public ActionResponse look(ActionContext ctx, Entity actor, Entity entity) throws ActionException {
+	public ActionResponse look(Entity actor, Entity entity) throws ActionException {
 		return new ActionResponse(entity.describe());
 	}
 	
 	/**
 	 * Look in a direction.
 	 */
-	public ActionResponse look(ActionContext ctx, Entity actor, Direction dir) throws ActionException {
+	public ActionResponse look(Entity actor, Direction dir) throws ActionException {
 		final Exit exit = actor.getLocation().getExits().get(dir);
 		if((exit == null) || !exit.perceivedBy(actor)) throw new ActionException("look.direction.invalid");
 		final Link link = exit.getLink();

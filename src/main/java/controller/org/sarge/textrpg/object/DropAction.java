@@ -1,7 +1,6 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.entity.Entity;
@@ -35,7 +34,7 @@ public class DropAction extends AbstractAction {
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+	public ActionResponse execute(Entity actor, WorldObject obj) throws ActionException {
 		// Check owned by the actor
 		verifyCarried(actor, obj);
 		

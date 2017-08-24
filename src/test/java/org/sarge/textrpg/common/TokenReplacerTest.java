@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sarge.lib.util.MapBuilder;
+import org.sarge.lib.collection.MapBuilder;
 import org.sarge.textrpg.util.TokenReplacer;
 
 public class TokenReplacerTest {

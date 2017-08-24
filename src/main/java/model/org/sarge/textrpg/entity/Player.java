@@ -5,9 +5,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.sarge.lib.collection.StrictMap;
+import org.sarge.lib.collection.StrictSet;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.StrictMap;
-import org.sarge.lib.util.StrictSet;
 import org.sarge.textrpg.common.*;
 import org.sarge.textrpg.common.Event.Holder;
 import org.sarge.textrpg.common.Notification.Handler;

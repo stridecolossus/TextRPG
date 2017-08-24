@@ -3,7 +3,6 @@ package org.sarge.textrpg.object;
 import java.util.Optional;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -32,7 +31,7 @@ public class CallAction extends AbstractAction {
 	 * @param actor
 	 * @throws ActionException
 	 */
-	public ActionResponse call(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse call(Entity actor) throws ActionException {
 		// Find gate
 		final Gate gate = (Gate) actor.getLocation().getExits().values().stream()
 			.map(exit -> exit.getLink().getController())

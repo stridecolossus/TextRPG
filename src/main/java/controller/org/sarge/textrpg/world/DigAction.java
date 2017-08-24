@@ -1,7 +1,6 @@
 package org.sarge.textrpg.world;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.entity.Corpse;
 import org.sarge.textrpg.entity.Entity;
@@ -19,7 +18,7 @@ public class DigAction extends AbstractAction {
 	 * @param obj
 	 * @return
 	 */
-	public ActionResponse bury(ActionContext ctx, Entity actor, WorldObject obj) {
+	public ActionResponse bury(Entity actor, WorldObject obj) {
 		// TODO
 		return null;
 	}
@@ -31,7 +30,7 @@ public class DigAction extends AbstractAction {
 	 * @param corpse
 	 * @return
 	 */
-	public ActionResponse bury(ActionContext ctx, Entity actor, Corpse corpse) {
+	public ActionResponse bury(Entity actor, Corpse corpse) {
 		// TODO
 		return null;
 	}
@@ -42,7 +41,7 @@ public class DigAction extends AbstractAction {
 	 * @param actor
 	 * @return
 	 */
-	public ActionResponse dig(ActionContext ctx, Entity actor) {
+	public ActionResponse dig(Entity actor) {
 		// TODO
 		return null;
 	}

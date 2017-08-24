@@ -1,7 +1,6 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.entity.Entity;
@@ -30,7 +29,7 @@ public class EnterAction extends AbstractAction {
 	 * @return
 	 * @throws ActionException if the actor cannot enter the vehicle
 	 */
-	public ActionResponse enter(ActionContext ctx, Entity actor, Vehicle vehicle) throws ActionException {
+	public ActionResponse enter(Entity actor, Vehicle vehicle) throws ActionException {
 		actor.setParent(vehicle);
 		return response(vehicle);
 	}

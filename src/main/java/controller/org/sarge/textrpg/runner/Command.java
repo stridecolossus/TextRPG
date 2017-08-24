@@ -5,11 +5,10 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.sarge.lib.object.EqualsBuilder;
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.EqualsBuilder;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Actor;
@@ -65,15 +64,15 @@ public final class Command {
 	
 	/**
 	 * Executes this command.
-	 * @param ctx		Context
-	 * @param player	Player
+	 * @param player		Player
+	 * @param daylight		Whether ambient light is available
 	 * @throws ActionException if the action fails
 	 * @return Action response or <tt>null</tt> in the event of an error
 	 */
-	public ActionResponse execute(ActionContext ctx, Player player) throws ActionException {
+	public ActionResponse execute(Player player, boolean daylight) throws ActionException {
 		replacePreviousObject(player);
-		verify(ctx, player);
-		final Object[] args = build(ctx, player);
+		verify(player, daylight);
+		final Object[] args = build(player);
 		final ActionResponse res = execute(args);
 		updatePreviousObject(player);
 		return res;
@@ -108,11 +107,11 @@ public final class Command {
 
 	/**
 	 * Pre-action verification.
-	 * @param ctx		Context
-	 * @param actor		Actor
+	 * @param actor			Actor
+	 * @param daylight		Whether ambient light is available
 	 * @throws ActionException if the action cannot be performed
 	 */
-	private void verify(ActionContext ctx, Entity actor) throws ActionException {
+	private void verify(Entity actor, boolean daylight) throws ActionException {
 		// Verify stance
 		final Stance stance = actor.getStance();
 		if((stance == Stance.COMBAT) && action.isCombatBlockedAction()) throw new ActionException("action.combat.blocked");
@@ -127,7 +126,7 @@ public final class Command {
 		
 		// Check for available light
 		final Location loc = actor.getLocation();
-		boolean light = ctx.isDaylight();
+		boolean light = daylight;
 		if(action.isLightRequiredAction() && !light) {
 			light = loc.isLightAvailable(light);
 			if(!light) throw new ActionException("action.requires.light");
@@ -160,11 +159,10 @@ public final class Command {
 	/**
 	 * Builds full argument list.
 	 */
-	private Object[] build(ActionContext ctx, Entity actor) {
-		final int len = 2 + this.args.length;
+	private Object[] build(Entity actor) {
+		final int len = 1 + this.args.length;
 		final Object[] args = new Object[len];
-		args[0] = ctx;
-		args[1] = actor;
+		args[0] = actor;
 		System.arraycopy(this.args, 0, args, 2, this.args.length);
 		return args;
 	}

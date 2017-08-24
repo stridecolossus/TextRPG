@@ -5,8 +5,8 @@ import static java.util.stream.Collectors.toList;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.Contents;
 import org.sarge.textrpg.common.EventQueue;

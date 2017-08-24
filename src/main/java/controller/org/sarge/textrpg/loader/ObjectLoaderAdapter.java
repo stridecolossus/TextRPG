@@ -5,11 +5,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.sarge.lib.util.Check;
-import org.sarge.lib.xml.Element.ElementException;
+import org.sarge.lib.xml.Element;
+import org.sarge.lib.xml.ElementException;
 import org.sarge.textrpg.object.ObjectDescriptor;
 import org.sarge.textrpg.object.WorldObject;
 import org.sarge.textrpg.util.Registry;
-import org.sarge.textrpg.util.TextNode;
 
 /**
  * Looks up or loads an object.
@@ -38,7 +38,7 @@ public class ObjectLoaderAdapter {
 		return descriptors;
 	}
 
-	public ObjectDescriptor loadDescriptor(TextNode node) {
+	public ObjectDescriptor loadDescriptor(Element node) {
 		return loadDescriptor(node, null);
 	}
 	
@@ -46,25 +46,17 @@ public class ObjectLoaderAdapter {
 	
 	
 	/**
-	 * 
-	 * type [def]
-	 * 
-	 * type <type>
-	 * 
-	 * <type> {
-	 * }
-	 * 
-	 * 
 	 * @param node
 	 * @param def
 	 * @return
 	 */
-	public ObjectDescriptor loadDescriptor(TextNode node, String def) {
+	public ObjectDescriptor loadDescriptor(Element node, String def) {
 		String type = null;
-		final Optional<TextNode> child = node.optionalChild();
+		final Optional<Element> child = node.optionalChild();
 		if(child.isPresent()) {
+			
 			if(child.get().name().equals("type")) {
-				type = child.get().value();
+				type = child.get().text();
 			}
 			else {
 				// Load custom object descriptor
@@ -102,7 +94,7 @@ public class ObjectLoaderAdapter {
 	 * @throw ElementException if the object is not a fixture
 	 * @see WorldObject#isFixture()
 	 */
-	public WorldObject loadObject(TextNode node, boolean child) {
+	public WorldObject loadObject(Element node, boolean child) {
 		final String name = node.getValue("type");
 		if(name == null) {
 			// Load one-off custom descriptor

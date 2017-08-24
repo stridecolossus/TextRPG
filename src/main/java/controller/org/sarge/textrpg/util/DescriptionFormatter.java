@@ -2,8 +2,8 @@ package org.sarge.textrpg.util;
 
 import java.util.function.Function;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.common.Description;
 
 /**

@@ -1,7 +1,8 @@
 package org.sarge.textrpg.entity;
 
+import static org.sarge.lib.util.Check.notNull;
+
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -17,14 +18,16 @@ import org.sarge.textrpg.world.Location;
  */
 public class MoveAction extends AbstractAction {
 	private final Direction dir;
+	private final MovementController mover;
 	
 	/**
 	 * Constructor.
 	 * @param dir Movement direction
 	 */
-	public MoveAction(Direction dir) {
+	public MoveAction(Direction dir, MovementController mover) {
 		super(dir.name());
 		this.dir = dir;
+		this.mover = notNull(mover);
 	}
 	
 	@Override
@@ -45,7 +48,7 @@ public class MoveAction extends AbstractAction {
 	/**
 	 * Move in direction.
 	 */
-	public ActionResponse move(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse move(Entity actor) throws ActionException {
 		// Check can move
 		final String name = actor.getParent().getParentName();
 		switch(name) {
@@ -63,8 +66,7 @@ public class MoveAction extends AbstractAction {
 		if((exit == null) || !exit.perceivedBy(actor)) throw new ActionException("move.invalid.direction");
 
 		// Move in specified direction
-		final MovementController mover = ctx.getMovementController();
-		final Description desc = mover.move(ctx, actor, dir, 1, true);
+		final Description desc = mover.move(actor, dir, 1, true);
 		
 		// Display location
 		return new ActionResponse(desc);

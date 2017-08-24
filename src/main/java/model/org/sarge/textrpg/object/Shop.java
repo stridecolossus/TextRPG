@@ -10,9 +10,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.sarge.lib.collection.Pair;
+import org.sarge.lib.collection.StrictSet;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.Pair;
-import org.sarge.lib.util.StrictSet;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.DefaultTopic;

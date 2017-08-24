@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sarge.lib.util.EqualsBuilder;
+import org.sarge.lib.object.EqualsBuilder;
 import org.sarge.textrpg.util.Percentile;
 
 public class PercentileTest {

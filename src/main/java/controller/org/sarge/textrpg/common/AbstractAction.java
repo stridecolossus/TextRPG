@@ -5,8 +5,8 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.entity.Entity;
 import org.sarge.textrpg.entity.Skill;
 import org.sarge.textrpg.entity.Stance;
@@ -129,22 +129,20 @@ public abstract class AbstractAction {
 	
 	/**
 	 * Default handler for an invalid action in this location.
-	 * @param ctx
-	 * @param actor
-	 * @return
+	 * @param actor Actor
+	 * @return Invalid response
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse execute(Entity actor) throws ActionException {
 		return INVALID;
 	}
 
 	/**
-	 * Default handler for an invalid action.
-	 * @param ctx
-	 * @param actor
-	 * @param obj
-	 * @return
+	 * Default handler for an invalid action on an object.
+	 * @param actor		Actor
+	 * @param obj		Object
+	 * @return Illogical response
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, Thing obj) throws ActionException {
+	public ActionResponse execute(Entity actor, Thing obj) throws ActionException {
 		return new ActionResponse(new Description(ILLOGICAL, "name", obj));
 	}
 

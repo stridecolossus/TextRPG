@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.sarge.lib.collection.StrictList;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.StrictList;
 
 /**
  * Mutable set of contents.

@@ -3,7 +3,6 @@ package org.sarge.textrpg.entity;
 import static java.util.stream.Collectors.toList;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -113,8 +112,8 @@ public class GroupAction extends AbstractAction {
 	}
 	
 	@Override
-	public ActionResponse execute(ActionContext ctx, Entity actor) throws ActionException {
-		return execute(ctx, actor, (Entity) null);
+	public ActionResponse execute(Entity actor) throws ActionException {
+		return execute(actor, (Entity) null);
 	}
 	
 	/**
@@ -124,7 +123,7 @@ public class GroupAction extends AbstractAction {
 	 * @param entity
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, Entity entity) throws ActionException {
+	public ActionResponse execute(Entity actor, Entity entity) throws ActionException {
 		// Validate argument
 		if((entity != null) != op.hasArgument()) throw new ActionException("group.requires.argument");
 

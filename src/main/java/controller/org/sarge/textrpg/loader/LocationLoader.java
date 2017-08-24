@@ -7,12 +7,14 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.sarge.lib.collection.MapBuilder;
 import org.sarge.lib.util.Check;
 import org.sarge.lib.util.Converter;
-import org.sarge.lib.util.MapBuilder;
+import org.sarge.lib.xml.Element;
 import org.sarge.textrpg.common.Parent;
 import org.sarge.textrpg.entity.CharacterEntity;
 import org.sarge.textrpg.entity.Race;
@@ -22,7 +24,6 @@ import org.sarge.textrpg.object.ObjectDescriptor;
 import org.sarge.textrpg.object.ObjectManager;
 import org.sarge.textrpg.object.Portal;
 import org.sarge.textrpg.object.WorldObject;
-import org.sarge.textrpg.util.TextNode;
 import org.sarge.textrpg.world.Area;
 import org.sarge.textrpg.world.FloorlessLocation;
 import org.sarge.textrpg.world.Location;
@@ -76,7 +77,7 @@ public class LocationLoader {
 	 * @param area		Parent area
 	 * @return Location
 	 */
-	public Location load(TextNode node, Area area) {
+	public Location load(Element node, Area area) {
 		// Load location
 		final Location loc = loadLocation(node, area);
 		
@@ -92,21 +93,21 @@ public class LocationLoader {
 	/**
 	 * Loads location descriptor.
 	 */
-	private static Location loadLocation(TextNode node, Area area) {
-		final String name = node.getString("name", null);
+	private static Location loadLocation(Element node, Area area) {
+		final String name = node.attributes().toString("name");
 		final Terrain terrain = loadTerrain(node, area.getTerrain());
-		final boolean water = node.getBoolean("water", false);
-		final Collection<String> decorations = node.children("decoration").map(TextNode::name).collect(toSet());
+		final boolean water = node.attributes().toBoolean("water", false);
+		final Collection<String> decorations = node.children("decoration").map(Element::name).collect(toSet());
 		return new Location(name, area, terrain, water, decorations);
 	}
 
 	/**
 	 * Loads terrain by location name.
 	 */
-	private static Terrain loadTerrain(TextNode node, Terrain def) {
+	private static Terrain loadTerrain(Element node, Terrain def) {
 		final Terrain terrain = TERRAIN_MAP.get(node.name());
 		if(terrain == null) {
-			return node.getAttribute("terrain", def, LoaderHelper.TERRAIN);
+			return node.attributes().toValue("terrain", def, LoaderHelper.TERRAIN);
 		}
 		else {
 			return terrain;
@@ -116,7 +117,7 @@ public class LocationLoader {
 	/**
 	 * Loads a location sub-class.
 	 */
-	private Location loadLocation(TextNode node, Location loc) {
+	private Location loadLocation(Element node, Location loc) {
 		// Load sub-class
 		final String type = node.name();
 		switch(type) {
@@ -126,12 +127,12 @@ public class LocationLoader {
 			return loc;
 			
 		case "floorless":
-			final String name = node.getString("base", null);
+			final String name = node.attributes().toString("base");
 			final Location base = world.getLocations().find(name);
 			return new FloorlessLocation(loc, base);
 			
 		case "moveable":
-			final boolean ferry = node.getBoolean("ferry", true);
+			final boolean ferry = node.attributes().toBoolean("ferry", true);
 			final List<Stage> stages = node.children("location").map(e -> loadStage(e, loc.getArea())).collect(toList());
 			if(stages.size() < 2) throw node.exception("Not enough stages");
 			return new MoveableLocation(loc.getName(), stages, ferry);
@@ -144,7 +145,7 @@ public class LocationLoader {
 	/**
 	 * Loads a moveable location stage.
 	 */
-	private Stage loadStage(TextNode node, Area area) {
+	private Stage loadStage(Element node, Area area) {
 		// Check no links for this fake location
 		if(node.children().count() > 0) throw node.exception("Cannot specify contents of a location stage");
 		
@@ -153,7 +154,7 @@ public class LocationLoader {
 		final Location loc = loadLocation(node, area);
 		
 		// Create stage
-		final long period = node.getAttribute("period", null, Converter.DURATION).toMillis();
+		final long period = node.attributes().toValue("period", null, Converter.DURATION).toMillis();
 		final Stage stage = new Stage(loc, period);
 
 		// Register stage
@@ -166,7 +167,7 @@ public class LocationLoader {
 	 * Loads an object or entity.
 	 * @param def Default race
 	 */
-	protected void loadContents(TextNode node, Race def, Location loc) {
+	protected void loadContents(Element node, Race def, Location loc) {
 		switch(node.name()) {
 		case "creature":
 			entityLoader.loadCreature(node, def, loc);
@@ -202,22 +203,22 @@ public class LocationLoader {
 	 * Loads an object-factory.
 	 */
 	@SuppressWarnings("unused")
-	private void loadFactory(TextNode node, Parent parent) {
+	private void loadFactory(Element node, Parent parent) {
 		// Load loot-factory
 		final LootFactory factory;
-		final String type = node.getValue("type");
-		if(type == null) {
-			factory = lootLoader.load(node);
+		final Optional<String> type = node.attributes().getOptional("type", Converter.STRING);
+		if(type.isPresent()) {
+			final ObjectDescriptor descriptor = world.getDescriptors().find(type.get());
+			if(descriptor == null) throw node.exception("Unknown descriptor: " + type.get());
+			factory = LootFactory.object(descriptor, 1);
 		}
 		else {
-			final ObjectDescriptor descriptor = world.getDescriptors().find(type);
-			if(descriptor == null) throw node.exception("Unknown descriptor: " + type);
-			factory = LootFactory.object(descriptor, 1);
+			factory = lootLoader.load(node);
 		}
 		
 		// Create object factory
-		final int count = node.getInteger("count", 1);
-		final long period = node.getAttribute("reset", DEFAULT_RESET, Converter.DURATION).toMillis();
+		final int count = node.attributes().toInteger("count", 1);
+		final long period = node.attributes().toValue("reset", DEFAULT_RESET, Converter.DURATION).toMillis();
 		new ObjectManager(factory, parent, count, period);
 	}
 }

@@ -1,15 +1,17 @@
 package org.sarge.textrpg.object;
 
+import static org.sarge.lib.util.Check.notNull;
+
 import java.util.stream.Stream;
 
 import org.sarge.lib.util.StreamUtil;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.entity.ActionHelper;
 import org.sarge.textrpg.entity.Entity;
+import org.sarge.textrpg.entity.MovementController;
 import org.sarge.textrpg.entity.Stance;
 import org.sarge.textrpg.world.Direction;
 import org.sarge.textrpg.world.Location;
@@ -20,6 +22,16 @@ import org.sarge.textrpg.world.Terrain;
  * @author Sarge
  */
 public class LeaveAction extends AbstractAction {
+	private final MovementController mover;
+	
+	/**
+	 * Constructor.
+	 * @param mover Movement controller
+	 */
+	public LeaveAction(MovementController mover) {
+		this.mover = notNull(mover);
+	}
+
 	@Override
 	public boolean isVisibleAction() {
 		return true;
@@ -42,7 +54,7 @@ public class LeaveAction extends AbstractAction {
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse leave(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse leave(Entity actor) throws ActionException {
 		final Vehicle vehicle = ActionHelper.getVehicle(actor);
 		final Location loc = actor.getLocation();
 		if(vehicle == null) {
@@ -54,7 +66,7 @@ public class LeaveAction extends AbstractAction {
 			final Direction dir = StreamUtil.findOnly(str).orElseThrow(() -> new ActionException("leave.invalid.location"));
 
 			// Leave and display destination
-			final Description description = ctx.getMovementController().move(ctx, actor, dir, 1, true);
+			final Description description = mover.move(actor, dir, 1, true);
 			return new ActionResponse(description);
 		}
 		else {

@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionTest;
+import org.sarge.textrpg.common.Clock;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.common.Emission;
 import org.sarge.textrpg.common.Script;
@@ -37,11 +38,12 @@ public class MovementControllerTest extends ActionTest {
 	@Before
 	public void before() {
 		// Create controller
+		final Clock clock = mock(Clock.class);
 		final DataTableCalculator move = mock(DataTableCalculator.class);
 		final DataTableCalculator tracks = mock(DataTableCalculator.class);
 		when(move.multiply(Terrain.DESERT, Route.NONE, actor.getStance())).thenReturn(3f);
 		when(tracks.multiply(Terrain.DESERT, Route.NONE, actor.getStance())).thenReturn(0.5f);
-		controller = new MovementController(move, tracks, 1);
+		controller = new MovementController(clock, move, tracks, 1);
 
 		// Create a link with a controller
 		final Thing obj = mock(Thing.class);
@@ -76,7 +78,7 @@ public class MovementControllerTest extends ActionTest {
 	@Test
 	public void move() throws ActionException {
 		// Move
-		final Description next = controller.move(ctx, actor, Direction.EAST, 2, true);
+		final Description next = controller.move(actor, Direction.EAST, 2, true);
 		verify(actor).setParent(dest);
 		assertNotNull(next);
 		
@@ -113,7 +115,7 @@ public class MovementControllerTest extends ActionTest {
 		when(link.isTraversable(actor)).thenReturn(false);
 		when(link.getReason()).thenReturn("move.cannot.traverse");
 		expect("move.cannot.traverse");
-		controller.move(ctx, actor, Direction.EAST, 1, true);
+		controller.move(actor, Direction.EAST, 1, true);
 	}
 
 	@Test
@@ -122,13 +124,13 @@ public class MovementControllerTest extends ActionTest {
 		when(link.getReason()).thenReturn("move.link.constraint");
 		when(actor.getSize()).thenReturn(Size.LARGE);
 		expect("move.link.constraint");
-		controller.move(ctx, actor, Direction.EAST, 1, true);
+		controller.move(actor, Direction.EAST, 1, true);
 	}
 	
 	@Test
 	public void moveInsufficientStamina() throws ActionException {
 		when(actor.getValues().get(EntityValue.STAMINA)).thenReturn(0);
 		expect("move.insufficient.stamina");
-		controller.move(ctx, actor, Direction.EAST, 1, true);
+		controller.move(actor, Direction.EAST, 1, true);
 	}
 }

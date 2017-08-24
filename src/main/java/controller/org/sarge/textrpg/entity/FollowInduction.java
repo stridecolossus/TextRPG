@@ -1,8 +1,9 @@
 package org.sarge.textrpg.entity;
 
+import static org.sarge.lib.util.Check.notNull;
+
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.world.Direction;
@@ -12,29 +13,28 @@ import org.sarge.textrpg.world.Direction;
  * @author Sarge
  */
 public class FollowInduction implements Induction {
-	private final ActionContext ctx;
 	private final Entity actor;
 	private final Follower follower;
+	private final MovementController mover;
 	private final int mod;
 	private final String message;
 
 	/**
 	 * Constructor.
-	 * @param ctx			Context
 	 * @param actor			Actor
 	 * @param follower		Follower
+	 * @param mover			Movement controller
 	 * @param mod			Movement cost modifier
 	 * @param message		Notification message when stopped following
 	 */
-	public FollowInduction(ActionContext ctx, Entity actor, Follower follower, int mod, String message) {
-		Check.notNull(ctx);
+	public FollowInduction(Entity actor, Follower follower, MovementController mover, int mod, String message) {
 		Check.notNull(actor);
 		Check.notNull(follower);
 		Check.oneOrMore(mod);
 		Check.notEmpty(message);
-		this.ctx = ctx;
 		this.actor = actor;
 		this.follower = follower;
+		this.mover = notNull(mover);
 		this.mod = mod;
 		this.message = message;
 	}
@@ -53,7 +53,7 @@ public class FollowInduction implements Induction {
 		}
 		else {
 			// Traverse link
-			desc = ctx.getMovementController().move(ctx, actor, dir, mod, true);
+			desc = mover.move(actor, dir, mod, true);
 		}
 		
 		return desc;

@@ -1,7 +1,6 @@
 package org.sarge.textrpg.entity;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -59,7 +58,7 @@ public class StanceAction extends AbstractAction {
 	 * @throws ActionException
 	 */
 	@Override
-	public ActionResponse execute(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse execute(Entity actor) throws ActionException {
 		switch(actor.getParent().getParentName()) {
 		case Vehicle.NAME:
 			if(stance == Stance.DEFAULT) {

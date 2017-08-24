@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -50,15 +49,15 @@ public class SmokeAction extends AbstractAction {
 	 * Smoke any pipe-weed.
 	 */
 	@Override
-	public ActionResponse execute(ActionContext ctx, Entity actor) throws ActionException {
-		return smoke(ctx, actor, WEED);
+	public ActionResponse execute(Entity actor) throws ActionException {
+		return smoke(actor, WEED);
 	}
 	
 	/**
 	 * Smoke specified pipe-weed.
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, String weed) throws ActionException {
-		return smoke(ctx, actor, WEED.and(obj -> obj.getName().equals(weed)));
+	public ActionResponse execute(Entity actor, String weed) throws ActionException {
+		return smoke(actor, WEED.and(obj -> obj.getName().equals(weed)));
 	}
 
 	/**
@@ -68,7 +67,7 @@ public class SmokeAction extends AbstractAction {
 	 * @param matcher		Pipe-weed matcher
 	 * @throws ActionException if the actor does not possess a pipe or matched pipe-weed.
 	 */
-	private ActionResponse smoke(ActionContext ctx, Entity actor, Predicate<WorldObject> matcher) throws ActionException {
+	private ActionResponse smoke(Entity actor, Predicate<WorldObject> matcher) throws ActionException {
 		// Check for pipe
 		find(actor, PIPE, true, "pipe");
 		

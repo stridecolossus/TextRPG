@@ -2,7 +2,7 @@ package org.sarge.textrpg.util;
 
 import java.util.Map;
 
-import org.sarge.lib.util.ToString;
+import org.sarge.lib.object.ToString;
 
 /**
  * Calculator for values derived from a {@link DataTable}.

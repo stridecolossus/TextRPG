@@ -2,8 +2,8 @@ package org.sarge.textrpg.entity;
 
 import java.util.Map;
 
-import org.sarge.lib.util.Pair;
-import org.sarge.lib.util.StrictMap;
+import org.sarge.lib.collection.Pair;
+import org.sarge.lib.collection.StrictMap;
 
 /**
  * Helper that initialises entity values.

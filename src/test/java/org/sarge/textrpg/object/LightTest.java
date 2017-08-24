@@ -10,6 +10,7 @@ import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionTest;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.common.Emission;
+import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.object.Light.Descriptor;
 import org.sarge.textrpg.object.Light.Operation;
 import org.sarge.textrpg.object.Light.Type;
@@ -67,7 +68,7 @@ public class LightTest extends ActionTest {
 
 	@Test
 	public void light() throws ActionException {
-		light.execute(Operation.LIGHT, 0);
+		light.execute(Operation.LIGHT);
 		assertEquals(true, light.isLit());
 		assertEquals(Optional.of(LIGHT), light.getEmission(Emission.Type.LIGHT));
 		assertEquals("{light.lit}", light.describe().get("light.lit"));
@@ -75,15 +76,15 @@ public class LightTest extends ActionTest {
 
 	@Test
 	public void lightAlreadyLit() throws ActionException {
-		light.execute(Operation.LIGHT, 0);
+		light.execute(Operation.LIGHT);
 		expect("light.already.lit");
-		light.execute(Operation.LIGHT, 0);
+		light.execute(Operation.LIGHT);
 	}
 
 	@Test
 	public void snuff() throws ActionException {
-		light.execute(Operation.LIGHT, 0);
-		light.execute(Operation.SNUFF,0);
+		light.execute(Operation.LIGHT);
+		light.execute(Operation.SNUFF);
 		assertEquals(false, light.isLit());
 		assertEquals(Optional.empty(), light.getEmission(Emission.Type.LIGHT));
 	}
@@ -91,21 +92,21 @@ public class LightTest extends ActionTest {
 	@Test
 	public void snuffNotLit() throws ActionException {
 		expect("snuff.not.lit");
-		light.execute(Operation.SNUFF,0);
+		light.execute(Operation.SNUFF);
 	}
 
 	@Test
 	public void cover() throws ActionException {
-		light.execute(Operation.COVER,0);
+		light.execute(Operation.COVER);
 		assertEquals(true, light.isCovered());
 		assertEquals("{light.covered}", light.describe().get("light.covered"));
 	}
 
 	@Test
 	public void coverAlreadyCovered() throws ActionException {
-		light.execute(Operation.COVER,0);
+		light.execute(Operation.COVER);
 		expect("cover.already.covered");
-		light.execute(Operation.COVER,0);
+		light.execute(Operation.COVER);
 	}
 
 	@Test
@@ -113,12 +114,12 @@ public class LightTest extends ActionTest {
 		light = create(Type.GENERAL);
 		light.setParentAncestor(actor);
 		expect("cover.not.lantern");
-		light.execute(Operation.COVER, 0);
+		light.execute(Operation.COVER);
 	}
 
 	@Test
 	public void expiry() throws ActionException {
-		light.execute(Operation.LIGHT, 0);
+		light.execute(Operation.LIGHT);
 		assertEquals(2, Light.QUEUE.stream().count());
 		Light.QUEUE.execute(3);
 		assertEquals(false, light.isLit());
@@ -128,15 +129,16 @@ public class LightTest extends ActionTest {
 
 	@Test
 	public void expiryCancelled() throws ActionException {
-		light.execute(Operation.LIGHT, 0);
-		light.execute(Operation.SNUFF, 2);
+		light.execute(Operation.LIGHT);
+		EventQueue.update(2);
+		light.execute(Operation.SNUFF);
 		assertEquals(false, light.isLit());
 		assertEquals(3 - 2, light.getLifetime());
 	}
 
 	@Test
 	public void destroy() throws ActionException {
-		light.execute(Operation.LIGHT, 0);
+		light.execute(Operation.LIGHT);
 		light.destroy();
 		assertEquals(0, light.getLifetime());
 		assertEquals(false, light.isLit());

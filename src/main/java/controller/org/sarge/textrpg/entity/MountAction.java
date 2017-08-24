@@ -5,7 +5,6 @@ import java.util.stream.Stream;
 import org.sarge.lib.util.Check;
 import org.sarge.lib.util.StreamUtil;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 
@@ -142,15 +141,9 @@ public class MountAction extends AbstractAction {
 		}
 	}
 
-	/**
-	 * Mount action.
-	 * @param ctx
-	 * @param actor
-	 * @throws ActionException
-	 */
 	@Override
-	public ActionResponse execute(ActionContext ctx, Entity actor) throws ActionException {
-		return execute(ctx, actor, (Entity) null);
+	public ActionResponse execute(Entity actor) throws ActionException {
+		return execute(actor, (Entity) null);
 	}
 
 	/**
@@ -160,7 +153,7 @@ public class MountAction extends AbstractAction {
 	 * @param entity
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, Entity entity) throws ActionException {
+	public ActionResponse execute(Entity actor, Entity entity) throws ActionException {
 		// Check can ride and argument is a mount
 		if((entity != null) && !entity.getRace().getAttributes().isMount()) throw new ActionException("mount.not.mount", op);
 		getSkillLevel(actor, riding);

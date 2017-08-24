@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -53,12 +52,11 @@ public class ButcherAction extends AbstractAction {
 
 	/**
 	 * Butcher corpse.
-	 * @param ctx
 	 * @param actor
 	 * @param obj
 	 * @throws ActionException
 	 */
-	public ActionResponse butcher(ActionContext ctx, Entity actor, Corpse corpse) throws ActionException {
+	public ActionResponse butcher(Entity actor, Corpse corpse) throws ActionException {
 		// Check not already butchered
 		if(corpse.isButchered()) throw new ActionException("corpse.already.butchered");
 
@@ -80,13 +78,12 @@ public class ButcherAction extends AbstractAction {
 
 	/**
 	 * Attempt to butcher something.
-	 * @param ctx
 	 * @param actor
 	 * @param obj
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse butcher(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+	public ActionResponse butcher(Entity actor, WorldObject obj) throws ActionException {
 		throw new ActionException("butcher.not.corpse");
 	}
 }

@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.LogManager;
 
+import org.sarge.lib.collection.LoopIterator;
 import org.sarge.lib.util.Converter;
-import org.sarge.lib.util.LoopIterator;
 import org.sarge.lib.util.Util;
 import org.sarge.textrpg.common.AbstractAction;
 import org.sarge.textrpg.common.ActionContext;

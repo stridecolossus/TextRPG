@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
 import org.sarge.lib.util.Converter;
 import org.sarge.lib.util.StreamUtil;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.util.Percentile;
 
 /**

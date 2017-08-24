@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -29,16 +28,15 @@ public class RemoveAction extends AbstractAction {
 
 	/**
 	 * Remove an equipped object.
-	 * @param ctx
 	 * @param actor
 	 * @param obj
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
-		return new ActionResponse(remove(actor, obj, ctx.getTime()));
+	public ActionResponse execute(Entity actor, WorldObject obj) throws ActionException {
+		return new ActionResponse(remove(actor, obj));
 	}
 
-	private static List<Description> remove(Entity actor, WorldObject obj, long time) throws ActionException {
+	private static List<Description> remove(Entity actor, WorldObject obj) throws ActionException {
 		// Remove equipment
 		actor.getEquipment().remove(obj);
 
@@ -47,7 +45,7 @@ public class RemoveAction extends AbstractAction {
 		if(obj instanceof Light) {
 			final Light light = (Light) obj;
 			if(light.isLit()) {
-				light.execute(Operation.SNUFF, time);
+				light.execute(Operation.SNUFF);
 			}
 		}
 
@@ -75,7 +73,7 @@ public class RemoveAction extends AbstractAction {
 	 * @param filter
 	 * @throws ActionException
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, ObjectFilter filter) throws ActionException {
+	public ActionResponse execute(Entity actor, ObjectFilter filter) throws ActionException {
 		final List<WorldObject> list = actor.getEquipment().stream().filter(obj -> filter.test(obj.getDescriptor())).collect(toList());
 		if(list.isEmpty()) {
 			throw new ActionException("remove.empty.filter");
@@ -84,7 +82,7 @@ public class RemoveAction extends AbstractAction {
 			final List<Description> responses = new ArrayList<>();
 			for(final WorldObject obj : list) {
 				try {
-					responses.addAll(remove(actor, obj, ctx.getTime()));
+					responses.addAll(remove(actor, obj));
 				}
 				catch(final ActionException e) {
 					responses.add(new Description(e.getMessage()));

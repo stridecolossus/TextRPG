@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -47,12 +46,11 @@ public class RecoverArrowsAction extends AbstractAction {
 
 	/**
 	 * Recover arrows.
-	 * @param ctx
 	 * @param actor
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse recover(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse recover(Entity actor) throws ActionException {
 		// Check terrain
 		final Location loc = actor.getLocation();
 		switch(loc.getTerrain()) {

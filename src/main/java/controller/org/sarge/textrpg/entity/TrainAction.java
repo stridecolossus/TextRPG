@@ -1,7 +1,6 @@
 package org.sarge.textrpg.entity;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 
@@ -20,7 +19,7 @@ public class TrainAction extends AbstractAction {
 		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
 	}
 	
-	public ActionResponse train(ActionContext ctx, Entity actor, String name) throws ActionException {
+	public ActionResponse train(Entity actor, String name) throws ActionException {
 		// Check for trainer in this location
 		
 //		actor.getLocation().getContents().stream()

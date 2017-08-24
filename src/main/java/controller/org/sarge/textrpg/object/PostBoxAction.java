@@ -1,10 +1,9 @@
 package org.sarge.textrpg.object;
 
 import static java.util.stream.Collectors.joining;
+import static org.sarge.lib.util.Check.notNull;
 
-import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.entity.Entity;
@@ -16,7 +15,9 @@ import org.sarge.textrpg.object.PostManager.Letter;
  * @author Sarge
  */
 public class PostBoxAction extends AbstractAction {
-	
+	/**
+	 * Post-box operation.
+	 */
 	public enum Operation {
 		LIST {
 			@Override
@@ -110,23 +111,25 @@ public class PostBoxAction extends AbstractAction {
 	}
 	
 	private final Operation op;
+	private final PostManager mgr;
 	
 	/**
 	 * Constructor.
-	 * @param op Letter operation
+	 * @param op	Letter operation
+	 * @param mgr	Post-box
 	 */
-	public PostBoxAction(Operation op) {
-		Check.notNull(op);
-		this.op = op;
+	public PostBoxAction(Operation op, PostManager mgr) {
+		this.op = notNull(op);
+		this.mgr = notNull(mgr);
 	}
 
 	@Override
-	public ActionResponse execute(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse execute(Entity actor) throws ActionException {
 		// Check available post-box in this location
 		checkPostBox(actor);
 		
 		// Delegate
-		final String response = op.execute(actor, null, ctx.getPostManager());
+		final String response = op.execute(actor, null, mgr);
 		
 		// Generate response
 		// TODO
@@ -134,21 +137,21 @@ public class PostBoxAction extends AbstractAction {
 		return null;
 	}
 
-	public void execute(ActionContext ctx, Entity actor, Integer index) throws ActionException {
-		final Letter letter = ctx.getPostManager().getLetter(index).orElseThrow(() -> new ActionException(op + ".invalid.index"));
-		final String response = op.execute(actor, letter, ctx.getPostManager());
+	public void execute(Entity actor, Integer index) throws ActionException {
+		final Letter letter = mgr.getLetter(index).orElseThrow(() -> new ActionException(op + ".invalid.index"));
+		final String response = op.execute(actor, letter, mgr);
 		//actor.notify(new Message("post.box." + op, response == null ? AbstractAction.OK : response));
 	}
 	
-	public void execute(ActionContext ctx, Entity actor, Entity entity, String text) throws ActionException {
+	public void execute(Entity actor, Entity entity, String text) throws ActionException {
 		// Check can send letter
 		checkPostBox(actor);
 		if(!(actor instanceof Player)) throw new ActionException("post.invalid.recipient");
 		
 		// Send letter
-		final Letter letter = new Letter(actor.getName(), text, null, ctx.getTime()); // TODO - attachments
-		final PostManager mgr = ctx.getPostManager();
-		mgr.send(entity, letter);
+		// TODO - clock
+//		final Letter letter = new Letter(actor.getName(), text, null, ctx.getTime()); // TODO - attachments
+//		mgr.send(entity, letter);
 	}
 	
 	/**

@@ -4,9 +4,9 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
+import org.sarge.lib.xml.Element;
 import org.sarge.textrpg.common.Condition;
 import org.sarge.textrpg.entity.Skill;
-import org.sarge.textrpg.util.TextNode;
 
 /**
  * Loader for a {@link Condition}.
@@ -18,14 +18,14 @@ public class ConditionLoader {
 	 * @param node Text-node
 	 * @return Condition
 	 */
-	public Condition load(TextNode node) {
+	public Condition load(Element node) {
 		switch(node.name()) {
 		case "attribute":
 			// TODO
 		
 		case "skill":
 			final Skill skill;
-			final int level = node.getInteger("level", null);
+			final int level = node.attributes().toInteger("level", null);
 			// TODO
 			return actor -> true;
 			

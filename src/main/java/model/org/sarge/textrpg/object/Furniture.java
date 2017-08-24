@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.sarge.lib.util.StrictMap;
+import org.sarge.lib.collection.StrictMap;
 import org.sarge.textrpg.common.Contents;
 import org.sarge.textrpg.common.Notification;
 import org.sarge.textrpg.common.Parent;

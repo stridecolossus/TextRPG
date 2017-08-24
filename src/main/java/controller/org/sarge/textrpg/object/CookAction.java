@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -54,7 +53,7 @@ public class CookAction extends AbstractAction {
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse cook(ActionContext ctx, Entity actor, Food food) throws ActionException {
+	public ActionResponse cook(Entity actor, Food food) throws ActionException {
 		// Check required skill
 		final int level = getSkillLevel(actor, skill);
 

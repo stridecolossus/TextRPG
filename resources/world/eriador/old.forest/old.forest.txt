@@ -1,0 +1,195 @@
+old.forest {
+	route: trail
+	
+	tom.bombadils.house {	
+		tom.bombadil character
+	}
+	
+	withywindle.bridge {
+		n tom.bombadils.house door
+	}
+	
+	goldberrys.pool water {	
+		n bree.road.east one-way	
+		goldberry character
+	}
+	
+	withywindle.path {	
+		n goldberrys.pool {
+			route path
+		}
+		e withywindle.bridge {
+			route bridge
+		}
+	}
+	
+	old.man.willow {	
+		n withywindle.path {
+			route path
+		}
+	}
+	
+	withywindle.north {	
+		e old.man.willow route
+	}
+	
+	withywindle.central {	
+		e withywindle.north {
+			reverse-dir s
+		}
+	}
+	
+	withywindle.south {	
+		e withywindle.central route {
+			reverse-dir s
+		}
+	}
+	
+	lily.pond {	
+		e withywindle.south route {
+			reverse-dir s
+		}
+	}
+	
+	old.forest.waterfall water {	
+		s lily.pond one-way
+		e withywindle.south one-way
+	}
+	
+	old.forest.barrow
+
+	old.forest.ravine {	
+		e withywindle.north one-way
+		s withywindle.central one-way
+		w old.forest.barrow
+		n old.forest.barrow
+	}
+	
+	old.forest.furrow {	
+		s old.forest.ravine one-way
+		w old.forest.barrow {
+			reverse-dir n
+		}
+	}
+	
+	old.forest.wolf.cave {
+		terrain underground
+	}
+	
+	old.forest.wolf.den {	
+		s old.forest.waterfall one-way
+		e old.forest.wolf.cave
+		n old.forest.barrow one-way
+		w old.forest.furrow one-way
+	}
+
+	forest.spring
+	
+	great.tree.limb floorless {
+		base forest.spring	
+		d forest.spring rope {
+			old.forest.branch {
+				description default
+			}
+		}
+	}
+
+	great.tree.flet {	
+		w great.tree.limb
+		rope
+	}
+
+	great.tree {	
+		s old.forest.wolf.den one-way
+		e old.forest.barrow one-way
+		n old.forest.furrow one-way
+		w old.forest.furrow one-way
+		u great.tree.flet climb simple {
+			great.tree {
+				cardinality unique
+				description growing
+			}
+		}
+	}
+
+	clearing.east {	
+		s old.forest.furrow one-way
+		w great.tree one-way
+	}
+	
+	old.forest.east {	
+		n clearing.east one-way
+		s great.tree one-way
+		e clearing.east one-way
+		w great.tree one-way
+	}
+	
+	old.forest.west {
+		n old.forest.east one-way
+		e old.forest.east one-way
+		w old.forest.east route one-way
+	}
+	
+	forest.stream {	
+		s old.forest.wolf.den one-way
+		e great.tree one-way
+		n old.forest.west
+		w forest.spring
+	}
+	
+	forest.trail.east {
+		terrain hill	
+		e clearing.east route one-way 
+		s clearing.east one-way 
+	}
+	
+	bald.hill {
+		terrain hill	
+		e forest.trail.east
+	}
+	
+	forest.trail.central {	
+		e bald.hill route
+		s old.forest.west one-way
+	}
+	
+	bonfire.glade {	
+		e forest.trail.central
+	}
+	
+	forest.trail.west {	
+		e bonfire.glade
+	}
+	
+	old.forest.gate {	
+		e forest.trail.west
+	}
+	
+	forest.trail.south {
+		terrain hill	
+		n bonfire.glade route
+		e old.forest.west one-way
+		s forest.spring route
+	}
+	
+	forest.trail.north {	
+		s bonfire.glade
+	}
+	
+	clearing.north {	
+		s forest.trail.north route
+	}
+	
+	badger.set {	
+		s forest.trail.central
+		w forest.trail.north
+		badger creature
+	}
+	
+	abandoned.woodcutter {	
+		e clearing.north door
+		n secret.tunnel {
+			route tunnel
+		}
+	}
+}

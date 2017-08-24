@@ -299,14 +299,14 @@ public class EntityTest extends ActionTest {
 	
 	@Test
 	public void startInduction() {
-		entity.start(ctx, induction, 42, false);
+		entity.start(induction, 42, false);
 		assertEquals(induction, entity.getInduction());
 		assertEquals(1, entity.getEventQueue().stream().count());
 	}
 	
 	@Test
 	public void completeInduction() throws ActionException {
-		entity.start(ctx, induction, 42, false);
+		entity.start(induction, 42, false);
 		entity.getEventQueue().execute(42);
 		verify(induction).complete();
 		assertEquals(null, entity.getInduction());
@@ -314,13 +314,13 @@ public class EntityTest extends ActionTest {
 	
 	@Test(expected = IllegalStateException.class)
 	public void startInductionAlreadyActive() {
-		entity.start(ctx, induction, 42, false);
-		entity.start(ctx, induction, 42, false);
+		entity.start(induction, 42, false);
+		entity.start(induction, 42, false);
 	}
 	
 	@Test
 	public void interruptInduction() {
-		entity.start(ctx, induction, 42, false);
+		entity.start(induction, 42, false);
 		entity.interrupt();
 		verify(induction).interrupt();
 		assertEquals(null, entity.getInduction());
@@ -328,7 +328,7 @@ public class EntityTest extends ActionTest {
 	
 	@Test
 	public void repeatingInduction() throws ActionException {
-		entity.start(ctx, induction, 1, true);
+		entity.start(induction, 1, true);
 		entity.getEventQueue().execute(1);
 		entity.getEventQueue().execute(2);
 		assertEquals(induction, entity.getInduction());

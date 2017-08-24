@@ -9,11 +9,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.sarge.lib.collection.StrictMap;
+import org.sarge.lib.object.EqualsBuilder;
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.EqualsBuilder;
-import org.sarge.lib.util.StrictMap;
 import org.sarge.lib.util.StringUtil;
-import org.sarge.lib.util.ToString;
 
 /**
  * Description of an object or entity.

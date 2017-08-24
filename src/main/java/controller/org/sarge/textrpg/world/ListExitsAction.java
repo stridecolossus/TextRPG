@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
+import org.sarge.textrpg.common.Clock;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.entity.Entity;
 
@@ -16,8 +16,11 @@ import org.sarge.textrpg.entity.Entity;
  * @author Sarge
  */
 public class ListExitsAction extends AbstractAction {
-	public ListExitsAction() {
+	private final Clock clock;
+	
+	public ListExitsAction(Clock clock) {
 		super("exits");
+		this.clock = clock;
 	}
 	
 	@Override
@@ -41,11 +44,10 @@ public class ListExitsAction extends AbstractAction {
 	 * @param actor
 	 * @throws ActionException
 	 */
-	public ActionResponse listExits(ActionContext ctx, Entity actor) throws ActionException {
+	public ActionResponse listExits(Entity actor) throws ActionException {
 		// Build description for each available link
 		final Location loc = actor.getLocation();
-		final boolean daylight = ctx.isDaylight();
-		final boolean light = loc.isLightAvailable(daylight);
+		final boolean light = loc.isLightAvailable(clock.isDaylight());
 		final Map<Direction, Exit> links = actor.getLocation().getExits();
 		final List<Description> exits = new ArrayList<>();
 		for(Direction dir : Direction.values()) {

@@ -1,7 +1,7 @@
 package org.sarge.textrpg.object;
 
+import org.sarge.lib.object.EqualsBuilder;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.EqualsBuilder;
 import org.sarge.textrpg.common.Description;
 
 /**

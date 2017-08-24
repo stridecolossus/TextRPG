@@ -25,6 +25,6 @@ public class InfoActionTest extends ActionTest {
 	@Test
 	public void info() throws ActionException {
 		final InfoAction action = new InfoAction(Operation.INFO);
-		action.info(ctx, player);
+		action.info(player);
 	}
 }

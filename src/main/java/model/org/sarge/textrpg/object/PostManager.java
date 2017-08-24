@@ -3,8 +3,8 @@ package org.sarge.textrpg.object;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.lib.util.ToString;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.Description;
 

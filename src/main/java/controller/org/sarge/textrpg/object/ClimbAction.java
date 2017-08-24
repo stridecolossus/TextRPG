@@ -1,9 +1,10 @@
 package org.sarge.textrpg.object;
 
+import static org.sarge.lib.util.Check.notNull;
+
 import java.util.Map;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -18,6 +19,16 @@ import org.sarge.textrpg.world.Exit;
  * @author Sarge
  */
 public class ClimbAction extends AbstractAction {
+	private final MovementController mover;
+	
+	/**
+	 * Constructor.
+	 * @param mover Movement controller
+	 */
+	public ClimbAction(MovementController mover) {
+		this.mover = notNull(mover);
+	}
+
 	@Override
 	protected Stance[] getInvalidStances() {
 		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
@@ -26,7 +37,7 @@ public class ClimbAction extends AbstractAction {
 	/**
 	 * Climbs an object.
 	 */
-	public ActionResponse climb(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+	public ActionResponse climb(Entity actor, WorldObject obj) throws ActionException {
 		// Find the matching exit
 		final Direction dir = actor.getLocation().getExits().entrySet().stream()
 			.filter(e -> matches(e.getValue(), obj))
@@ -35,8 +46,7 @@ public class ClimbAction extends AbstractAction {
 			.orElseThrow(() -> new ActionException(ILLOGICAL));
 		
 		// Traverse link
-		final MovementController controller = ctx.getMovementController();
-		final Description description = controller.move(ctx, actor, dir, 1, true);
+		final Description description = mover.move(actor, dir, 1, true);
 		return new ActionResponse(description);
 	}
 	

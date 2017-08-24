@@ -1,7 +1,6 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -22,13 +21,12 @@ public class ExamineAction extends AbstractAction {
 
 	/**
 	 * Reveals a hidden object.
-	 * @param ctx
 	 * @param actor
 	 * @param obj
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse examine(ActionContext ctx, Entity actor, RevealObject obj) throws ActionException {
+	public ActionResponse examine(Entity actor, RevealObject obj) throws ActionException {
 		// Reveal hidden object
 		if(!obj.isRevealed()) {
 			final WorldObject revealed = obj.reveal();
@@ -43,18 +41,11 @@ public class ExamineAction extends AbstractAction {
 	/**
 	 * Examines an object.
 	 */
-	public ActionResponse examine(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
-		return examine(actor, obj);
-	}
-	
-	/**
-	 * Examines an object.
-	 */
-	private static ActionResponse examine(Entity actor, WorldObject obj) {
+	public ActionResponse examine(Entity actor, WorldObject obj) throws ActionException {
 		final Description desc = ActionHelper.describe(actor, obj);
 		return new ActionResponse(desc);
 	}
-
+	
 	/**
 	 * Examines an entity.
 	 * @param ctx
@@ -63,19 +54,18 @@ public class ExamineAction extends AbstractAction {
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse examine(ActionContext ctx, Entity actor, Entity entity) throws ActionException {
+	public ActionResponse examine(Entity actor, Entity entity) throws ActionException {
 		return new ActionResponse(entity.describe());
 	}
 
 	/**
 	 * Examines a decoration.
-	 * @param ctx
 	 * @param actor
 	 * @param decoration
 	 * @return
 	 * @throws ActionException
 	 */
-	public ActionResponse examine(ActionContext ctx, Entity actor, String decoration) throws ActionException {
+	public ActionResponse examine(Entity actor, String decoration) throws ActionException {
 		return new ActionResponse("examine.decoration");
 	}
 }

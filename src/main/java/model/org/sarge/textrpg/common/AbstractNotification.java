@@ -1,7 +1,7 @@
 package org.sarge.textrpg.common;
 
-import org.sarge.lib.util.EqualsBuilder;
-import org.sarge.lib.util.ToString;
+import org.sarge.lib.object.EqualsBuilder;
+import org.sarge.lib.object.ToString;
 
 /**
  * Partial implementation.

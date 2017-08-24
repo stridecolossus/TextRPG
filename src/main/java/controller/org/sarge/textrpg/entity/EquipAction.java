@@ -3,7 +3,6 @@ package org.sarge.textrpg.entity;
 import java.util.Collections;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -23,19 +22,15 @@ public class EquipAction extends AbstractAction {
 
 	/**
 	 * Equip object.
-	 * @param ctx
 	 * @param actor
 	 * @param obj
 	 * @throws ActionException
 	 */
-	public ActionResponse equip(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
-		return new ActionResponse(equip(actor, obj));
+	public ActionResponse equip(Entity actor, WorldObject obj) throws ActionException {
+		return new ActionResponse(equipObject(actor, obj));
 	}
-
-	/**
-	 * Helper.
-	 */
-	protected static Description equip(Entity actor, WorldObject obj) throws ActionException {
+	
+	protected static Description equipObject(Entity actor, WorldObject obj) throws ActionException {
 		// Check carried
 		if(obj.getOwner() != actor) throw new ActionException("equip.not.carried");
 

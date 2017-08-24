@@ -18,10 +18,11 @@ public class MoveEntityActionTest extends ActionTest {
 		when(follower.next(actor)).thenReturn(Direction.EAST);
 
 		// Invoke action
-		final MoveEntityAction action = new MoveEntityAction(ctx, follower, true);
+		final MovementController mover = mock(MovementController.class);
+		final MoveEntityAction action = new MoveEntityAction(follower, mover, true);
 		final boolean stop = action.execute(actor);
 		verify(follower).next(actor);
-		verify(ctx.getMovementController()).move(ctx, actor, Direction.EAST, 1, false);
+		verify(mover).move(actor, Direction.EAST, 1, false);
 		assertEquals(false, stop);
 		
 		// Terminate follower and check action is stopped

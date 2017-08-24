@@ -6,17 +6,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
-import java.time.LocalDateTime;
 import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.common.Clock;
 import org.sarge.textrpg.common.Parent;
 import org.sarge.textrpg.entity.Entity;
 import org.sarge.textrpg.entity.Player;
@@ -66,7 +63,7 @@ public class CommandTest extends ActionTest {
 			}
 			
 			@SuppressWarnings("unused")
-			public ActionResponse execute(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+			public ActionResponse execute(Entity actor, WorldObject obj) throws ActionException {
 				if(fail) throw new ActionException("doh");
 				arg = true;
 				return ActionResponse.OK;
@@ -86,9 +83,6 @@ public class CommandTest extends ActionTest {
 		// Create command
 		final Method method = CommandParser.findMethod(action, new Class<?>[]{WorldObject.class});
 		cmd = new Command(action, method, new Object[]{obj});
-		
-		// Set night-time
-		Clock.CLOCK.setDateTime(LocalDateTime.of(1, 1, 1, 0, 0));
 	}
 	
 	@Test
@@ -99,7 +93,7 @@ public class CommandTest extends ActionTest {
 	
 	@Test
 	public void execute() throws Exception {
-		final ActionResponse res = cmd.execute(ctx, player);
+		final ActionResponse res = cmd.execute(player, true);
 		assertEquals(ActionResponse.OK, res);
 		assertEquals(true, arg);
 	}
@@ -108,7 +102,7 @@ public class CommandTest extends ActionTest {
 	public void executeActionException() throws Exception {
 		expect("doh");
 		fail = true;
-		final ActionResponse res = cmd.execute(ctx, player);
+		final ActionResponse res = cmd.execute(player, true);
 		assertEquals(null, res);
 	}
 	
@@ -116,14 +110,14 @@ public class CommandTest extends ActionTest {
 	public void executeCombatBlocked() throws ActionException {
 		when(player.getStance()).thenReturn(Stance.COMBAT);
 		expect("action.combat.blocked");
-		cmd.execute(ctx, player);
+		cmd.execute(player, true);
 	}
 	
 	@Test
 	public void executeInvalidStance() throws ActionException {
 		when(player.getStance()).thenReturn(Stance.SLEEPING);
 		expect("action.invalid.sleeping");
-		cmd.execute(ctx, player);
+		cmd.execute(player, true);
 	}
 	
 	@Test
@@ -133,7 +127,7 @@ public class CommandTest extends ActionTest {
 		when(player.getParent()).thenReturn(parent);
 		when(obj.getParent()).thenReturn(mock(Parent.class));
 		expect("action.invalid.parent");
-		cmd.execute(ctx, player);
+		cmd.execute(player, true);
 	}
 	
 	@Test
@@ -142,7 +136,7 @@ public class CommandTest extends ActionTest {
 		loc = new Location("underground", Area.ROOT, Terrain.UNDERGROUND, false, Collections.emptyList());
 		when(player.getLocation()).thenReturn(loc);
 		expect("action.requires.light");
-		cmd.execute(ctx, player);
+		cmd.execute(player, false);
 	}
 
 	@Test
@@ -150,13 +144,13 @@ public class CommandTest extends ActionTest {
 		when(obj.getParent()).thenReturn(loc);
 		obj.setParent(loc);
 		expect("action.unknown.argument");
-		cmd.execute(ctx, player);
+		cmd.execute(player, false);
 	}
 
 	@Test
 	public void executeSneaking() throws ActionException {
 		when(player.getStance()).thenReturn(Stance.SNEAKING);
-		cmd.execute(ctx, player);
+		cmd.execute(player, true);
 		verify(player).setStance(Stance.DEFAULT);
 	}
 }

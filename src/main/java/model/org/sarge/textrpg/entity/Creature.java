@@ -1,6 +1,6 @@
 package org.sarge.textrpg.entity;
 
-import org.sarge.lib.util.ToString;
+import org.sarge.lib.object.ToString;
 import org.sarge.textrpg.common.EnvironmentNotification;
 import org.sarge.textrpg.common.MovementNotification;
 import org.sarge.textrpg.common.Notification;

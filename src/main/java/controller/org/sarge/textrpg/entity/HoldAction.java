@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -33,13 +32,12 @@ public class HoldAction extends AbstractAction {
 	
 	/**
 	 * Holds or wields an object.
-	 * @param ctx		Context
 	 * @param actor		Actor
 	 * @param obj		Object to hold
 	 * @return Response
 	 * @throws ActionException if both hands are full
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
+	public ActionResponse execute(Entity actor, WorldObject obj) throws ActionException {
 		verifyCarried(actor, obj);
 		if(obj.getDescriptor() instanceof Weapon) {
 			// Stop holding current object
@@ -48,7 +46,7 @@ public class HoldAction extends AbstractAction {
 			held.ifPresent(prev -> responses.add(new Description("remove.response", "name", prev)));
 			
 			// Delegate
-			final Description desc = EquipAction.equip(actor, obj);
+			final Description desc = EquipAction.equipObject(actor, obj);
 			responses.add(desc);
 			return new ActionResponse(responses);
 		}
@@ -67,7 +65,7 @@ public class HoldAction extends AbstractAction {
 	 * @return Response
 	 * @throws ActionException if both hands are full
 	 */
-	public ActionResponse execute(ActionContext ctx, Entity actor, Light light) throws ActionException {
+	public ActionResponse execute(Entity actor, Light light) throws ActionException {
 		// Hold light
 		verifyCarried(actor, light);
 		final List<Description> responses = new ArrayList<>();
@@ -77,7 +75,7 @@ public class HoldAction extends AbstractAction {
 		// Turn on light
 		if(!light.isLit()) {
 			try {
-				light.execute(Operation.LIGHT, ctx.getTime());
+				light.execute(Operation.LIGHT);
 				responses.add(LightAction.buildResponse(light, Operation.LIGHT));
 			}
 			catch(ActionException e) {

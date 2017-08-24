@@ -1,19 +1,23 @@
 package org.sarge.textrpg.runner;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.sarge.textrpg.common.ActionContext;
+import org.sarge.textrpg.common.Clock;
 
 public class WorldRunnerTest {
 	private WorldRunner runner;
+	private Clock clock;
 	
 	@Before
 	public void before() {
-		runner = new WorldRunner(mock(ActionContext.class));
+		clock = mock(Clock.class);
+		runner = new WorldRunner(clock);
 	}
 	
 	@After
@@ -32,6 +36,7 @@ public class WorldRunnerTest {
 	public void start() {
 		runner.start();
 		assertEquals(true, runner.isRunning());
+		verify(clock).update(anyLong());
 	}
 	
 	@Test(expected = IllegalArgumentException.class)

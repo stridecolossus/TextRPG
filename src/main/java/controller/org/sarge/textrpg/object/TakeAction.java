@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -36,7 +35,7 @@ public class TakeAction extends AbstractAction {
 	 * @param obj		Object to take
 	 * @throws ActionException if the object cannot be carried or is too heavy
 	 */
-	private static void take(Entity actor, WorldObject obj) throws ActionException {
+	private static void takeObject(Entity actor, WorldObject obj) throws ActionException {
 		// Check can be carried
 		obj.take(actor);
 
@@ -57,8 +56,8 @@ public class TakeAction extends AbstractAction {
 	 * @param obj
 	 * @throws ActionException
 	 */
-	public ActionResponse take(ActionContext ctx, Entity actor, WorldObject obj) throws ActionException {
-		take(actor, obj);
+	public ActionResponse take(Entity actor, WorldObject obj) throws ActionException {
+		takeObject(actor, obj);
 		return response(obj);
 	}
 
@@ -70,9 +69,9 @@ public class TakeAction extends AbstractAction {
 	 * @param container
 	 * @throws ActionException
 	 */
-	public ActionResponse take(ActionContext ctx, Entity actor, WorldObject obj, Container container) throws ActionException {
+	public ActionResponse take(Entity actor, WorldObject obj, Container container) throws ActionException {
 		if(!container.getOpenableModel().map(Openable::isOpen).orElse(true)) throw new ActionException("take.container.closed", container);
-		take(actor, obj);
+		takeObject(actor, obj);
 		return response(obj);
 	}
 
@@ -84,7 +83,7 @@ public class TakeAction extends AbstractAction {
 	 * @return Response
 	 * @throws ActionException
 	 */
-	public ActionResponse take(ActionContext ctx, Entity actor, ObjectFilter filter) throws ActionException {
+	public ActionResponse take(Entity actor, ObjectFilter filter) throws ActionException {
 		// Enumerate results
 		final List<WorldObject> results = ContentsHelper.select(actor.getLocation().getContents().stream(), WorldObject.class)
 			.filter(obj -> filter.test(obj.getDescriptor()))
@@ -97,7 +96,7 @@ public class TakeAction extends AbstractAction {
 		final List<Description> responses = new ArrayList<>();
 		for(final WorldObject obj : results) {
 			try {
-				take(actor, obj);
+				takeObject(actor, obj);
 				responses.add(new Description("take.response", "name", obj));
 			}
 			catch(final ActionException e) {

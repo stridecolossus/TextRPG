@@ -3,7 +3,6 @@ package org.sarge.textrpg.object;
 import java.util.function.Predicate;
 
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -46,12 +45,11 @@ public class FillAction extends AbstractAction {
 
 	/**
 	 * Fills a receptacle.
-	 * @param ctx
 	 * @param actor
 	 * @param rec
 	 * @throws ActionException
 	 */
-	public ActionResponse fill(ActionContext ctx, Entity actor, Receptacle rec) throws ActionException {
+	public ActionResponse fill(Entity actor, Receptacle rec) throws ActionException {
 		// Find source
 		final Receptacle src;
 		final Location loc = actor.getLocation();
@@ -78,7 +76,7 @@ public class FillAction extends AbstractAction {
 	 * @param light
 	 * @throws ActionException
 	 */
-	public ActionResponse fill(ActionContext ctx, Entity actor, Light light) throws ActionException {
+	public ActionResponse fill(Entity actor, Light light) throws ActionException {
 		final Receptacle rec = (Receptacle) find(actor, OIL, false, "oil");
 		light.fill(rec);
 		// TODO - notify if receptacle is empty

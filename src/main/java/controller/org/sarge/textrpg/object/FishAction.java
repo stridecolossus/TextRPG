@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.AbstractAction;
-import org.sarge.textrpg.common.ActionContext;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -59,7 +58,8 @@ public class FishAction extends AbstractAction {
 		return true;
 	}
 
-	public ActionResponse execute(ActionContext ctx, Entity actor) throws ActionException {
+	@Override
+	public ActionResponse execute(Entity actor) throws ActionException {
 		// Check require skill
 		final int level = actor.getSkillLevel(skill).orElseThrow(() -> new ActionException("fish.requires.skill"));
 		
