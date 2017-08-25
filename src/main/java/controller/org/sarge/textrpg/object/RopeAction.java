@@ -26,7 +26,7 @@ public class RopeAction extends AbstractAction {
 		rope.attach(actor, anchor);
 		return response("rope.attach.response", rope, anchor);
 	}
-	
+
 	/**
 	 * Remove rope.
 	 * @param ctx
@@ -36,8 +36,8 @@ public class RopeAction extends AbstractAction {
 	 * @throws ActionException
 	 */
 	public ActionResponse remove(Entity actor, Rope rope) throws ActionException {
-		final Anchor anchor = rope.getAnchor();
 		rope.remove(actor);
+        final Anchor anchor = rope.getAnchor().get();
 		return response("rope.remove.response", rope, anchor);
 	}
 

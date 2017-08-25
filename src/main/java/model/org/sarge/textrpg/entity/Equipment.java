@@ -18,6 +18,7 @@ import org.sarge.textrpg.object.WorldObject;
 
 /**
  * Equipment worn by an {@link Entity}.
+ * TODO - factor out some of the code to make the higher-level methods simpler to read
  * @author Sarge
  */
 public class Equipment {

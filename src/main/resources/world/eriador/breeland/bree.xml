@@ -1,0 +1,72 @@
+<area name="bree" terrain="urban" route="street" race="man">
+	<location name="west.gate">
+		<gate dir="w" dest="west.gate.outside" hours="7, 19" />
+		<character name="harry.goatleaf" />
+	</location>
+	
+	<location name="prancing.pony.sign" terrain="urban_lit">
+        <route dir="w" dest="bree.west.gate" />
+    </location>
+	
+	<area name="prancing.pony" terrain="indoors">
+		<location name="reception">
+			<link dir="w" dest="common.room" />
+			<link dir="u" dest="pony.bedrooms" />
+			<link dir="e" dest="pony.stables" />
+			<fake dir="n" dest="kitchen" />
+			<door  dir="s" dest="prancing.pony.sign" />
+            <character name="barliman">
+				<manager period="00:00:30" />
+                <topic name="beer" message="beer" />
+            </character>
+        </location>
+	
+		<location name="common.room">
+          <character name="nob" race="hobbit">
+            <manager period="00:00:15" description="nob.bustle" />
+          </character>
+          <furniture name="bar.stool" />
+          <!--
+            <stances>
+              <rest />
+            </stances>
+            <limits>
+              <one />
+            </limits>
+          </furniture>
+           -->
+        </location>		
+		
+		<location name="bedrooms" />
+		
+		<location name="stables" terrain="urban">
+			<hidden dir="n" dest="bree.hill" route="trail" name="pony.hedge" vis="50" forget="10s" />
+			<creature race="horse" />
+			<character name="bob" race="hobbit" />
+		</location>
+    </area>
+
+	<location name="town.square">	
+		<link dir="n" dest="prancing.pony.sign" />
+		<fixture name="well" />
+    </location>
+	
+	<location name="common">	
+		<link dir="w" dest="town.square" />
+		<creature race="sheep" group="3" />
+    </location>
+    
+	<location name="market">	
+		<link dir="n" name="town.square" />
+	</location>
+	
+	<location name="south.gate">	
+		<link dir="n" dest="bree.common" />
+		<link dir="w" dest="bree.market" />
+		<gate dir="s" dest="south.gate.outside" />
+	</location>
+	
+	<location name="bill.fernys.house" terrain="indoors">	
+		<door dir="w" dest="bree.south.gate" />
+	</location>
+</area>

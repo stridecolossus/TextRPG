@@ -25,11 +25,11 @@ import org.sarge.textrpg.world.Location;
  */
 public final class Command {
 	private static final Logger LOG = Logger.getLogger(Command.class.getName());
-	
+
 	private final AbstractAction action;
 	private final Method method;
 	private final Object[] args;
-	
+
 	/**
 	 * Constructor.
 	 * @param action	Action
@@ -61,7 +61,7 @@ public final class Command {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Executes this command.
 	 * @param player		Player
@@ -84,6 +84,7 @@ public final class Command {
 	 */
 	private void replacePreviousObject(Player player) {
 		final WorldObject obj = player.getPreviousObject();
+		if(obj == null) return;
 		for(int n = 0; n < args.length; ++n) {
 			if(args[n] == WorldObject.PREVIOUS) {
 				args[n] = obj;
@@ -97,9 +98,9 @@ public final class Command {
 	 */
 	private void updatePreviousObject(Player player) {
 		final WorldObject obj = player.getPreviousObject();
-		for(int n = 0; n < args.length; ++n) {
-			if((args[n] != obj) && (args[n] instanceof WorldObject)) {
-				player.setPreviousObject((WorldObject) args[n]);
+		for (Object arg : args) {
+			if((arg != obj) && (arg instanceof WorldObject)) {
+				player.setPreviousObject((WorldObject) arg);
 				break;
 			}
 		}
@@ -116,14 +117,14 @@ public final class Command {
 		final Stance stance = actor.getStance();
 		if((stance == Stance.COMBAT) && action.isCombatBlockedAction()) throw new ActionException("action.combat.blocked");
 		if(!action.isValidStance(stance)) throw new ActionException("action.invalid." + stance);
-		
+
 		// Verify action can be performed in a parent
 		final boolean remote = isRemoteArgument(actor);
 		if(action.isParentBlockedAction()) {
 			final String name = actor.getParent().getParentName();
 			if(remote && !name.equals(Location.NAME)) throw new ActionException("action.invalid." + name, actor.getParent());
 		}
-		
+
 		// Check for available light
 		final Location loc = actor.getLocation();
 		boolean light = daylight;
@@ -131,12 +132,12 @@ public final class Command {
 			light = loc.isLightAvailable(light);
 			if(!light) throw new ActionException("action.requires.light");
 		}
-		
+
 		// Check whether can see non-inventory argument(s)
 		if(!light && remote) {
 			if(!loc.isArtificialLightAvailable()) throw new ActionException("action.unknown.argument");
 		}
-		
+
 		// Reveal if sneaking
 		if((stance == Stance.SNEAKING) && action.isVisibleAction()) {
 			actor.setStance(Stance.DEFAULT);
@@ -166,7 +167,7 @@ public final class Command {
 		System.arraycopy(this.args, 0, args, 2, this.args.length);
 		return args;
 	}
-	
+
 	/**
 	 * Executes this action.
 	 * @return Response
@@ -190,12 +191,12 @@ public final class Command {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object that) {
 		return EqualsBuilder.equals(this, that);
 	}
-	
+
 	@Override
 	public String toString() {
 		return ToString.toString(this);

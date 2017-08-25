@@ -107,19 +107,6 @@ public class LinkTest {
 	}
 
 	@Test
-	public void reverseLink() {
-		final Link link = new RouteLink(Route.NONE);
-		final Link reverse = new ReverseLink(link);
-		assertEquals(Route.NONE, reverse.getRoute());
-		assertNotNull(link.getController());
-		assertEquals(true, link.isVisible(actor));
-		assertEquals(true, link.isTraversable(actor));
-		assertEquals(Optional.empty(), link.getController());
-		assertEquals("dir", link.describe("dir"));
-		assertNotNull(link.describe());
-	}
-
-	@Test
 	public void extendedLink() {
 		final Script script = mock(Script.class);
 		final Link link = new ExtendedLink(Route.NONE, script, Size.MEDIUM);

@@ -1,5 +1,7 @@
 package org.sarge.textrpg.runner;
 
+import static java.util.stream.Collectors.toList;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -24,7 +26,38 @@ import org.sarge.textrpg.world.Location;
  * @author Sarge
  */
 public class CommandParser {
-	private final List<AbstractAction> actions;
+    /**
+     * Action definition.
+     */
+    private class ActionEntry {
+        private final AbstractAction action;
+        private final List<Method> methods;
+
+        /**
+         * Constructor.
+         * @param action Action-class
+         */
+        private ActionEntry(AbstractAction action) {
+            this.action = action;
+            this.methods = enumerateMethods(action);
+        }
+
+        private List<Method> enumerateMethods(AbstractAction action){
+            return Arrays.stream(action.getClass().getMethods())
+                .filter(m -> Modifier.isPublic(m.getModifiers()))
+                .collect(toList());
+        }
+
+        public Method findMethod(Class<?>[] params) {
+            for(Method m : methods) {
+                if(matches(m, params)) return m;
+            }
+            return null;
+        }
+    }
+
+
+	private final List<ActionEntry> actions;
 	private final Set<String> stopwords;
 	private final DescriptionStore store;
 
@@ -35,10 +68,9 @@ public class CommandParser {
 	 * @param actions		Actions indexed by name
 	 */
 	public CommandParser(List<AbstractAction> actions, Set<String> stopwords, DescriptionStore store) {
-		Check.notNull(store);
-		this.actions = new ArrayList<>(actions);
-		this.stopwords = new HashSet<String>(stopwords);
-		this.store = store;
+		this.actions = actions.stream().map(ActionEntry::new).collect(toList());
+		this.stopwords = new HashSet<>(stopwords);
+		this.store = Check.notNull(store);
 	}
 
 	/**
@@ -52,7 +84,7 @@ public class CommandParser {
 		// Tokenize command string
 		final String[] tokens = cmd.trim().toLowerCase().split(" ");
 		final List<String> words = new ArrayList<>(Arrays.asList(tokens));
-		
+
 		// Strip stop-words
 		words.removeIf(String::isEmpty);
 		words.removeIf(stopwords::contains);
@@ -72,7 +104,7 @@ public class CommandParser {
 			arg -> loc.getDecorations(),
 			arg -> Location.getSurfaces(),
 		};
-		
+
 		// Find arguments
 		final Object[] args = new Object[words.size() - 1];
 		for(int n = 0; n < args.length; ++n) {
@@ -101,7 +133,7 @@ public class CommandParser {
 		catch(NumberFormatException e) {
 			// Ignore
 		}
-		
+
 		// Otherwise find argument
 		return Arrays.stream(builders)
 			.flatMap(b -> b.stream(actor))
@@ -109,7 +141,7 @@ public class CommandParser {
 			.findFirst()
 			.orElseThrow(() -> new ActionException("action.unknown.argument", name));
 	}
-	
+
 	/**
 	 * @param key		Names key
 	 * @param word		Command word
@@ -120,7 +152,7 @@ public class CommandParser {
 		// Lookup names for this object
 		final String[] names = store.getStringArray(key);
 		if(names == null) return false;
-		
+
 		// Find matching name
 		for(String name : names) {
 			if(name.equalsIgnoreCase(word)) return true;
@@ -132,7 +164,7 @@ public class CommandParser {
 			tokens.removeIf(stopwords::contains);
 			if(tokens.contains(word)) return true;
 		}
-		
+
 		// Not matched
 		return false;
 	}
@@ -153,33 +185,25 @@ public class CommandParser {
 		}
 
 		// Find matching action
-		for(AbstractAction action : actions) {
+		// TODO - to stream?
+		for(ActionEntry entry : actions) {
 			// Match action name
-			// TODO - lookup names once
-			if(!matches(action.getName(), name, false)) continue;
-			
+			if(!matches(entry.action.getName(), name, false)) {
+			    continue;
+			}
+
 			// Find method matching the arguments
-			final Method method = findMethod(action, params);
-			if(method == null) continue;
-			
+			final Method method = entry.findMethod(params);
+			if(method == null) {
+			    continue;
+			}
+
 			// Found match
-			return new Command(action, method, args);
+			return new Command(entry.action, method, args);
 		}
-		
+
 		// No action found
 		throw new ActionException("parser.unknown.action");
-	}
-
-	/**
-	 * Finds an action method for the given arguments.
-	 * TODO - could do this once in ctor rather than having to walk thru the whole set of methods?
-	 */
-	protected static Method findMethod(AbstractAction action, Class<?>[] params) throws ActionException {
-		return Arrays.stream(action.getClass().getMethods())
-			.filter(m -> Modifier.isPublic(m.getModifiers()))
-			.filter(m -> matches(m, params))
-			.findFirst()
-			.orElse(null);
 	}
 
 	/**
@@ -189,12 +213,12 @@ public class CommandParser {
 		// Check matching number of arguments (excluding common arguments)
 		final Class<?>[] params = m.getParameterTypes();
 		if(params.length != args.length + 2) return false;
-		
+
 		// Check matching argument types
 		for(int n = 0; n < args.length; ++n) {
 			if(!params[n + 2].isAssignableFrom(args[n])) return false;
 		}
-		
+
 		// Found matching method
 		return true;
 	}

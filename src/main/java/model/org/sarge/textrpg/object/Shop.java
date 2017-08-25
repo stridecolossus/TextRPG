@@ -1,6 +1,5 @@
 package org.sarge.textrpg.object;
 
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 import java.util.ArrayList;
@@ -10,14 +9,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.sarge.lib.collection.Pair;
 import org.sarge.lib.collection.StrictSet;
-import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.DefaultTopic;
-import org.sarge.textrpg.common.Event;
-import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.common.Script;
 import org.sarge.textrpg.common.Topic;
 
@@ -98,35 +93,24 @@ public class Shop {
 		};
 	}
 
-	private final long duration;
-	private final int mod;
-	private final long discard;
 	private final Set<String> accepts;
 	private final Map<ObjectDescriptor, StockLevel> stock;
 	private final List<ObjectDescriptor> index;
-	private final List<Pair<Actor, WorldObject>> repaired = new ArrayList<>();
-	private final EventQueue queue = new EventQueue();
+	private final Optional<RepairShop> repair;
 
 	private boolean open;
 
 	/**
 	 * Constructor.
-	 * @param accepts		Object categories that this shop will purchase
-	 * @param stock			Initial stock
-	 * @param duration		Repair duration multiplier (ms)
-	 * @param mod			Repair cost multiplier
-	 * @param discard		Discard period (ms)
+	 * @param accepts	   Object categories that this shop will purchase
+	 * @param stock		   Initial stock
+	 * @param repair       Optional repair shop
 	 */
-	public Shop(Set<String> accepts, Map<ObjectDescriptor, Integer> stock, long duration, int mod, long discard) {
-		Check.oneOrMore(duration);
-		Check.oneOrMore(mod);
-		Check.oneOrMore(discard);
+	public Shop(Set<String> accepts, Map<ObjectDescriptor, Integer> stock, RepairShop repair) {
 		this.accepts = new StrictSet<>(accepts);
 		this.stock = stock.entrySet().stream().collect(toMap(Map.Entry::getKey, e -> new StockLevel(e.getValue())));
 		this.index = new ArrayList<>(stock.keySet());
-		this.duration = duration;
-		this.mod = mod;
-		this.discard = discard;
+		this.repair = Optional.ofNullable(repair);
 	}
 
 	/**
@@ -143,13 +127,6 @@ public class Shop {
 	public void setOpen(boolean open) {
 		assert this.open != open;
 		this.open = open;
-	}
-
-	/**
-	 * @return Shop repair queue
-	 */
-	EventQueue getEventQueue() {
-		return queue;
 	}
 
 	/**
@@ -230,21 +207,6 @@ public class Shop {
 	}
 
 	/**
-	 * Calculates the cost of repairing the given object.
-	 * @param obj Damaged object
-	 * @return Repair cost
-	 */
-	public int calculateRepairCost(WorldObject obj) {
-		if(obj instanceof DurableObject) {
-			final DurableObject durable = (DurableObject) obj;
-			return durable.getWear() * mod;
-		}
-		else {
-			return 0;
-		}
-	}
-
-	/**
 	 * Repairs a damaged object.
 	 * @param obj		Damaged object
 	 * @param actor		Actor
@@ -252,38 +214,10 @@ public class Shop {
 	 * @throws ActionException
 	 */
 	public long repair(Actor actor, WorldObject obj) throws ActionException {
-		// Check can be repaired by this shop
 		checkOpen();
 		accepts(obj.getDescriptor(), "repair");
-		final int cost = calculateRepairCost(obj);
-		if(cost == 0) throw new ActionException("repair.not.damaged");
-
-		// Remove from inventory
-		obj.destroy();
-
-		// Generate repair event
-		final Pair<Actor, WorldObject> entry = new Pair<>(actor, obj);
-		final Event event = () -> repaired.add(entry);
-		final long duration = this.duration * cost;
-		queue.add(event, duration);
-
-		// Generate discard event
-		final Event discardEvent = () -> repaired.stream().filter(e -> e == entry).findFirst().ifPresent(repaired::remove);
-		queue.add(discardEvent, discard + duration);
-
-		return duration;
-	}
-
-	/**
-	 * Returns repaired objects belonging to the given actor.
-	 * @param actor Actor
-	 * @return Repaired objects
-	 * TODO - how to make this automatic when entity enters a location?
-	 */
-	public Stream<WorldObject> getRepaired(Actor actor) {
-		final List<Pair<Actor, WorldObject>> results = repaired.stream().filter(entry -> entry.getLeft() == actor).collect(toList());
-		repaired.removeAll(results);
-		return results.stream().map(Pair::getRight);
+		if(!repair.isPresent()) new ActionException("repair.cannot.repair");
+		return repair.get().repair(actor, obj);
 	}
 
 	/**
@@ -295,6 +229,7 @@ public class Shop {
 
 	@Override
 	public String toString() {
+	    // TODO
 		return super.toString();
 	}
 }

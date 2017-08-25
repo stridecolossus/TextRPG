@@ -2,9 +2,12 @@ package org.sarge.textrpg.loader;
 
 import static java.util.stream.Collectors.toSet;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.sarge.lib.util.Converter;
@@ -32,7 +35,33 @@ public class LoaderHelper {
 	private LoaderHelper() {
 		// Utility class
 	}
-	
+
+	/**
+	 * Parses a duration.
+	 * @param str Duration as a string
+	 * @return Duration
+	 */
+	public static Duration parseDuration(String str) {
+	    /**
+	     * 99h99m99s
+	     */
+
+
+	    final Pattern pattern = Pattern.compile("(\\d{1,2}h)?(\\d{1,2}m)?(\\d{1,2}s)?");
+	    final Matcher m = pattern.matcher(str);
+
+//	    Duration.ofSeconds(Arrays.stream(runtime.split(":"))
+//                .mapToInt(n -> Integer.parseInt(n))
+//                .reduce(0, (n, m) -> n * 60 + m));
+
+	    while(m.find()) {
+	        System.out.println(m.start()+" "+m.end()+" "+m.group());
+	    }
+
+//	    return Duration.parse(str);
+	    return null;
+	}
+
 	/**
 	 * Helper - Loads an enumeration set from the children of the given element.
 	 * @param node			Text-node
@@ -49,7 +78,7 @@ public class LoaderHelper {
 			.map(converter::convert)
 			.collect(toSet());
 	}
-	
+
 	/**
 	 * The attribute-map has the following structure:
 	 * <pre>
@@ -94,7 +123,7 @@ public class LoaderHelper {
 			// Parse hours
 			final String[] tokens = attr.trim().split(",");
 			final int[] hours = Arrays.stream(tokens).map(String::trim).mapToInt(Integer::parseInt).toArray();
-			
+
 			// Create toggle listener
 			return new ToggleListener(toggle, hours);
 		}

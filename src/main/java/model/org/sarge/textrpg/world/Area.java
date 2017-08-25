@@ -56,14 +56,23 @@ public final class Area {
 			this.repeat = repeat;
 		}
 
+		/**
+		 * @return Event identifier
+		 */
 		public String getName() {
 			return name;
 		}
 
+		/**
+		 * @return Period (ms)
+		 */
 		public long getPeriod() {
 			return period;
 		}
 
+		/**
+		 * @return Whether this is a repeating event
+		 */
 		public boolean isRepeating() {
 			return repeat;
 		}
@@ -76,8 +85,6 @@ public final class Area {
 
 	private final String name;
 	private final Area parent;
-	private final Terrain terrain;
-	private final Route route;
 	private final Map<Resource, LootFactory> resources;
 	private final Collection<Ambient> ambient;
 	// TODO
@@ -87,19 +94,13 @@ public final class Area {
 	 * Constructor.
 	 * @param name			Name of this area
 	 * @param parent		Parent area
-	 * @param route			Default route-type in this area
-	 * @param terrain		Default terrain in this area
 	 * @param resources		Loot-factories for resources in this area
 	 */
-	public Area(String name, Area parent, Terrain terrain, Route route, Map<Resource, LootFactory> resources, Collection<Ambient> ambient) {
+	public Area(String name, Area parent, Map<Resource, LootFactory> resources, Collection<Ambient> ambient) {
 		Check.notEmpty(name);
 		Check.notNull(parent);
-		Check.notNull(terrain);
-		Check.notNull(route);
 		this.name = name;
 		this.parent = parent;
-		this.terrain = terrain;
-		this.route = route;
 		this.resources = new HashMap<>(resources);
 		this.ambient = new ArrayList<>(ambient);
 	}
@@ -110,8 +111,6 @@ public final class Area {
 	private Area() {
 		this.name = "root";
 		this.parent = null;
-		this.terrain = Terrain.GRASSLAND;
-		this.route = Route.NONE;
 		this.resources = Collections.emptyMap();
 		this.ambient = Collections.emptyList();
 	}
@@ -129,20 +128,6 @@ public final class Area {
 	 */
 	public Area getParent() {
 		return parent;
-	}
-
-	/**
-	 * @return Default terrain in this area
-	 */
-	public Terrain getTerrain() {
-		return terrain;
-	}
-
-	/**
-	 * @return Default route in this area
-	 */
-	public Route getRouteType() {
-		return route;
 	}
 
 	/**
@@ -184,8 +169,6 @@ public final class Area {
 	public static class Builder {
 		private final String name;
 		private Area parent = Area.ROOT;
-		private Terrain terrain = Terrain.FARMLAND;
-		private final Route route = Route.NONE;
 		private final Map<Resource, LootFactory> resources = new StrictMap<>();
 		private final Collection<Ambient> ambient = new StrictSet<>();
 
@@ -202,24 +185,6 @@ public final class Area {
 		 * @param parent Parent area
 		 */
 		public Builder parent(Area parent) {
-			this.parent = Check.notNull(parent);
-			return this;
-		}
-
-		/**
-		 * Sets the default terrain of this area.
-		 * @param terrain Default terrain
-		 */
-		public Builder terrain(Terrain terrain) {
-			this.terrain = Check.notNull(terrain);
-			return this;
-		}
-
-		/**
-		 * Sets the default route-type of this area.
-		 * @param route Route-type
-		 */
-		public Builder route(Route route) {
 			this.parent = Check.notNull(parent);
 			return this;
 		}
@@ -248,7 +213,7 @@ public final class Area {
 		 * @return New area
 		 */
 		public Area build() {
-			return new Area(name, parent, terrain, route, resources, ambient);
+			return new Area(name, parent, resources, ambient);
 		}
 	}
 }

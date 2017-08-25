@@ -2,8 +2,6 @@ package org.sarge.textrpg.common;
 
 import java.util.function.Predicate;
 
-import org.sarge.textrpg.entity.XXXCopyOfEntityManager.EntityState;
-
 /**
  * Actor performing an {@link EntityState}.
  * @author Sarge

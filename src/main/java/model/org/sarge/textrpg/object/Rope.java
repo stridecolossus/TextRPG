@@ -1,5 +1,7 @@
 package org.sarge.textrpg.object;
 
+import java.util.Optional;
+
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Actor;
@@ -13,7 +15,7 @@ public class Rope extends DurableObject {
 	/**
 	 * Anchor for a rope.
 	 */
-	public static class Anchor extends WorldObject {
+	public static class Anchor extends WorldObject {               // TODO - extends Fixture
 		private Rope rope;
 
 		/**
@@ -96,7 +98,7 @@ public class Rope extends DurableObject {
 		super.describe(builder);
 		builder.add("length", getLength());
 		if(anchor != null) {
-			builder.wrap("anchor", anchor.getName());
+		    builder.wrap("anchor", anchor.getName());
 		}
 	}
 
@@ -125,8 +127,8 @@ public class Rope extends DurableObject {
 	/**
 	 * @return Current anchor of this rope if any
 	 */
-	public Anchor getAnchor() {
-		return anchor;
+	public Optional<Anchor> getAnchor() {
+		return Optional.ofNullable(anchor);
 	}
 
 	/**

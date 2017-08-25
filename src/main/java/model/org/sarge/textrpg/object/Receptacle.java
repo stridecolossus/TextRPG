@@ -6,6 +6,8 @@ import org.sarge.textrpg.common.Description;
 
 /**
  * Receptacle for a {@link Liquid} such as an oil flask, water-skin, well or potion.
+ * TODO
+ * - value ~ contents, e.g. water = 0, beer = 1, wine = 5, etc.
  * @author Sarge
  */
 public class Receptacle extends WorldObject {

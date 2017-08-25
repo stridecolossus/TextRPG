@@ -151,7 +151,7 @@ public class ObjectDescriptorLoader {
 			def = Duration.ZERO;
 			break;
 		}
-		builder.reset(attrs.toValue("reset", def, Converter.DURATION).toMillis());
+		builder.reset(attrs.toValue("reset", def, LoaderHelper::parseDuration).toMillis());
 
 		// Create descriptor
 		return builder.build();

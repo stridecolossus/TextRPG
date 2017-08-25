@@ -84,18 +84,20 @@ public class AreaLoader {
 	 * Loader pass.
 	 */
 	private interface Pass {
-		Area load(Element node, Area parent);
+		Area load(Element node, Area parent, Terrain terrain, Route route);
 	}
 
 	/**
 	 * Location loader pass.
 	 */
-	private final Pass locationPass = (node, parent) -> {
+	private final Pass locationPass = (node, parent, parentTerrain, parentRoute) -> {
 		// Load area
 		final ConverterAdapter attrs = node.attributes();
 		final String name = attrs.toString("name");
-		final Terrain terrain = attrs.toValue("default-terrain", parent.getTerrain(), TERRAIN);
-		final Route route = attrs.toValue("default-route", parent.getRouteType(), ROUTE);
+
+		// Load transient area properties
+		final Terrain terrain = attrs.toValue("default-terrain", parentTerrain, TERRAIN);
+		final Route route = attrs.toValue("default-route", parentRoute, ROUTE);
 
 		// Load resources in this area
 		final Map<Resource, LootFactory> resources = node.children("resource").map(AreaLoader.this::loadResourceFactory).collect(Pair.toMap());
@@ -104,12 +106,11 @@ public class AreaLoader {
 		final Collection<Ambient> ambient = node.children("ambient").map(AreaLoader::loadAmbient).collect(toList());
 
 		// Create area
-		final Area area = new Area(name, parent, terrain, route, resources, ambient);
+		final Area area = new Area(name, parent, resources, ambient);
 		LOG.log(Level.FINE, "Area: {0}", area.getName());
-		// TODO - terrain, route and default-race are all transient once loading is done, bind into an a context
 
 		// Load locations
-		node.children().filter(FILTER).forEach(e -> locationLoader.load(e, area));
+		node.children().filter(FILTER).forEach(e -> loadLocation(e, area));
 		return area;
 	};
 
@@ -133,12 +134,16 @@ public class AreaLoader {
 		return new Ambient(name, period, repeat);
 	}
 
+	private void loadLocation(Element node, Area area) {
+	    locationLoader.load(node, area);
+	}
+
 	/**
 	 * Links pass.
 	 */
-	private final Pass linksPass = (node, parent) -> {
+	private final Pass linksPass = (node, parent, terrain, route) -> {
 		try {
-			node.children().filter(FILTER).forEach(e -> AreaLoader.this.loadContents(e));
+			node.children().filter(FILTER).forEach(e -> AreaLoader.this.loadContents(e, route));
 		}
 		catch(final LoaderException e) {
 			throw e;
@@ -152,14 +157,13 @@ public class AreaLoader {
 	/**
 	 * Loads links and contents.
 	 */
-	private void loadContents(Element node) {
+	private void loadContents(Element node, Route route) {
 		// Retrieve location
 		final String name = node.attributes().toString("name");
 		final Location loc = world.getLocations().find(name);
 		if(loc == null) throw new RuntimeException();
 
 		// Load links
-		final Route route = loc.getArea().getRouteType();
 		node.optionalChild("links")
 			.map(Element::children)
 			.orElse(Stream.empty())

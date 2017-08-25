@@ -47,7 +47,7 @@ public class DurableObject extends WorldObject {
 
 	/**
 	 * Wear banding table.
-	 * TODO - does this need to be configurable?
+	 * TODO - move this to descriptor
 	 */
 	private static final BandingTable TABLE = new BandingTable.Builder()
 		.add(0, "broken")

@@ -12,6 +12,8 @@ import org.sarge.textrpg.world.Route;
 
 /**
  * Link that requires a {@link Rope} to be traversed.
+ * TODO
+ * - extended link so can have size constraint?
  * @author Sarge
  */
 public class RopeLink extends Link {
