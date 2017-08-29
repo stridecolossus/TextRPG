@@ -29,9 +29,9 @@ public class CommandTest extends ActionTest {
 	private AbstractAction action;
 	private WorldObject obj;
 	private boolean arg, fail, light;
-	
+
 	@Before
-	public void before() throws ActionException {
+	public void before() throws Exception {
 		// Create action
 		arg = false;
 		fail = false;
@@ -41,12 +41,12 @@ public class CommandTest extends ActionTest {
 			public boolean isLightRequiredAction() {
 				return light;
 			}
-			
+
 			@Override
 			public boolean isVisibleAction() {
 				return true;
 			}
-			
+
 			@Override
 			public boolean isValidStance(Stance stance) {
 				if(stance == Stance.SNEAKING) {
@@ -56,12 +56,12 @@ public class CommandTest extends ActionTest {
 					return super.isValidStance(stance);
 				}
 			}
-			
+
 			@Override
 			public boolean isParentBlockedAction() {
 				return true;
 			}
-			
+
 			@SuppressWarnings("unused")
 			public ActionResponse execute(Entity actor, WorldObject obj) throws ActionException {
 				if(fail) throw new ActionException("doh");
@@ -75,22 +75,22 @@ public class CommandTest extends ActionTest {
 		when(player.getLocation()).thenReturn(loc);
 		when(player.getParent()).thenReturn(loc);
 		when(player.getStance()).thenReturn(Stance.DEFAULT);
-		
+
 		// Create argument
 		obj = mock(WorldObject.class);
 		when(obj.getParent()).thenReturn(player);
 
 		// Create command
-		final Method method = CommandParser.findMethod(action, new Class<?>[]{WorldObject.class});
+		final Method method = action.getClass().getDeclaredMethod("execute", new Class<?>[]{Entity.class, WorldObject.class});
 		cmd = new Command(action, method, new Object[]{obj});
 	}
-	
+
 	@Test
 	public void constructor() {
 		assertEquals(action, cmd.getAction());
 		assertEquals(obj, cmd.getPreviousObject());
 	}
-	
+
 	@Test
 	public void execute() throws Exception {
 		final ActionResponse res = cmd.execute(player, true);
@@ -105,21 +105,21 @@ public class CommandTest extends ActionTest {
 		final ActionResponse res = cmd.execute(player, true);
 		assertEquals(null, res);
 	}
-	
+
 	@Test
 	public void executeCombatBlocked() throws ActionException {
 		when(player.getStance()).thenReturn(Stance.COMBAT);
 		expect("action.combat.blocked");
 		cmd.execute(player, true);
 	}
-	
+
 	@Test
 	public void executeInvalidStance() throws ActionException {
 		when(player.getStance()).thenReturn(Stance.SLEEPING);
 		expect("action.invalid.sleeping");
 		cmd.execute(player, true);
 	}
-	
+
 	@Test
 	public void executeRemoteArgument() throws ActionException {
 		final Parent parent = mock(Parent.class);
@@ -129,7 +129,7 @@ public class CommandTest extends ActionTest {
 		expect("action.invalid.parent");
 		cmd.execute(player, true);
 	}
-	
+
 	@Test
 	public void executeRequiresLight() throws ActionException {
 		light = true;

@@ -19,25 +19,30 @@ import org.sarge.textrpg.object.WorldObject;
 public class AbstractActionTest extends ActionTest {
 	private AbstractAction action;
 	private Skill skill;
-	
+
 	private class MockAction extends AbstractAction {
-		@Override
-		public Stance[] getInvalidStances() {
-			return new Stance[]{Stance.MOUNTED};
+	    @Override
+	    public boolean isValidStance(Stance stance) {
+	        if(stance == Stance.MOUNTED) {
+	            return false;
+	        }
+	        else {
+	            return super.isValidStance(stance);
+	        }
 		}
 	}
-	
+
 	@Before
 	public void before() {
 		action = new MockAction();
 		skill = new Skill("skill", Collections.singletonList(new Tier(Condition.TRUE, 1)));
 	}
-	
+
 	@Test
 	public void constructor() {
 		assertEquals("action.mock", action.getName());
 	}
-	
+
 	@Test
 	public void isValidStance() {
 		assertEquals(true, action.isValidStance(Stance.DEFAULT));
@@ -47,17 +52,17 @@ public class AbstractActionTest extends ActionTest {
 		assertEquals(false, action.isValidStance(Stance.MOUNTED));
 		assertEquals(false, action.isValidStance(Stance.SLEEPING));
 	}
-	
+
 	@Test
 	public void isCombatAction() {
 		assertEquals(true, action.isCombatBlockedAction());
 	}
-	
+
 	@Test
 	public void isVisibleAction() {
 		assertEquals(false, action.isVisibleAction());
 	}
-	
+
 	@Test
 	public void getSkill() throws ActionException {
 		when(actor.getSkillLevel(skill)).thenReturn(Optional.of(42));
@@ -70,20 +75,20 @@ public class AbstractActionTest extends ActionTest {
 		expect("mock.requires.skill");
 		action.getSkillLevel(actor, skill);
 	}
-	
+
 	@Test
 	public void find() throws ActionException {
 		final WorldObject obj = new WorldObject(new ObjectDescriptor("object"));
 		obj.setParent(actor);
 		assertEquals(Optional.of(obj), action.find(actor, t -> true, false));
 	}
-	
+
 	@Test
 	public void findNotFound() throws ActionException {
 		expect("mock.requires.object");
 		action.find(actor, t -> true, true, "object");
 	}
-	
+
 	@Test
 	public void findBroken() throws ActionException {
 		final WorldObject obj = new DurableObject(new Descriptor(new ObjectDescriptor("durable"), 1));
@@ -92,7 +97,7 @@ public class AbstractActionTest extends ActionTest {
 		expect("mock.broken.object");
 		action.find(actor, t -> true, true, "object");
 	}
-	
+
 	@Test
 	public void calculateDuration() {
 		final long base = 100;
@@ -100,7 +105,7 @@ public class AbstractActionTest extends ActionTest {
 		assertEquals(80, AbstractAction.calculateDuration(base, 10));
 		assertEquals(60, AbstractAction.calculateDuration(base, 20));
 	}
-	
+
 	@Test
 	public void response() {
 		final ActionResponse res = action.response("arg");

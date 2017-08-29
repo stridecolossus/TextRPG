@@ -1,26 +1,20 @@
 package org.sarge.textrpg.object;
 
-import org.sarge.textrpg.common.AbstractAction;
+import org.sarge.textrpg.common.AbstractActiveAction;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.entity.Entity;
-import org.sarge.textrpg.entity.Stance;
 
 /**
  * Enter a {@link Vehicle}.
  * @author Sarge
  */
-public class EnterAction extends AbstractAction {
+public class EnterAction extends AbstractActiveAction {
 	@Override
 	public boolean isVisibleAction() {
 		return true;
 	}
 
-	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
-	}
-	
 	/**
 	 * Enters a vehicle.
 	 * @param ctx

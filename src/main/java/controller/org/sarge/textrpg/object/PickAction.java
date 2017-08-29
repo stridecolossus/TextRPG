@@ -3,7 +3,7 @@ package org.sarge.textrpg.object;
 import java.util.function.Predicate;
 
 import org.sarge.lib.util.Check;
-import org.sarge.textrpg.common.AbstractAction;
+import org.sarge.textrpg.common.AbstractActiveAction;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -15,14 +15,13 @@ import org.sarge.textrpg.entity.ActionHelper;
 import org.sarge.textrpg.entity.Entity;
 import org.sarge.textrpg.entity.Induction;
 import org.sarge.textrpg.entity.Skill;
-import org.sarge.textrpg.entity.Stance;
 import org.sarge.textrpg.world.Location;
 
 /**
  * Pick-lock action.
  * @author Sarge
  */
-public class PickAction extends AbstractAction {
+public class PickAction extends AbstractActiveAction {
 	private final Skill pick;
 	private final Predicate<WorldObject> matcher;
 	private final long mod;
@@ -39,11 +38,6 @@ public class PickAction extends AbstractAction {
 		this.pick = pick;
 		this.matcher = ContentsHelper.objectMatcher(lockpicks);
 		this.mod = mod;
-	}
-
-	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
 	}
 
 	/**

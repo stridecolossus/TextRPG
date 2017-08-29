@@ -20,7 +20,7 @@ public class DataTableTest {
 	}
 
 	private DataTable table;
-	
+
 	@Before
 	public void before() {
 		final String[][] rows = {
@@ -29,7 +29,7 @@ public class DataTableTest {
 		};
 		table = new DataTable(Arrays.asList("key", "a", "b"), rows);
 	}
-	
+
 	@Test
 	public void get() {
 		assertEquals("ONE", table.get(0, "key"));
@@ -39,7 +39,7 @@ public class DataTableTest {
 		assertEquals("3", table.get(1, "a"));
 		assertEquals("4", table.get(1, "b"));
 	}
-	
+
 	@Test
 	public void getRow() {
 		assertArrayEquals(new String[]{"ONE", "1", "2"}, table.getRow(0).toArray());
@@ -53,13 +53,6 @@ public class DataTableTest {
 		assertEquals(new Integer(3), map.get("TWO"));
 	}
 
-	@Test
-	public void getColumnEnumeration() {
-		final Map<MockEnum, Integer> col = table.getColumn("b", MockEnum.class, Converter.INTEGER);
-		assertEquals(new Integer(2), col.get(MockEnum.ONE));
-		assertEquals(new Integer(4), col.get(MockEnum.TWO));
-	}
-	
 	@Test
 	public void load() throws IOException {
 		final String str = "key a b \n ONE 1 2 \n TWO 3 4 \n";

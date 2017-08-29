@@ -114,6 +114,13 @@ public class Shop {
 	}
 
 	/**
+	 * @return Repair facility at this shop
+	 */
+	public Optional<RepairShop> getRepairShop() {
+        return repair;
+    }
+
+	/**
 	 * @return Whether the shop is open
 	 */
 	public boolean isOpen() {

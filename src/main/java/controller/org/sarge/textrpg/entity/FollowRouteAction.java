@@ -36,10 +36,15 @@ public class FollowRouteAction extends AbstractAction {
 		this.period = period;
 		this.mover = notNull(mover);
 	}
-	
+
 	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING};
+	public boolean isValidStance(Stance stance) {
+	    if(stance == Stance.RESTING) {
+	        return false;
+	    }
+	    else {
+	        return super.isValidStance(stance);
+	    }
 	}
 
 	/**
@@ -53,11 +58,11 @@ public class FollowRouteAction extends AbstractAction {
 		// Check direction
 		final Exit exit = actor.getLocation().getExits().get(dir);
 		if(exit == null) throw new ActionException("follow.no.link");
-		
+
 		// Check available route
 		final Route route = exit.getLink().getRoute();
 		if(route == Route.NONE) throw new ActionException("follow.no.route");
-		
+
 		// Start following route
 		final Predicate<Exit> filter = SelectFollower.route(Collections.singleton(route));
 		final Follower follower = new SelectFollower(filter, Policy.ONE);

@@ -1,21 +1,20 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.lib.util.Check;
-import org.sarge.textrpg.common.AbstractAction;
+import org.sarge.textrpg.common.AbstractActiveAction;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.entity.Attribute;
 import org.sarge.textrpg.entity.Entity;
 import org.sarge.textrpg.entity.EntityValue;
-import org.sarge.textrpg.entity.Stance;
 import org.sarge.textrpg.object.WorldObject.Interaction;
 
 /**
  * Manipulate an object.
  * @author Sarge
  */
-public class InteractAction extends AbstractAction {
+public class InteractAction extends AbstractActiveAction {
 	private final Interaction action;
 	private final int mod;
 
@@ -30,17 +29,12 @@ public class InteractAction extends AbstractAction {
 		this.action = action;
 		this.mod = mod;
 	}
-	
-	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
-	}
 
 	@Override
 	public boolean isCombatBlockedAction() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean isVisibleAction() {
 		return true;
@@ -86,7 +80,7 @@ public class InteractAction extends AbstractAction {
 		// Check sufficient strength
 		final int str = obj.getRequiredStrength();
 		if(actor.getAttributes().get(Attribute.STRENGTH) < str) throw new ActionException("interact.insufficient.strength");
-		
+
 		// Check required stamina
 		final int cost = str * mod;
 		if(actor.getValues().get(EntityValue.STAMINA) < cost) throw new ActionException("interact.insufficient.stamina");
@@ -94,7 +88,7 @@ public class InteractAction extends AbstractAction {
 		// Interact
 		obj.interact(action, actor.getLocation());
 		actor.modify(EntityValue.STAMINA, -cost);
-		
+
 		// Build response
 		return build(obj);
 	}
@@ -116,7 +110,7 @@ public class InteractAction extends AbstractAction {
 	private static ActionResponse nothing() {
 		return new ActionResponse("interact.nothing");
 	}
-	
+
 	/**
 	 * Builds the response.
 	 * @param obj Object

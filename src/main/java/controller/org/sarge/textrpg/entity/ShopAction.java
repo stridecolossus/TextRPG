@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.sarge.lib.util.Check;
-import org.sarge.textrpg.common.AbstractAction;
+import org.sarge.textrpg.common.AbstractActiveAction;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.common.Topic;
 import org.sarge.textrpg.object.ObjectDescriptor;
 import org.sarge.textrpg.object.ObjectFilter;
+import org.sarge.textrpg.object.RepairShop;
 import org.sarge.textrpg.object.Shop;
 import org.sarge.textrpg.object.Shop.StockEntry;
 import org.sarge.textrpg.object.WorldObject;
@@ -21,7 +22,7 @@ import org.sarge.textrpg.object.WorldObject;
  * Action to interact with a {@link Shop}.
  * @author Sarge
  */
-public class ShopAction extends AbstractAction {
+public class ShopAction extends AbstractActiveAction {
 	/**
 	 * Shop operation.
 	 */
@@ -32,7 +33,7 @@ public class ShopAction extends AbstractAction {
 		COST,
 		REPAIR,
 	}
-	
+
 	private final Operation op;
 
 	/**
@@ -46,15 +47,10 @@ public class ShopAction extends AbstractAction {
 	}
 
 	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
-	}
-
-	@Override
 	public boolean isVisibleAction() {
 		return true;
 	}
-	
+
 	/**
 	 * List all stock.
 	 */
@@ -74,7 +70,7 @@ public class ShopAction extends AbstractAction {
 		// List stock
 		final Shop shop = find(actor);
 		final Stream<StockEntry> stock = shop.list(filter);
-		
+
 		// Delegate
 		switch(op) {
 		case LIST:
@@ -88,7 +84,7 @@ public class ShopAction extends AbstractAction {
 			if(results.isEmpty()) throw new ActionException("buy.unknown.object");
 			if(results.size() != 1) throw new ActionException("buy.ambiguous.object");
 			return buy(actor, results.iterator().next().getDescriptor(), shop);
-			
+
 		default:
 			return INVALID;
 		}
@@ -132,7 +128,7 @@ public class ShopAction extends AbstractAction {
 		// Create object and add to inventory
 		final WorldObject obj = descriptor.create();
 		obj.setParent(actor);
-		
+
 		// Build response
 		return response(obj);
 	}
@@ -140,7 +136,6 @@ public class ShopAction extends AbstractAction {
 	/**
 	 * Sell or repair.
 	 */
-	@SuppressWarnings("unused")
 	public ActionResponse execute(Entity actor, WorldObject obj) throws ActionException {
 		final Shop shop = find(actor);
 		verifyCarried(actor, obj);
@@ -150,31 +145,39 @@ public class ShopAction extends AbstractAction {
 			shop.sell(obj);
 			actor.modify(EntityValue.CASH, obj.getValue());
 			return response(obj);
-			
+
 		case COST:
 			// Calculate repair cost
-			final int amount = shop.calculateRepairCost(obj);
+			final int amount = getRepairShop(shop).calculateRepairCost(obj);
 			return new ActionResponse(new Description("repair.cost", "amount", amount));
-			
+
 		case REPAIR:
 			// Consume repair cost
-			final int cost = shop.calculateRepairCost(obj);
+			final int cost = getRepairShop(shop).calculateRepairCost(obj);
 			if(actor.getValues().get(EntityValue.CASH) < cost) throw new ActionException("repair.insufficient.funds");
 			actor.modify(EntityValue.CASH, -cost);
-	
+
 			// Notify expected duration
 			final long duration = shop.repair(actor, obj);
 			return new ActionResponse(new Description("repair.duration", "duration", duration));
-			
+
 		default:
 			return INVALID;
 		}
 	}
-	
+
 	/**
 	 * Finds a shop in the current location.
  	 */
 	private static Shop find(Entity actor) throws ActionException {
 		return ActionHelper.findTopic(actor.getLocation(), Shop.TOPIC_NAME).map(Topic::getShop).orElseThrow(() -> new ActionException("shop.not.found"));
+	}
+
+	/**
+	 * Gets the repair facility at this shop.
+	 * @throws ActionException if this shop does not repair
+	 */
+	private static RepairShop getRepairShop(Shop shop) throws ActionException {
+	    return shop.getRepairShop().orElseThrow(() -> new ActionException("shop.cannot.repair"));
 	}
 }

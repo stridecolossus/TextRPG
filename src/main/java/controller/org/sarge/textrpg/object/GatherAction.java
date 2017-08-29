@@ -8,7 +8,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.sarge.lib.util.Check;
-import org.sarge.textrpg.common.AbstractAction;
+import org.sarge.textrpg.common.AbstractActiveAction;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -16,7 +16,6 @@ import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.entity.Entity;
 import org.sarge.textrpg.entity.Induction;
 import org.sarge.textrpg.entity.Skill;
-import org.sarge.textrpg.entity.Stance;
 import org.sarge.textrpg.world.Area.Resource;
 import org.sarge.textrpg.world.Location;
 
@@ -24,12 +23,12 @@ import org.sarge.textrpg.world.Location;
  * Action to gather a {@link Resource} from the current location.
  * @author Sarge
  */
-public class GatherAction extends AbstractAction {
+public class GatherAction extends AbstractActiveAction {
 	private final Resource res;
 	private final Skill skill;
 	private final long duration;
 	private final Optional<ObjectDescriptor> tool;
-	
+
 	/**
 	 * Constructor.
 	 * @param res			Resource to gather
@@ -47,11 +46,6 @@ public class GatherAction extends AbstractAction {
 		this.duration = duration;
 		this.tool = Optional.ofNullable(tool);
 	}
-	
-	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
-	}
 
 	@Override
 	public boolean isVisibleAction() {
@@ -67,7 +61,7 @@ public class GatherAction extends AbstractAction {
 		// Check can gather in the current location
 		final Location loc = actor.getLocation();
 		if(!isValidLocation(loc)) throw new ActionException("gather.invalid.location");
-		
+
 		// Check required skill
 		final int level = getSkillLevel(actor, skill);
 
@@ -77,7 +71,7 @@ public class GatherAction extends AbstractAction {
 			final WorldObject obj = find(actor, matcher, false, tool.get().getName());
 			obj.wear();
 		}
-		
+
 		// Gather resources and add to inventory
 		final Induction induction = () -> {
 			final Stream<WorldObject> results = loc.getArea().getResource(res).map(f -> f.generate(actor)).orElse(null);
@@ -106,7 +100,7 @@ public class GatherAction extends AbstractAction {
 		case INDOORS:
 		case UNDERGROUND:
 			return false;
-			
+
 		default:
 			return true;
 		}

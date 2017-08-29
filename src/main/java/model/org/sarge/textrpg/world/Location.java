@@ -1,7 +1,6 @@
 package org.sarge.textrpg.world;
 
 import static java.util.stream.Collectors.toList;
-import static org.sarge.lib.util.Check.notEmpty;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +13,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.sarge.lib.collection.StrictMap;
-import org.sarge.lib.collection.StrictSet;
 import org.sarge.lib.util.Check;
 import org.sarge.lib.util.StringUtil;
 import org.sarge.textrpg.common.Actor;
@@ -337,72 +335,72 @@ public class Location implements Parent {
 		return name;
 	}
 
-	/**
-	 * Builder for a location.
-	 */
-	public static class Builder {
-	    private final String name;
-	    private Area area = Area.ROOT;
-	    private Terrain terrain = Terrain.GRASSLAND;
-	    private boolean water;
-	    private final Collection<String> decorations = new StrictSet<>();
-	    private final Map<Direction, Exit> exits = new StrictMap<>();
-
-	    /**
-	     * Constructor.
-	     * @param name Location name
-	     */
-	    public Builder(String name) {
-            this.name = notEmpty(name);
-        }
-
-	    /**
-	     * Sets the parent area of this location.
-	     * @param area Area
-	     */
-	    public Builder area(Area area) {
-	        this.area = notNull(area);
-	        return this;
-	    }
-
-	    /**
-	     * Sets the terrain of this location.
-	     * @param terrain Terrain
-	     */
-        public Builder terrain(Terrain terrain) {
-            this.terrain = notNull(terrain);
-            return this;
-        }
-
-        // TODO
-        // - flags
-        // - decorations
-
-        /**
-         * Adds a link <i>from</i> this location.
-         * @param wrapper Link descriptor
-         */
-        public Builder link(LinkWrapper wrapper) {
-            // Add link
-            final Link link = wrapper.getLink();
-            final Direction dir = wrapper.getDirection();
-            final Location dest = wrapper.getDestination();
-            if(exits.containsKey(dir)) throw new IllegalArgumentException(String.format("Duplicate link: dir=%s loc=%s", dir, this));
-            exits.put(dir, new Exit(dest, wrapper.getLink()));
-
-            // Add reverse link
-            final ReversePolicy policy = wrapper.getReversePolicy();
-            if(policy != ReversePolicy.ONE_WAY) {
-                final Direction reverse = wrapper.getReverseDirection();
-                if(dest.exits.containsKey(reverse)) throw new IllegalArgumentException(String.format("Duplicate reverse link: dir=%s loc=%s dest=%s", reverse, this, dest));
-                dest.exits.put(reverse, new Exit(this, dest.invert(link, policy)));
-            }
-
-            return this;
-        }
-
-	    public Location build() {
-	        return new Location(name, area, terrain, water, decorations);
-	    }
-	}
+//	/**
+//	 * Builder for a location.
+//	 */
+//	public static class Builder {
+//	    private final String name;
+//	    private Area area = Area.ROOT;
+//	    private Terrain terrain = Terrain.GRASSLAND;
+//	    private boolean water;
+//	    private final Collection<String> decorations = new StrictSet<>();
+//	    private final Map<Direction, Exit> exits = new StrictMap<>();
+//
+//	    /**
+//	     * Constructor.
+//	     * @param name Location name
+//	     */
+//	    public Builder(String name) {
+//            this.name = notEmpty(name);
+//        }
+//
+//	    /**
+//	     * Sets the parent area of this location.
+//	     * @param area Area
+//	     */
+//	    public Builder area(Area area) {
+//	        this.area = notNull(area);
+//	        return this;
+//	    }
+//
+//	    /**
+//	     * Sets the terrain of this location.
+//	     * @param terrain Terrain
+//	     */
+//        public Builder terrain(Terrain terrain) {
+//            this.terrain = notNull(terrain);
+//            return this;
+//        }
+//
+//        // TODO
+//        // - flags
+//        // - decorations
+//
+//        /**
+//         * Adds a link <i>from</i> this location.
+//         * @param wrapper Link descriptor
+//         */
+//        public Builder link(LinkWrapper wrapper) {
+//            // Add link
+//            final Link link = wrapper.getLink();
+//            final Direction dir = wrapper.getDirection();
+//            final Location dest = wrapper.getDestination();
+//            if(exits.containsKey(dir)) throw new IllegalArgumentException(String.format("Duplicate link: dir=%s loc=%s", dir, this));
+//            exits.put(dir, new Exit(dest, wrapper.getLink()));
+//
+//            // Add reverse link
+//            final ReversePolicy policy = wrapper.getReversePolicy();
+//            if(policy != ReversePolicy.ONE_WAY) {
+//                final Direction reverse = wrapper.getReverseDirection();
+//                if(dest.exits.containsKey(reverse)) throw new IllegalArgumentException(String.format("Duplicate reverse link: dir=%s loc=%s dest=%s", reverse, this, dest));
+//                dest.exits.put(reverse, new Exit(this, dest.invert(link, policy)));
+//            }
+//
+//            return this;
+//        }
+//
+//	    public Location build() {
+//	        return new Location(name, area, terrain, water, decorations);
+//	    }
+//	}
 }

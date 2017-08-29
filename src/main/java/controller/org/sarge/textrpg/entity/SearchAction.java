@@ -8,7 +8,15 @@ import java.util.List;
 
 import org.sarge.lib.util.Check;
 import org.sarge.lib.util.StreamUtil;
-import org.sarge.textrpg.common.*;
+import org.sarge.textrpg.common.AbstractActiveAction;
+import org.sarge.textrpg.common.ActionException;
+import org.sarge.textrpg.common.ActionResponse;
+import org.sarge.textrpg.common.Description;
+import org.sarge.textrpg.common.Event;
+import org.sarge.textrpg.common.EventQueue;
+import org.sarge.textrpg.common.Notification;
+import org.sarge.textrpg.common.RevealNotification;
+import org.sarge.textrpg.common.Thing;
 import org.sarge.textrpg.object.WorldObject;
 import org.sarge.textrpg.util.Percentile;
 import org.sarge.textrpg.world.Location;
@@ -17,7 +25,7 @@ import org.sarge.textrpg.world.Location;
  * Action to search for hidden objects in the current location.
  * @author Sarge
  */
-public class SearchAction extends AbstractAction {
+public class SearchAction extends AbstractActiveAction {
 	private static Comparator<Thing> COMPARATOR = Comparator.comparing(Thing::getVisibility);
 
 	private final int mod;
@@ -33,11 +41,6 @@ public class SearchAction extends AbstractAction {
 		Check.oneOrMore(time);
 		this.mod = mod;
 		this.time = time;
-	}
-
-	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
 	}
 
 	/**

@@ -5,14 +5,13 @@ import static org.sarge.lib.util.Check.notNull;
 import java.util.stream.Stream;
 
 import org.sarge.lib.util.StreamUtil;
-import org.sarge.textrpg.common.AbstractAction;
+import org.sarge.textrpg.common.AbstractActiveAction;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.entity.ActionHelper;
 import org.sarge.textrpg.entity.Entity;
 import org.sarge.textrpg.entity.MovementController;
-import org.sarge.textrpg.entity.Stance;
 import org.sarge.textrpg.world.Direction;
 import org.sarge.textrpg.world.Location;
 import org.sarge.textrpg.world.Terrain;
@@ -21,9 +20,9 @@ import org.sarge.textrpg.world.Terrain;
  * Leave a {@link Vehicle} or a location with a single exit.
  * @author Sarge
  */
-public class LeaveAction extends AbstractAction {
+public class LeaveAction extends AbstractActiveAction {
 	private final MovementController mover;
-	
+
 	/**
 	 * Constructor.
 	 * @param mover Movement controller
@@ -35,11 +34,6 @@ public class LeaveAction extends AbstractAction {
 	@Override
 	public boolean isVisibleAction() {
 		return true;
-	}
-
-	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
 	}
 
 	@Override

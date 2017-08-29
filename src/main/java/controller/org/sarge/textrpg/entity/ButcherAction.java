@@ -3,7 +3,7 @@ package org.sarge.textrpg.entity;
 import java.util.function.Predicate;
 
 import org.sarge.lib.util.Check;
-import org.sarge.textrpg.common.AbstractAction;
+import org.sarge.textrpg.common.AbstractActiveAction;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
@@ -14,17 +14,17 @@ import org.sarge.textrpg.object.WorldObject;
  * Action to butcher a corpse.
  * @author Sarge
  */
-public class ButcherAction extends AbstractAction {
+public class ButcherAction extends AbstractActiveAction {
 	/**
 	 * Object category for a knife that can be used to butcher a corpse.
 	 */
 	public static final String KNIFE_CATEGORY = "butchery.knife";
-	
+
 	/**
 	 * Knife matcher.
 	 */
 	private static final Predicate<WorldObject> MATCHER = ContentsHelper.categoryMatcher(KNIFE_CATEGORY);
-	
+
 	private final Skill butchery;
 	private final long duration;
 
@@ -38,11 +38,6 @@ public class ButcherAction extends AbstractAction {
 		Check.oneOrMore(duration);
 		this.butchery = butchery;
 		this.duration = duration;
-	}
-	
-	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
 	}
 
 	@Override
@@ -63,10 +58,10 @@ public class ButcherAction extends AbstractAction {
 		// Check has required skill
 		final int level = getSkillLevel(actor, butchery);
 		final long duration = calculateDuration(this.duration, level);
-		
+
 		// Check for suitable knife
 		final WorldObject knife = find(actor, MATCHER, false, "knife");
-		
+
 		// Butcher corpse
 		final Induction induction = () -> {
 			corpse.butcher(actor);

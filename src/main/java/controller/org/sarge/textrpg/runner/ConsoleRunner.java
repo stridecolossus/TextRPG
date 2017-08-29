@@ -71,13 +71,11 @@ public class ConsoleRunner {
 
 	private final CommandParser parser;
 	private final Player player;
-	private final ActionContext ctx;
 	private final Device dev;
 
-	public ConsoleRunner(CommandParser parser, Player player, ActionContext ctx, Device dev) {
+	public ConsoleRunner(CommandParser parser, Player player, Device dev) {
 		this.parser = parser;
 		this.player = player;
-		this.ctx = ctx;
 		this.dev = dev;
 	}
 
@@ -177,7 +175,7 @@ public class ConsoleRunner {
 				}
 
 				// Execute command
-				final ActionResponse response = cmd.execute(ctx, player);
+				final ActionResponse response = cmd.execute(player, true);  // TODO - daylight
 
 				// Display response
 				// TODO
@@ -202,7 +200,7 @@ public class ConsoleRunner {
 								dev.write(">");
 							}
 						};
-						player.start(ctx, intercept, response.getDuration(), response.isRepeating());
+						player.start(intercept, response.getDuration(), response.isRepeating());
 					});
 				}
 

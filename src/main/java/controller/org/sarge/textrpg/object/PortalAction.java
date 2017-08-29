@@ -1,7 +1,7 @@
 package org.sarge.textrpg.object;
 
 import org.sarge.lib.util.Check;
-import org.sarge.textrpg.common.AbstractAction;
+import org.sarge.textrpg.common.AbstractActiveAction;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -11,7 +11,6 @@ import org.sarge.textrpg.common.Openable.Operation;
 import org.sarge.textrpg.entity.ActionHelper;
 import org.sarge.textrpg.entity.Entity;
 import org.sarge.textrpg.entity.Player;
-import org.sarge.textrpg.entity.Stance;
 import org.sarge.textrpg.world.Location;
 
 /**
@@ -19,7 +18,7 @@ import org.sarge.textrpg.world.Location;
  * @author Sarge
  * @see WorldObject#getOpenableModel()
  */
-public class PortalAction extends AbstractAction {
+public class PortalAction extends AbstractActiveAction {
 	private final Operation op;
 
 	/**
@@ -30,11 +29,6 @@ public class PortalAction extends AbstractAction {
 		super(op.name());
 		Check.notNull(op);
 		this.op = op;
-	}
-
-	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
 	}
 
 	@Override

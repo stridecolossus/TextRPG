@@ -45,17 +45,22 @@ public class CampAction extends AbstractAction {
 		this.tinderbox = ContentsHelper.objectMatcher(tinderbox);
 		this.duration = duration;
 	}
-	
+
 	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.MOUNTED};
+	public boolean isValidStance(Stance stance) {
+	    if(stance == Stance.MOUNTED) {
+	        return false;
+	    }
+	    else {
+	        return super.isValidStance(stance);
+	    }
 	}
 
 	@Override
 	public boolean isVisibleAction() {
 		return true;
 	}
-	
+
 	/**
 	 * Builds a camp in the current location.
 	 * @param ctx
@@ -71,10 +76,10 @@ public class CampAction extends AbstractAction {
 		case WATER:
 			throw new ActionException("camp.invalid.location");
 		}
-		
+
 		// Check required skill
 		final int level = getSkillLevel(actor, skill);
-		
+
 		// Check required components
 		final WorldObject wood = find(actor, this.wood, false, "wood");
 		final WorldObject tinderbox = find(actor, this.tinderbox, true, "tinderbox");
@@ -87,16 +92,16 @@ public class CampAction extends AbstractAction {
 			// Create camp-fire and add to current location
 			final Light light = new Light(campfire);
 			light.setParent(loc);
-			
+
 			// Consume wood
 			wood.destroy();
-			
+
 			// Apply wear to tinderbox
 			tinderbox.wear();
-			
+
 			// Generate notifications
 			// TODO
-			
+
 			// Build response
 			return new Description("camp.response");
 		};

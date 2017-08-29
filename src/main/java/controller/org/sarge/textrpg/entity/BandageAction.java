@@ -35,20 +35,25 @@ public class BandageAction extends AbstractAction {
 	}
 
 	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.MOUNTED};
+	public boolean isValidStance(Stance stance) {
+	    if(stance == Stance.MOUNTED) {
+	        return false;
+	    }
+	    else {
+	        return super.isValidStance(stance);
+	    }
 	}
 
 	@Override
 	public boolean isVisibleAction() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean isParentBlockedAction() {
 		return false;
 	}
-	
+
 	/**
 	 * Bandage self.
 	 * @param ctx
@@ -59,7 +64,7 @@ public class BandageAction extends AbstractAction {
 	public ActionResponse execute(Entity actor) throws ActionException {
 		return execute(actor, actor);
 	}
-	
+
 	/**
 	 * Bandage another entity.
 	 * @param ctx
@@ -70,26 +75,26 @@ public class BandageAction extends AbstractAction {
 	public ActionResponse execute(Entity actor, Entity entity) throws ActionException {
 		// Check can bandage the entity
 		if(ActionHelper.isValidTarget(actor, entity)) throw new ActionException("bandage.invalid.target");
-		
+
 		// Check required skill
 		final int level = getSkillLevel(actor, skill);
-		
+
 		// Find un-bandaged wound
 		// entity.getAppliedEffects().filter(predicate)
 		// TODO
-		
+
 		// Check for available bandages
 		final WorldObject bandage = find(actor, this.bandage, true, "bandage");
 
 		// Start bandaging
 		final Induction induction = () -> {
 			// Check able to bandage this wound
-			
+
 			// Apply bandage
 			// TODO
 			// - wound effect -> bandaged
 			// - partial success?
-			
+
 			// Consume bandage
 			// TODO - needs to be public!
 			// bandage.destroy();

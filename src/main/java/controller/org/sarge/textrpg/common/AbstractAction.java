@@ -1,7 +1,5 @@
 package org.sarge.textrpg.common;
 
-import java.util.Arrays;
-import java.util.EnumSet;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -15,6 +13,8 @@ import org.sarge.textrpg.object.WorldObject;
 /**
  * Base-class for an action performed by an {@link Entity}.
  * @author Sarge
+ * TODO
+ * - factor out Action interface?
  */
 public abstract class AbstractAction {
 	/**
@@ -27,45 +27,29 @@ public abstract class AbstractAction {
 	 */
 	protected static final String ILLOGICAL = "action.illogical";
 
-	/**
-	 * Keyword filter for <b>all</b> contents.
-	 */
-	public static final String ALL = "all";
-
 	protected final String name;
-
-	private final EnumSet<Stance> stances;
 
 	/**
 	 * Default constructor.
 	 */
 	protected AbstractAction() {
-		this(null);
+        this.name = "action." + this.getClass().getSimpleName().replaceFirst("Action", "").toLowerCase();
 	}
 
 	/**
 	 * Constructor.
-	 * @param name Action name or <tt>null</tt> to use class-name
+	 * @param name Action name
 	 */
 	protected AbstractAction(String name) {
-		// Build action identifier
-		if(name == null) {
-			this.name = this.getClass().getSimpleName().replaceFirst("Action", "").toLowerCase();
-		}
-		else {
-			this.name = name.toLowerCase();
-		}
-
-		// Enumerate valid stances
-		this.stances = EnumSet.of(Stance.DEFAULT, Stance.RESTING, Stance.MOUNTED, Stance.SNEAKING);
-		this.stances.removeAll(Arrays.asList(getInvalidStances()));
+	    Check.notEmpty(name);
+		this.name = "action." + name.toLowerCase();
 	}
 
 	/**
 	 * @return Action identifier
 	 */
 	public final String getName() {
-		return "action." + name.toLowerCase();
+		return name;
 	}
 
 	/**
@@ -92,21 +76,22 @@ public abstract class AbstractAction {
 	}
 
 	/**
-	 * Over-ride for custom stance validation.
-	 * @return Invalid stances for this action (default is <b>any</b> stance except {@link Stance#COMBAT} and {@link Stance#SLEEPING})
-	 */
-	protected Stance[] getInvalidStances() {
-		return new Stance[]{};
-	}
-
-	/**
 	 * Tests whether the given stance is valid for this action.
 	 * @param stance Stance
 	 * @return Whether the given stance is valid
 	 * @see #getInvalidStances()
 	 */
-	public final boolean isValidStance(Stance stance) {
-		return stances.contains(stance);
+	public boolean isValidStance(Stance stance) {
+	    switch(stance) {
+	        case DEFAULT:
+	        case RESTING:
+	        case MOUNTED:
+	        case SNEAKING:
+	            return true;
+
+            default:
+                return false;
+	    }
 	}
 
 	/**

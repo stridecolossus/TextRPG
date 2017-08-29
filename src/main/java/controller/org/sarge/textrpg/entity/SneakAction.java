@@ -1,7 +1,7 @@
 package org.sarge.textrpg.entity;
 
 import org.sarge.lib.util.Check;
-import org.sarge.textrpg.common.AbstractAction;
+import org.sarge.textrpg.common.AbstractActiveAction;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
@@ -11,9 +11,9 @@ import org.sarge.textrpg.util.Percentile;
  * Sneak action.
  * @author Sarge
  */
-public class SneakAction extends AbstractAction {
+public class SneakAction extends AbstractActiveAction {
 	private final Skill skill;
-	
+
 	/**
 	 * Constructor.
 	 * @param skill Sneak skill
@@ -26,11 +26,6 @@ public class SneakAction extends AbstractAction {
 	@Override
 	public boolean isLightRequiredAction() {
 		return false;
-	}
-
-	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING, Stance.MOUNTED};
 	}
 
 	/**
@@ -49,7 +44,7 @@ public class SneakAction extends AbstractAction {
 			// Check required skill
 			final int level = getSkillLevel(actor, skill);
 			final Percentile vis = skill.toPercentile(level).invert();
-			
+
 			// Start sneaking
 			actor.setStance(Stance.SNEAKING);
 			actor.setVisibility(vis);

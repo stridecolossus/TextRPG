@@ -20,18 +20,20 @@ import org.sarge.textrpg.object.Shop.StockEntry;
 
 public class ShopTest extends ActionTest {
 	private Shop shop;
+	private RepairShop repair;
 	private Descriptor descriptor;
 
 	@Before
 	public void before() {
 		descriptor = new Descriptor(new Builder("durable").category("cat").build(), 1);
-		shop = new Shop(Collections.singleton("cat"), Collections.singletonMap(descriptor, 1), 2, 3, 4);
+		repair = new RepairShop(2L, 3, 4L);
+		shop = new Shop(Collections.singleton("cat"), Collections.singletonMap(descriptor, 1), repair);
 		shop.setOpen(true);
 	}
 
 	@After
 	public void after() {
-		shop.getEventQueue().reset();
+		repair.getEventQueue().reset();
 	}
 
 	@Test
@@ -88,7 +90,7 @@ public class ShopTest extends ActionTest {
 	public void calculateRepairCost() throws ActionException {
 		final DurableObject obj = descriptor.create();
 		obj.wear();
-		assertEquals(3, shop.calculateRepairCost(obj));
+		assertEquals(3, repair.calculateRepairCost(obj));
 	}
 
 	@Test
@@ -98,16 +100,16 @@ public class ShopTest extends ActionTest {
 		obj.wear();
 		final long duration = shop.repair(actor, obj);
 		assertEquals(Thing.LIMBO, obj.getParent());
-		assertEquals(0, shop.getRepaired(actor).count());
+		assertEquals(0, repair.getRepaired(actor).count());
 		assertEquals(2 * 3, duration);
 
 		// Wait for repair event and check now ready
-		assertEquals(2, shop.getEventQueue().stream().count());
-		shop.getEventQueue().execute(duration);
-		final List<WorldObject> results = shop.getRepaired(actor).collect(toList());
+		assertEquals(2, repair.getEventQueue().stream().count());
+		repair.getEventQueue().execute(duration);
+		final List<WorldObject> results = repair.getRepaired(actor).collect(toList());
 		assertEquals(1, results.size());
 		assertEquals(obj, results.iterator().next());
-		assertEquals(1, shop.getEventQueue().stream().count());
+		assertEquals(1, repair.getEventQueue().stream().count());
 	}
 
 	@Test
@@ -115,8 +117,8 @@ public class ShopTest extends ActionTest {
 		final DurableObject obj = descriptor.create();
 		obj.wear();
 		final long duration = shop.repair(actor, obj);
-		shop.getEventQueue().execute(duration + 6L);
-		assertEquals(0, shop.getRepaired(actor).count());
+		repair.getEventQueue().execute(duration + 6L);
+		assertEquals(0, repair.getRepaired(actor).count());
 	}
 
 	@Test

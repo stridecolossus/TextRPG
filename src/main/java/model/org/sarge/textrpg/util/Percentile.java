@@ -23,12 +23,12 @@ public final class Percentile extends Number implements Comparable<Percentile> {
 	 * 0% percentile.
 	 */
 	public static final Percentile ZERO = new Percentile(0);
-	
+
 	/**
 	 * Converter for percentile values represented as a 0..1 floating-point or 0..100 integer number.
 	 */
 	public static final Converter<Percentile> CONVERTER = str -> {
-		if(str.indexOf('.') == -1 ) {
+		if(str.indexOf('.') == -1) {
 			return new Percentile(Converter.INTEGER.convert(str));
 		}
 		else {
@@ -54,44 +54,44 @@ public final class Percentile extends Number implements Comparable<Percentile> {
 	public Percentile(int value) {
 		this(value / 100f);
 	}
-	
+
 	@Override
 	public double doubleValue() {
 		return value;
 	}
-	
+
 	@Override
 	public float floatValue() {
 		return value;
 	}
-	
+
 	@Override
 	public int intValue() {
 		return (int) (value * 100);
 	}
-	
+
 	@Override
 	public long longValue() {
 		return intValue();
 	}
-	
+
 	@Override
 	public short shortValue() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public byte byteValue() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * @return Invert this percentile
 	 */
 	public Percentile invert() {
 		return new Percentile(1f - value);
 	}
-	
+
 	/**
 	 * Comparator.
 	 * @param p Percentile
@@ -100,17 +100,17 @@ public final class Percentile extends Number implements Comparable<Percentile> {
 	public boolean isLessThan(Percentile p) {
 		return this.value < p.value;
 	}
-	
+
 	@Override
 	public int compareTo(Percentile that) {
 		return this.isLessThan(that) ? -1 : +1;
 	}
-	
+
 	@Override
 	public boolean equals(Object that) {
 		return EqualsBuilder.equals(this, that);
 	}
-	
+
 	@Override
 	public String toString() {
 		return intValue() + "%";

@@ -19,7 +19,7 @@ import org.sarge.textrpg.world.Location;
 public class MoveAction extends AbstractAction {
 	private final Direction dir;
 	private final MovementController mover;
-	
+
 	/**
 	 * Constructor.
 	 * @param dir Movement direction
@@ -29,20 +29,25 @@ public class MoveAction extends AbstractAction {
 		this.dir = dir;
 		this.mover = notNull(mover);
 	}
-	
-	@Override
-	public Stance[] getInvalidStances() {
-		return new Stance[]{Stance.RESTING, Stance.SLEEPING};
-	}
-	
+
 	@Override
 	public boolean isLightRequiredAction() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean isParentBlockedAction() {
 		return false;
+	}
+
+	@Override
+	public boolean isValidStance(Stance stance) {
+	    if(stance == Stance.RESTING) {
+	        return false;
+	    }
+	    else {
+	        return super.isValidStance(stance);
+	    }
 	}
 
 	/**
@@ -55,11 +60,11 @@ public class MoveAction extends AbstractAction {
 		case Location.NAME:
 		case Vehicle.NAME:
 			break;
-			
+
 		default:
 			throw new ActionException("move.invalid." + name);
 		}
-		
+
 		// Check valid link
 		final Location loc = actor.getLocation();
 		final Exit exit = loc.getExits().get(dir);
@@ -67,7 +72,7 @@ public class MoveAction extends AbstractAction {
 
 		// Move in specified direction
 		final Description desc = mover.move(actor, dir, 1, true);
-		
+
 		// Display location
 		return new ActionResponse(desc);
 	}
