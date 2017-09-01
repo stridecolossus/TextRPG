@@ -16,19 +16,38 @@ import org.sarge.lib.util.Converter;
 import org.sarge.lib.util.Util;
 import org.sarge.lib.xml.Element;
 import org.sarge.textrpg.common.DamageType;
-import org.sarge.textrpg.common.LoaderException;
 import org.sarge.textrpg.common.Openable;
 import org.sarge.textrpg.common.Script;
 import org.sarge.textrpg.common.Value;
 import org.sarge.textrpg.entity.DamageEffect;
 import org.sarge.textrpg.entity.Effect;
 import org.sarge.textrpg.entity.Stance;
-import org.sarge.textrpg.object.*;
+import org.sarge.textrpg.object.Boat;
+import org.sarge.textrpg.object.Container;
+import org.sarge.textrpg.object.ContentsObjectDescriptor;
+import org.sarge.textrpg.object.Control;
+import org.sarge.textrpg.object.DeploymentSlot;
+import org.sarge.textrpg.object.DurableObject;
+import org.sarge.textrpg.object.Fixture;
+import org.sarge.textrpg.object.Food;
 import org.sarge.textrpg.object.Food.Type;
+import org.sarge.textrpg.object.Furniture;
+import org.sarge.textrpg.object.InteractObject;
+import org.sarge.textrpg.object.Light;
+import org.sarge.textrpg.object.Liquid;
+import org.sarge.textrpg.object.Money;
+import org.sarge.textrpg.object.ObjectDescriptor;
 import org.sarge.textrpg.object.ObjectDescriptor.Equipment;
 import org.sarge.textrpg.object.ObjectDescriptor.EquipmentBuilder;
-import org.sarge.textrpg.object.WorldObject.Interaction;
 import org.sarge.textrpg.object.Readable;
+import org.sarge.textrpg.object.Receptacle;
+import org.sarge.textrpg.object.RevealObject;
+import org.sarge.textrpg.object.Rope;
+import org.sarge.textrpg.object.ScriptLoader;
+import org.sarge.textrpg.object.TrackedContents;
+import org.sarge.textrpg.object.Vehicle;
+import org.sarge.textrpg.object.Weapon;
+import org.sarge.textrpg.object.WorldObject.Interaction;
 import org.sarge.textrpg.util.Percentile;
 import org.sarge.textrpg.util.TableConverter;
 import org.sarge.textrpg.world.Route;
@@ -40,7 +59,6 @@ import org.sarge.textrpg.world.Route;
 public class ObjectLoader {
 	private static final Converter<DamageType> DAMAGE_CONVERTER = Converter.enumeration(DamageType.class);
 	private static final Converter<DeploymentSlot> SLOT_CONVERTER = Converter.enumeration(DeploymentSlot.class);
-	private static final Converter<Container.Placement> PLACEMENT = Converter.enumeration(Container.Placement.class);
 	private static final Converter<Interaction> INTERACTION = Converter.enumeration(Interaction.class);
 
 	private static final ValueLoader VALUE_LOADER = new ValueLoader();
@@ -110,7 +128,7 @@ public class ObjectLoader {
 
 			@Override
 			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
-				final long lifetime = node.attributes().toValue("lifetime", null, Converter.DURATION).toMillis();
+				final long lifetime = node.attributes().toValue("lifetime", null, LoaderHelper::parseDuration).toMillis();
 				final Light.Type type = node.attributes().toValue("type", Light.Type.GENERAL, LIGHT_TYPE);
 				return new Light.Descriptor(descriptor, lifetime, type);
 			}
@@ -156,7 +174,7 @@ public class ObjectLoader {
 			protected ObjectDescriptor load(Element node, ObjectDescriptor descriptor, ObjectLoader loader) {
 				final Food.Type type = node.attributes().toValue("food-type", Type.COOKED, FOOD_TYPE);
 				final int level = node.attributes().toInteger("nutrition", null);
-				final long lifetime = node.attributes().toValue("lifetime", null, Converter.DURATION).toMillis();
+				final long lifetime = node.attributes().toValue("lifetime", null, LoaderHelper::parseDuration).toMillis();
 				return new Food.Descriptor(descriptor, type, level, lifetime);
 			}
 		},
@@ -190,7 +208,7 @@ public class ObjectLoader {
 				final Map<TrackedContents.Limit, String> limits = loadLimits(node);
 				if(stances.isEmpty()) throw node.exception("Expected one-or-more stances");
 				if(limits.isEmpty()) throw node.exception("Expected one-or-more limits");
-				return new Furniture.Descriptor(descriptor, stances, limits);
+				return new Furniture.Descriptor(new ContentsObjectDescriptor(descriptor, limits), stances);
 			}
 		},
 
@@ -240,7 +258,7 @@ public class ObjectLoader {
 				switch(type) {
 				case "vehicle":
 					final Set<Route> routes = LoaderHelper.loadEnumeration(node, "route", LoaderHelper.ROUTE);
-					return new Vehicle.Descriptor(descriptor, loadLimits(node), routes, mod);
+					return new Vehicle.Descriptor(new ContentsObjectDescriptor(descriptor, loadLimits(node)), routes, mod);
 
 				case "boat":
 				case "raft":
@@ -345,9 +363,9 @@ public class ObjectLoader {
 	 */
 	public Container.Descriptor loadContainer(Element node, ObjectDescriptor descriptor) {
 		final Openable.Lock lock = loadLock(node, false);
-		final Container.Placement placement = node.attributes().toValue("place", Container.Placement.IN, PLACEMENT);
+		final String placement = node.attributes().toString("place", "in");
 		final DeploymentSlot slot = loadSlot(node);
-		return new Container.Descriptor(descriptor, placement, lock, loadLimits(node), slot);
+		return new Container.Descriptor(new ContentsObjectDescriptor(descriptor, loadLimits(node)), placement, lock, slot);
 	}
 
 	/**

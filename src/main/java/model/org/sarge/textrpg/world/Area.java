@@ -87,8 +87,6 @@ public final class Area {
 	private final Area parent;
 	private final Map<Resource, LootFactory> resources;
 	private final Collection<Ambient> ambient;
-	// TODO
-	// - creature spawns
 
 	/**
 	 * Constructor.

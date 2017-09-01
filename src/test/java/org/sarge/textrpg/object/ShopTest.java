@@ -139,8 +139,8 @@ public class ShopTest extends ActionTest {
 	public void topic() {
 		final Topic topic = shop.topic("text");
 		assertNotNull(topic);
-		assertEquals("shop", topic.getName());
-		assertNotNull(topic.getScript());
-		assertEquals(shop, topic.getShop());
+		assertEquals("shop", topic.name());
+		assertNotNull(topic.script());
+		assertEquals(shop, topic.shop());
 	}
 }

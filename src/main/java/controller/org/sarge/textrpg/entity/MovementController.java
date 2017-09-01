@@ -8,7 +8,6 @@ import org.sarge.textrpg.common.Clock;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.common.Emission;
 import org.sarge.textrpg.common.EnvironmentNotification;
-import org.sarge.textrpg.common.Event;
 import org.sarge.textrpg.common.Message;
 import org.sarge.textrpg.common.MovementNotification;
 import org.sarge.textrpg.object.Vehicle;
@@ -85,11 +84,11 @@ public class MovementController {
 			// TODO - move to MoveAction
 			checkLink(actor, vehicle, exit);
 		}
-		
+
 		// Check stamina
 		final float cost = calculateMovementCost(actor, exit, vehicle, mod);
 		if(actor.getValues().get(EntityValue.STAMINA) < cost) throw new ActionException("move.insufficient.stamina");
-		
+
 		// Traverse link
 		if(player) {
 			// TODO - move to MoveAction
@@ -102,20 +101,20 @@ public class MovementController {
 			vehicle.setParent(dest);
 		}
 		actor.modify(EntityValue.STAMINA, (int) -cost);
-		
+
 		// Update environment
 		addTracks(actor, loc, dir, exit);
 		generateNotifications(loc, dest, actor, dir);
-		
+
 		// Update ambient events
 		if(player) {
 			// TODO - move to MoveAction
 			generateAmbientEvents(loc, dest, actor);
 		}
-		
+
 		// Move group members if leader
 		moveGroup(actor, dir);
-		
+
 		// Describe destination
 		// TODO - move to MoveAction
 		if(player) {
@@ -125,21 +124,22 @@ public class MovementController {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Checks that the link can be traversed by the given actor.
 	 * @param actor		Actor
 	 * @param vehicle	Vehicle
 	 * @param exit		Exit
 	 * @throws ActionException if the link cannot be traversed
-	 * @see Link#getReason()
+	 * @see Link#reason()
 	 */
 	private static void checkLink(Entity actor, Vehicle vehicle, Exit exit) throws ActionException {
 		// Check link can be traversed by this actor
 		final Link link = exit.getLink();
-		if(!link.isTraversable(actor)) {
+		final String reason = link.reason(actor);
+		if(reason != null) {
 			final Object arg = link.getController().orElse(null);
-			throw new ActionException(link.getReason(), arg);
+			throw new ActionException(reason, arg);
 		}
 
 		// Check terrain
@@ -157,7 +157,7 @@ public class MovementController {
 			if(!vehicle.getDescriptor().isValid(link.getRoute())) throw new ActionException("vehicle.invalid.route", vehicle);
 		}
 	}
-	
+
 	/**
 	 * Calculates movement cost of traversing the link.
 	 * @param actor		Actor
@@ -198,7 +198,7 @@ public class MovementController {
 		final boolean player = actor instanceof Player;
 		prev.broadcast(actor, new MovementNotification(actor, false, dir, player));
 		dest.broadcast(actor, new MovementNotification(actor, true, dir.reverse(), player));
-		
+
 		// Generate environmental notifications
 		// TODO - modify by visibility, weather, day/night, etc
 		// TODO - noisier if fleeing?
@@ -210,7 +210,7 @@ public class MovementController {
 				.ifPresent(n -> prev.broadcast(actor, n));
 		}
 	}
-	
+
 	/**
 	 * Generates ambient events.
 	 * @param prev		Previous location
@@ -223,17 +223,17 @@ public class MovementController {
 			area.getAmbientEvents().forEach(e -> create(actor, e, area));
 		}
 	}
-	
+
 	/**
 	 * Registers an ambient event.
 	 */
 	private static void create(Entity actor, Area.Ambient ambient, Area area) {
 		// Register event
-		final Event event = () -> {
+		final Runnable event = () -> {
 			if(actor.getLocation().getArea() == area) {
 				// Display if still in this area
 				actor.alert(new Message(ambient.getName()));
-				
+
 				// Repeat
 				if(ambient.isRepeating()) {
 					create(actor, ambient, area);
@@ -257,7 +257,7 @@ public class MovementController {
 		// Move followers
 		actor.getFollowers().forEach(e -> move(e, dir));
 	}
-	
+
 	/**
 	 * Moves other entities.
 	 * @param entities		Entity to move

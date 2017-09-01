@@ -2,43 +2,58 @@ package org.sarge.textrpg.world;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.sarge.textrpg.common.*;
+import org.sarge.textrpg.common.ActionException;
+import org.sarge.textrpg.common.Actor;
+import org.sarge.textrpg.common.Description;
+import org.sarge.textrpg.common.Emission;
+import org.sarge.textrpg.common.Hidden;
+import org.sarge.textrpg.common.Openable;
+import org.sarge.textrpg.common.Script;
+import org.sarge.textrpg.common.Size;
+import org.sarge.textrpg.common.Thing;
 import org.sarge.textrpg.object.ObjectDescriptor;
 import org.sarge.textrpg.object.ObjectLink;
 import org.sarge.textrpg.object.WorldObject;
 import org.sarge.textrpg.util.Percentile;
 import org.sarge.textrpg.world.LinkWrapper.ReversePolicy;
+import org.sarge.textrpg.world.Location.Property;
 
 public class LocationTest {
+    private static final Set<Property> PROPS = new HashSet<>(Arrays.asList(Property.WATER, Property.LIGHT));
+
 	private Location loc, dest;
 	private LinkWrapper link;
 	private Actor actor;
-	
+
 	@Before
 	public void before() {
-		dest = new Location("dest", Area.ROOT, Terrain.DESERT, true, Collections.emptyList());
-		loc = new Location("location", Area.ROOT, Terrain.DESERT, true, Collections.singleton("decoration"));
+		dest = new Location("dest", Area.ROOT, Terrain.DESERT, PROPS, Collections.emptyList());
+		loc = new Location("location", Area.ROOT, Terrain.DESERT, PROPS, Collections.singleton("decoration"));
 		link = new LinkWrapper(Direction.DOWN, new RouteLink(Route.ROAD), dest, Direction.UP, ReversePolicy.INVERSE);
 		actor = mock(Actor.class);
 	}
-	
+
 	@Test
 	public void constructor() {
 		assertEquals("location", loc.getName());
 		assertEquals(Area.ROOT, loc.getArea());
 		assertEquals(Terrain.DESERT, loc.getTerrain());
-		assertEquals(true, loc.isWaterAvailable());
 		assertArrayEquals(new String[]{"decoration"}, loc.getDecorations().toArray());
 		assertNotNull(loc.getContents());
 		assertNotNull(loc.getExits());
@@ -46,7 +61,14 @@ public class LocationTest {
 		assertNotNull(Location.getSurfaces());
 		assertEquals("location", loc.getParentName());
 	}
-	
+
+	@Test
+	public void properties() {
+        assertTrue(loc.isProperty(Property.WATER));
+        assertTrue(loc.isProperty(Property.LIGHT));
+        assertFalse(loc.isProperty(Property.FISH));
+	}
+
 	@Test
 	public void add() {
 		loc.add(link);
@@ -59,7 +81,7 @@ public class LocationTest {
 		assertEquals(link.getLink(), exit.getLink());
 		assertEquals(true, exit.perceivedBy(actor));
 	}
-	
+
 	@Test
 	public void reverseLink() {
 		loc.add(link);
@@ -70,7 +92,7 @@ public class LocationTest {
 		assertEquals(Route.ROAD, reverse.getLink().getRoute());
 		assertEquals(Optional.empty(), reverse.getLink().getController());
 	}
-	
+
 	@Test
 	public void reverseLinkSimple() {
 		link = new LinkWrapper(Direction.DOWN, Link.DEFAULT, dest, Direction.UP, ReversePolicy.SIMPLE);
@@ -88,7 +110,7 @@ public class LocationTest {
 		loc.add(link);
 		assertEquals(null, dest.getExits().get(Direction.UP));
 	}
-	
+
 	@Test
 	public void closedLocation() {
 		final Location closed = new Location(dest) {
@@ -101,18 +123,33 @@ public class LocationTest {
 		loc.add(link);
 		assertEquals(true, loc.getExits().isEmpty());
 	}
-	
-	@Test
-	public void isLightAvailableIndoors() {
-		loc = new Location("location", Area.ROOT, Terrain.INDOORS, true, Collections.emptyList());
-		assertEquals(true, loc.isLightAvailable(true));
-	}
+
+    @Test
+    public void isLightAvailable() {
+        assertEquals(true, loc.isLightAvailable(true));
+        assertEquals(false, loc.isLightAvailable(false));
+    }
 
 	@Test
 	public void isLightAvailableTerrainDark() {
-		loc = new Location("location", Area.ROOT, Terrain.INDOORS_DARK, true, Collections.emptyList());
-		assertEquals(false, loc.isLightAvailable(true));
+		loc = new Location("location", Area.ROOT, Terrain.UNDERGROUND, Collections.emptySet(), Collections.emptyList());
+        assertEquals(false, loc.isLightAvailable(true));
+        assertEquals(false, loc.isLightAvailable(false));
 	}
+
+	@Test
+    public void isLightAvailableTerrainDarkOverride() {
+		loc = new Location("location", Area.ROOT, Terrain.UNDERGROUND, Collections.singleton(Property.LIGHT), Collections.emptyList());
+        assertEquals(true, loc.isLightAvailable(true));
+        assertEquals(true, loc.isLightAvailable(false));
+	}
+
+    @Test
+    public void isLightAvailableOverride() {
+        loc = new Location("location", Area.ROOT, Terrain.FARMLAND, Collections.emptySet(), Collections.emptyList());
+        assertEquals(false, loc.isLightAvailable(true));
+        assertEquals(false, loc.isLightAvailable(false));
+    }
 
 	@Test
 	public void isArtificialLightAvailable() {
@@ -127,11 +164,11 @@ public class LocationTest {
 		// Add some contents
 		final WorldObject obj = new WorldObject(new ObjectDescriptor("object"));
 		obj.setParent(loc);
-		
+
 		// Add a link that should be listed in the exits
 		loc.add(link);
 		when(actor.perceives(any(Hidden.class))).thenReturn(true);
-		
+
 		// Add a link with a visible controller object
 		final WorldObject controller = new WorldObject(new ObjectDescriptor("portal")) {
 			@Override
@@ -141,7 +178,7 @@ public class LocationTest {
 		};
 		final Link other = new ObjectLink(Route.NONE, Script.NONE, Size.NONE, controller, "reason");
 		loc.add(new LinkWrapper(Direction.EAST, other, loc));
-		
+
 		// Build description
 		final Description description = loc.describe(true, actor);
 		assertNotNull(description);
@@ -159,14 +196,14 @@ public class LocationTest {
 		final Description controllerDescription = itr.next();
 		assertEquals("description.dropped", controllerDescription.getKey());
 		assertEquals("{portal}", controllerDescription.get("name"));
-		
+
 		// Check exits description
 		final Description exits = itr.next();
 		assertEquals("exit.exits", exits.getKey());
 		assertEquals("={exit.down}=", exits.get("down"));
 		assertEquals("{exit.east}", exits.get("east"));
 	}
-	
+
 	@Test
 	public void describeEmptyExits() {
 		final Description description = loc.describe(true, actor);
@@ -181,7 +218,7 @@ public class LocationTest {
 
 	@Test
 	public void describeTerrainDark() {
-		loc = new Location("dark", Area.ROOT, Terrain.UNDERGROUND, false, Collections.emptyList());
+		loc = new Location("dark", Area.ROOT, Terrain.UNDERGROUND, Collections.emptySet(), Collections.emptyList());
 		final Description description = loc.describe(true, actor);
 		assertEquals("location.description.dark", description.getKey());
 	}
@@ -191,7 +228,7 @@ public class LocationTest {
 		loc.add(link);
 		loc.add(link);
 	}
-	
+
 	@Test(expected = IllegalArgumentException.class)
 	public void duplicateReverseExit() {
 		final LinkWrapper other = new LinkWrapper(Direction.UP, Link.DEFAULT, loc, Direction.DOWN, ReversePolicy.SIMPLE);

@@ -10,7 +10,6 @@ import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionTest;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.common.Emission;
-import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.object.Light.Descriptor;
 import org.sarge.textrpg.object.Light.Operation;
 import org.sarge.textrpg.object.Light.Type;
@@ -121,7 +120,7 @@ public class LightTest extends ActionTest {
 	public void expiry() throws ActionException {
 		light.execute(Operation.LIGHT);
 		assertEquals(2, Light.QUEUE.stream().count());
-		Light.QUEUE.execute(3);
+        Light.QUEUE.execute(Light.QUEUE.time() + 3);
 		assertEquals(false, light.isLit());
 		assertEquals(0, light.getLifetime());
 		assertEquals(0, Light.QUEUE.stream().count());
@@ -130,7 +129,7 @@ public class LightTest extends ActionTest {
 	@Test
 	public void expiryCancelled() throws ActionException {
 		light.execute(Operation.LIGHT);
-		EventQueue.update(2);
+		Light.QUEUE.execute(Light.QUEUE.time() + 2);
 		light.execute(Operation.SNUFF);
 		assertEquals(false, light.isLit());
 		assertEquals(3 - 2, light.getLifetime());

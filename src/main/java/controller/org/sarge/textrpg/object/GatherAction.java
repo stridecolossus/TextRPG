@@ -18,6 +18,7 @@ import org.sarge.textrpg.entity.Induction;
 import org.sarge.textrpg.entity.Skill;
 import org.sarge.textrpg.world.Area.Resource;
 import org.sarge.textrpg.world.Location;
+import org.sarge.textrpg.world.Terrain;
 
 /**
  * Action to gather a {@link Resource} from the current location.
@@ -27,15 +28,18 @@ public class GatherAction extends AbstractActiveAction {
 	private final Resource res;
 	private final Skill skill;
 	private final long duration;
+	private final ObjectDescriptor wood;
 	private final Optional<ObjectDescriptor> tool;
 
 	/**
 	 * Constructor.
-	 * @param res			Resource to gather
+	 * @param res		    Resource to gather
 	 * @param skill			Required skill
-	 * @param matcher		Optional required gathering tool
+	 * @param duration     Base duration (ms)
+	 * @param wood         Fire-wood descriptor
+	 * @param tool         Optional required gathering tool
 	 */
-	public GatherAction(Resource res, Skill skill, long duration, ObjectDescriptor tool) {
+	public GatherAction(Resource res, Skill skill, long duration, ObjectDescriptor wood, ObjectDescriptor tool) {
 		super(res.name());
 		Check.notNull(res);
 		if(res == Resource.FISH) throw new IllegalArgumentException("Fish resource cannot be gathered");
@@ -44,6 +48,7 @@ public class GatherAction extends AbstractActiveAction {
 		this.res = res;
 		this.skill = skill;
 		this.duration = duration;
+		this.wood = Check.notNull(wood);
 		this.tool = Optional.ofNullable(tool);
 	}
 
@@ -74,7 +79,7 @@ public class GatherAction extends AbstractActiveAction {
 
 		// Gather resources and add to inventory
 		final Induction induction = () -> {
-			final Stream<WorldObject> results = loc.getArea().getResource(res).map(f -> f.generate(actor)).orElse(null);
+			final Stream<WorldObject> results = getResourceFactory(loc, res, level).map(f -> f.generate(actor)).orElse(null);
 			if(results == null) {
 				return new Description("gather.results.empty");
 			}
@@ -85,6 +90,40 @@ public class GatherAction extends AbstractActiveAction {
 			}
 		};
 		return new ActionResponse("gather.start", induction, calculateDuration(this.duration, level));
+	}
+
+	/**
+	 * Looks up specified resource factory from the given location.
+	 * @param loc Location
+	 * @param res Resource type
+	 * @return Resource factory if available
+	 */
+	private Optional<LootFactory> getResourceFactory(Location loc, Resource res, int level) {
+	    if(res == Resource.WOOD) {
+	        final int amount = getWoodAmount(loc.getTerrain());
+	        if(amount == 0) {
+	            // No wood available to be gathered
+	            return Optional.empty();
+	        }
+	        else {
+	            // Create loot-factory for gathered wood
+	            return Optional.ofNullable(LootFactory.object(wood, amount));
+	        }
+	    }
+	    else {
+	        // Delegate to area
+	        return loc.getArea().getResource(res);
+	    }
+	}
+
+	// TODO - move to terrain-data-table
+	private static int getWoodAmount(Terrain terrain) {
+	    switch(terrain) {
+	        case FOREST:       return 3;
+	        case WOODLAND:     return 2;
+	        case JUNGLE:       return 1;
+	        default:           return 0;
+	    }
 	}
 
 	/**

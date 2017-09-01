@@ -52,18 +52,13 @@ public class RopeLink extends Link {
 	}
 
 	@Override
-	public boolean isTraversable(Actor actor) {
-		if(!anchor.isAttached()) {
-			return false;
-		}
-		else {
-			return super.isTraversable(actor);
-		}
-	}
-
-	@Override
-	public String getReason() {
-		return "rope.not.attached";
+	public String reason(Actor actor) {
+        if(anchor.isAttached()) {
+            return super.reason(actor);
+        }
+        else {
+            return "rope.not.attached";
+        }
 	}
 
 	@Override

@@ -38,7 +38,7 @@ public class ValueLoader {
 		return node
 			.optionalChild(name)
 			.map(ValueLoader::load)
-			.orElseGet(() -> Value.literal((int) node.attributes().toValue(name, null, Converter.DURATION).toMillis()));
+			.orElseGet(() -> Value.literal((int) node.attributes().toValue(name, null, LoaderHelper::parseDuration).toMillis()));
 	}
 
 	/**
@@ -50,15 +50,15 @@ public class ValueLoader {
 		switch(node.name()) {
 		case "literal":
 			return Value.literal(node.attributes().toInteger("value", null));
-			
+
 		case "compound":
 			final Value.Operator op = node.attributes().toValue("op", Value.Operator.ADD, OPERATOR_CONVERTER);
 			final List<Value> values = node.children().map(ValueLoader::load).collect(toList());
 			return Value.compound(op, values);
-			
+
 		case "random":
 			return Value.random(node.attributes().toInteger("range", null));
-			
+
 		default:
 			throw node.exception("Unknown value type: " + node.name());
 		}

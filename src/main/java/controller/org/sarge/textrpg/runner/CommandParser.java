@@ -212,11 +212,11 @@ public class CommandParser {
 	private static boolean matches(Method m, Class<?>[] args) {
 		// Check matching number of arguments (excluding common arguments)
 		final Class<?>[] params = m.getParameterTypes();
-		if(params.length != args.length + 2) return false;
+		if(params.length != args.length + 1) return false;
 
 		// Check matching argument types
 		for(int n = 0; n < args.length; ++n) {
-			if(!params[n + 2].isAssignableFrom(args[n])) return false;
+			if(!params[n + 1].isAssignableFrom(args[n])) return false;
 		}
 
 		// Found matching method

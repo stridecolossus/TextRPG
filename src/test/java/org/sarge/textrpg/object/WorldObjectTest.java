@@ -52,8 +52,8 @@ public class WorldObjectTest extends ActionTest {
 		assertEquals("object", obj.getName());
 		assertEquals(descriptor, obj.getDescriptor());
 		assertEquals("object", descriptor.getDescriptionKey());
-		assertEquals(1, obj.getWeight());
-		assertEquals(2, obj.getValue());
+		assertEquals(1, obj.weight());
+		assertEquals(2, obj.value());
 		assertEquals(Percentile.HALF, obj.getVisibility());
 		assertEquals(Optional.of(light), obj.getEmission(Emission.Type.LIGHT));
 		assertEquals(Optional.empty(), obj.getOpenableModel());

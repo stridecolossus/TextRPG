@@ -32,8 +32,8 @@ public class ReadAction extends AbstractAction {
 	 */
 	public ActionResponse read(Entity actor, Readable readable) throws ActionException {
 		final Descriptor descriptor = readable.getDescriptor();
-		if(descriptor.getSize() == 1) {
-			return readChapter(descriptor.getChapter(0), descriptor.getLanguage(), actor);
+		if(descriptor.size() == 1) {
+			return readChapter(descriptor.chapter(0), descriptor.language(), actor);
 		}
 		else {
 			throw new ActionException("read.requires.index");
@@ -49,8 +49,8 @@ public class ReadAction extends AbstractAction {
 	 */
 	public ActionResponse read(Entity actor, Readable readable, Integer index) throws ActionException {
 		final Descriptor descriptor = readable.getDescriptor();
-		if((index < 1) || (index >= descriptor.getSize())) throw new ActionException("read.invalid.chapter");
-		return readChapter(descriptor.getChapter(index - 1), descriptor.getLanguage(), actor);
+		if((index < 1) || (index >= descriptor.size())) throw new ActionException("read.invalid.chapter");
+		return readChapter(descriptor.chapter(index - 1), descriptor.language(), actor);
 	}
 
 	/**
@@ -67,8 +67,8 @@ public class ReadAction extends AbstractAction {
 		
 		// Read chapter
 		final Description description = new Description.Builder("readable")
-			.add("title", c.getTitle())
-			.add("text", c.getText())
+			.add("title", c.title())
+			.add("text", c.text())
 			.build();
 		return new ActionResponse(description);
 	}

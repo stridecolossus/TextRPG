@@ -85,7 +85,7 @@ public class ObjectDescriptorTest {
 		assertNotNull(descriptor.getEquipment());
 		assertEquals(true, descriptor.getEquipment().isPresent());
 		final Equipment equipment = descriptor.getEquipment().get();
-		assertEquals(Optional.of(DeploymentSlot.ARMS), equipment.getDeploymentSlot());
+		assertEquals(DeploymentSlot.ARMS, equipment.getDeploymentSlot());
 		assertEquals(5, equipment.getArmour());
 		assertEquals(Effect.NONE, equipment.getPassive());
 	}

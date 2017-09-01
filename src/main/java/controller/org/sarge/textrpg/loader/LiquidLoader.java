@@ -17,7 +17,7 @@ public class LiquidLoader {
 	
 	private final EffectLoader effectLoader = new EffectLoader();
 	
-	private final Registry<Liquid> liquids = new Registry<>(Liquid::getName);
+	private final Registry<Liquid> liquids = new Registry<>(Liquid::name);
 	
 	/**
 	 * Constructor.
@@ -55,7 +55,7 @@ public class LiquidLoader {
 		final Effect.Descriptor effect = node.optionalChild().map(effectLoader::load).orElse(Effect.NONE);
 		final Liquid liquid = new Liquid(node.name(), alcohol, effect);
 		liquids.add(liquid);
-		LOG.log(Level.FINE, "Custom liquid: {0}", liquid.getName());
+		LOG.log(Level.FINE, "Custom liquid: {0}", liquid.name());
 		return liquid;
 	}
 }

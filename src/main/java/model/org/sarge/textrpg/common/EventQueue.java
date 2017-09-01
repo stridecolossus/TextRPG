@@ -16,25 +16,11 @@ import org.sarge.lib.object.ToString;
 public class EventQueue {
 	private static final Collection<EventQueue> QUEUES = new StrictSet<>();
 
-	private static long time;
-
-	/**
-	 * @return Current game time
-	 */
-	public static long getTime() {
-		return time;
-	}
-
 	/**
 	 * Advances game time and executes pending events.
 	 * @param time Time
 	 */
 	public static void update(long time) {
-		// Advance time
-		if(time <= EventQueue.time) throw new RuntimeException("Invalid time update");
-		EventQueue.time = time;
-
-		// Execute pending events
 		for(EventQueue q : QUEUES) {
 			q.execute(time);
 		}
@@ -44,7 +30,7 @@ public class EventQueue {
 	 * Queue entry.
 	 */
 	public class Entry implements Comparable<Entry> {
-		private final Event event;
+		private final Runnable event;
 		private final long when;
 		private final boolean repeating;
 		private final long period;
@@ -57,11 +43,11 @@ public class EventQueue {
 		 * @param period		Scheduled time
 		 * @param repeating		Whether this is a repeating event
 		 */
-		private Entry(Event event, long period, boolean repeating) {
+		private Entry(Runnable event, long period, boolean repeating) {
 			this.event = event;
 			this.period = period;
 			this.repeating = repeating;
-			this.when = EventQueue.time + period;
+			this.when = time + period;
 		}
 
 		/**
@@ -104,12 +90,21 @@ public class EventQueue {
 
 	private final Queue<Entry> queue = new PriorityQueue<>();
 
+	private long time;
+
 	/**
 	 * Constructor.
 	 */
 	public EventQueue() {
 		QUEUES.add(this);
 	}
+
+	/**
+	 * @return Current time
+	 */
+	public long time() {
+        return time;
+    }
 
 	/**
 	 * Note that the stream is <b>not</b> ordered.
@@ -125,7 +120,7 @@ public class EventQueue {
 	 * @param time			Scheduled time
 	 * @param repeating		Whether this is a repeating event
 	 */
-	public Entry add(Event event, long time, boolean repeating) {
+	public Entry add(Runnable event, long time, boolean repeating) {
 		final Entry entry = new Entry(event, time, repeating);
 		queue.add(entry);
 		return entry;
@@ -137,7 +132,7 @@ public class EventQueue {
 	 * @param time		Scheduled time
 	 * @return
 	 */
-	public Entry add(Event event, long time) {
+	public Entry add(Runnable event, long time) {
 		return add(event, time, false);
 	}
 
@@ -145,6 +140,10 @@ public class EventQueue {
 	 * Executes pending events up to the given time.
 	 */
 	public synchronized void execute(long time) {
+	    // Advance time
+	    this.time = time;
+
+	    // Execute pending events
 		while(!queue.isEmpty()) {
 			// Stop when reach future events
 			if(queue.peek().when > time) {
@@ -155,7 +154,7 @@ public class EventQueue {
 			final Entry entry = queue.poll();
 			if(!entry.cancelled) {
 				// Complete event
-				entry.event.execute();
+				entry.event.run();
 				entry.cancelled = true;
 
 				// Re-schedule if repeating
@@ -177,7 +176,7 @@ public class EventQueue {
 	public String toString() {
 		final ToString ts = new ToString(this);
 		ts.append("size", queue.size());
-		ts.append("time", EventQueue.time);
+		ts.append("time", time);
 		return ts.toString();
 	}
 }

@@ -6,7 +6,6 @@ import java.util.Set;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.Event;
 import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.common.Openable;
 import org.sarge.textrpg.common.Parent;
@@ -102,7 +101,7 @@ public class InteractObject extends WorldObject {
 		}
 
 		// Register reset event
-		final Event reset = () -> {
+		final Runnable reset = () -> {
 			model.setOpen(false);
 			if(descriptor.removes) {
 				setParentAncestor(parent);

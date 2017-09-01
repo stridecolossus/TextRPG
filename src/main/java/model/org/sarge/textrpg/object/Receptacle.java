@@ -94,8 +94,8 @@ public class Receptacle extends WorldObject {
 	}
 
 	@Override
-	public int getWeight() {
-		return super.getWeight() + level;
+	public int weight() {
+		return super.weight() + level;
 	}
 
 	@Override

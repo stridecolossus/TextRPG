@@ -28,7 +28,7 @@ public class CorpseTest extends ActionTest {
 	public void before() {
 		// Create an object
 		obj = mock(WorldObject.class);
-		when(obj.getWeight()).thenReturn(2);
+		when(obj.weight()).thenReturn(2);
 		
 		// Create butchery loot
 		butcher = mock(LootFactory.class);
@@ -43,7 +43,7 @@ public class CorpseTest extends ActionTest {
 	@Test
 	public void constructor() {
 		assertEquals("corpse", corpse.getName());
-		assertEquals(3, corpse.getWeight());
+		assertEquals(3, corpse.weight());
 		assertNotNull(corpse.getContents());
 		assertEquals(1, corpse.getContents().size());
 		assertEquals(false, corpse.isButchered());
@@ -55,7 +55,7 @@ public class CorpseTest extends ActionTest {
 		assertEquals(true, corpse.isButchered());
 		verify(butcher).generate(actor);
 		assertEquals(2, corpse.getContents().size());
-		assertEquals(3 + 2, corpse.getWeight());
+		assertEquals(3 + 2, corpse.weight());
 	}
 
 	@Test(expected = IllegalStateException.class)

@@ -104,7 +104,6 @@ public class ShopAction extends AbstractActiveAction {
 	/**
 	 * Buys an object by index.
 	 */
-	@SuppressWarnings("unused")
 	public ActionResponse buy(Entity actor, Integer index) throws ActionException {
 		final Shop shop = find(actor);
 		if(op != Operation.BUY) return INVALID;
@@ -143,7 +142,7 @@ public class ShopAction extends AbstractActiveAction {
 		case SELL:
 			// Sell object to shop
 			shop.sell(obj);
-			actor.modify(EntityValue.CASH, obj.getValue());
+			actor.modify(EntityValue.CASH, obj.value());
 			return response(obj);
 
 		case COST:
@@ -170,7 +169,7 @@ public class ShopAction extends AbstractActiveAction {
 	 * Finds a shop in the current location.
  	 */
 	private static Shop find(Entity actor) throws ActionException {
-		return ActionHelper.findTopic(actor.getLocation(), Shop.TOPIC_NAME).map(Topic::getShop).orElseThrow(() -> new ActionException("shop.not.found"));
+		return ActionHelper.findTopic(actor.getLocation(), Shop.TOPIC_NAME).map(Topic::shop).orElseThrow(() -> new ActionException("shop.not.found"));
 	}
 
 	/**

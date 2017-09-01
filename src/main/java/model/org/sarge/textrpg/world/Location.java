@@ -5,11 +5,13 @@ import static java.util.stream.Collectors.toList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.sarge.lib.collection.StrictMap;
@@ -36,6 +38,33 @@ public class Location implements Parent {
 	public static final String NAME = "location";
 
 	/**
+	 * Properties of this location.
+	 */
+	public enum Property {
+	    /**
+	     * Location has drinking water.
+	     */
+	    WATER,
+
+	    /**
+	     * Location is naturally light/dark (over-rides terrain).
+	     * @see Terrain#isDark()
+	     */
+	    LIGHT,
+
+	    /**
+	     * Location can be fished.
+	     */
+	    FISH;
+
+	    private final byte bit;
+
+        private Property() {
+            this.bit = (byte) (1 << ordinal());
+        }
+	}
+
+	/**
 	 * Default surfaces.
 	 */
 	private static final List<String> SURFACES = Arrays.asList("floor", "ceiling", "wall").stream().map(str -> "surface." + str).collect(toList());
@@ -47,43 +76,72 @@ public class Location implements Parent {
 		return SURFACES.stream();
 	}
 
+//	/**
+//	 * Caches locations containing artificial lights.
+//	 * TODO
+//	 * - replace with soft-ref set?
+//	 * - http://www.javaspecialists.eu/archive/Issue098.html
+//	 * - thread-safe
+//	 * - OR use a 'synthetic' bit in PROPS
+//	 */
+//	private static final byte LIGHT_CACHE_BIT = 1 << 8; // TODO
+
 	private final String name;
 	private final Area area;
 	private final Terrain terrain;
-	// TODO - bit-field for water, light/dark, others?
-	private final boolean water;
+	private final byte props;
 	private final Collection<String> decorations;
-
 	private final Map<Direction, Exit> exits = new StrictMap<>();
 	private final List<Tracks> tracks = new ArrayList<>();
 
 	protected final Contents contents = new Contents();
+
+	/*{
+	    @Override
+	    public void add(Thing obj) {
+            clearCache();
+	        super.add(obj);
+	    }
+
+	    @Override
+        protected void remove(Thing obj) {
+            clearCache();
+	        super.remove(obj);
+	    }
+
+	    private void clearCache() {
+            LIGHT_CACHE.remove(Location.this);
+	    }
+	};
+	*/
 
 	/**
 	 * Constructor.
 	 * @param name			Name of this location
 	 * @param area			Parent area
 	 * @param terrain		Terrain at this location
-	 * @param water			Whether water is available at this location
+	 * @param props         Properties of this location
 	 * @param decoration	Decorations in this location
 	 */
-	public Location(String name, Area area, Terrain terrain, boolean water, Collection<String> decorations) {
+	public Location(String name, Area area, Terrain terrain, Set<Property> props, Collection<String> decorations) {
 		Check.notEmpty(name);
 		Check.notNull(area);
 		Check.notNull(terrain);
 		this.name = name;
 		this.area = area;
 		this.terrain = terrain;
-		this.water = water;
+		this.props = (byte) props.stream().mapToInt(p -> p.bit).reduce((a, b) -> a | b).orElse(0);
 		this.decorations = new HashSet<>(decorations);
 	}
+
+	// TODO - 1. protected ctors messy 2. deal with properties
 
 	/**
 	 * Copy constructor.
 	 * @param loc Location
 	 */
 	protected Location(Location loc) {
-		this(loc.name, loc.area, loc.terrain, loc.water, loc.decorations);
+		this(loc.name, loc.area, loc.terrain, /*loc.props*/Collections.emptySet(), loc.decorations);
 	}
 
 	/**
@@ -92,7 +150,7 @@ public class Location implements Parent {
 	 * @param loc		Location
 	 */
 	protected Location(String name, Location loc) {
-		this(name, loc.area, loc.terrain, loc.water, loc.decorations);
+		this(name, loc.area, loc.terrain, /*loc.props*/null, loc.decorations);
 	}
 
 	/**
@@ -148,10 +206,11 @@ public class Location implements Parent {
 	}
 
 	/**
-	 * @return Whether water is available in this location
+	 * @param p Property
+	 * @return Whether this location has the given property
 	 */
-	public boolean isWaterAvailable() {
-		return water;
+	public boolean isProperty(Property p) {
+	    return (props & p.bit) > 0;
 	}
 
 	/**
@@ -300,20 +359,36 @@ public class Location implements Parent {
 	/**
 	 * @param daylight Whether time-of-day is daylight
 	 * @return Whether light is available in this location (natural or artificial)
+	 * TODO - should this return light-level?
 	 */
 	public final boolean isLightAvailable(boolean daylight) {
 		final Terrain terrain = getTerrain();
-		if(terrain.isDark())
-			return isArtificialLightAvailable();
-		else
-			return daylight || terrain.isLit();
+		final boolean light = isProperty(Property.LIGHT);
+		if(terrain.isDark()) {
+			return light || isArtificialLightAvailable();
+		}
+		else {
+			return daylight && light;
+		}
 	}
 
 	/**
 	 * @return Whether this location contains an artificial light
 	 */
 	public final boolean isArtificialLightAvailable() {
-		return contents.stream().map(t -> t.getEmission(Emission.Type.LIGHT)).anyMatch(Optional::isPresent);
+        return contents.stream().map(t -> t.getEmission(Emission.Type.LIGHT)).anyMatch(Optional::isPresent);
+        /*
+	    if(LIGHT_CACHE.contains(this)) {
+	        return true;
+	    }
+	    else {
+	        final boolean light = contents.stream().map(t -> t.getEmission(Emission.Type.LIGHT)).anyMatch(Optional::isPresent);
+	        if(light) {
+	            LIGHT_CACHE.add(this);
+	        }
+	        return light;
+	    }
+	    */
 	}
 
 	/**

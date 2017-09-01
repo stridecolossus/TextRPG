@@ -39,14 +39,14 @@ public final class Liquid {
 	/**
 	 * @return Liquid name
 	 */
-	public String getName() {
+	public String name() {
 		return name;
 	}
 
 	/**
 	 * @return Alcohol level
 	 */
-	public int getAlcohol() {
+	public int alcohol() {
 		return alcohol;
 	}
 
@@ -60,7 +60,7 @@ public final class Liquid {
 	/**
 	 * @return Effect(s) if this liquid can be drunk
 	 */
-	public Effect.Descriptor getEffect() {
+	public Effect.Descriptor effects() {
 		return effect;
 	}
 

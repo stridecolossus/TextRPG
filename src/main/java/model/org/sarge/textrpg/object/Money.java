@@ -27,12 +27,12 @@ public class Money extends WorldObject {
 	}
 	
 	@Override
-	public int getWeight() {
+	public int weight() {
 		return value;
 	}
 	
 	@Override
-	public int getValue() {
+	public int value() {
 		return value;
 	}
 	

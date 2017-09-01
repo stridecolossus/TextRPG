@@ -34,14 +34,14 @@ public class Readable extends WorldObject {
 		/**
 		 * @return Chapter title
 		 */
-		public String getTitle() {
+		public String title() {
 			return title;
 		}
 
 		/**
 		 * @return Chapter text
 		 */
-		public String getText() {
+		public String text() {
 			return text;
 		}
 		
@@ -76,14 +76,14 @@ public class Readable extends WorldObject {
 		/**
 		 * @return Language skill
 		 */
-		public String getLanguage() {
+		public String language() {
 			return lang;
 		}
 		
 		/**
 		 * @return Number of chapters
 		 */
-		public int getSize() {
+		public int size() {
 			return chapters.size();
 		}
 		
@@ -92,7 +92,7 @@ public class Readable extends WorldObject {
 		 * @param index Chapter index
 		 * @return Chapter text
 		 */
-		public Chapter getChapter(int index) {
+		public Chapter chapter(int index) {
 			return chapters.get(index);
 		}
 

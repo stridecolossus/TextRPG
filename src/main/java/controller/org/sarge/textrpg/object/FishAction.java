@@ -59,7 +59,7 @@ public class FishAction extends AbstractActiveAction {
 
 		// Check location
 		final Location loc = actor.getLocation();
-		if(!loc.isWaterAvailable()) throw new ActionException("fish.requires.water");
+		if(!loc.isProperty(Location.Property.FISH)) throw new ActionException("fish.requires.water");
 
 		// Check for rod
 		final Optional<WorldObject> rod = actor.getEquipment().get(DeploymentSlot.MAIN_HAND);

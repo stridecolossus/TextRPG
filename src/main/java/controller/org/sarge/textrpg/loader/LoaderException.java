@@ -1,4 +1,4 @@
-package org.sarge.textrpg.common;
+package org.sarge.textrpg.loader;
 
 import java.util.function.Function;
 

@@ -8,9 +8,18 @@ import java.util.Set;
 import org.sarge.lib.collection.StrictMap;
 import org.sarge.lib.collection.StrictSet;
 import org.sarge.lib.util.Check;
-import org.sarge.textrpg.common.*;
-import org.sarge.textrpg.common.Event.Holder;
+import org.sarge.textrpg.common.ActionException;
+import org.sarge.textrpg.common.Contents;
+import org.sarge.textrpg.common.DescriptionStore;
+import org.sarge.textrpg.common.EnvironmentNotification;
+import org.sarge.textrpg.common.EventHolder;
+import org.sarge.textrpg.common.Hidden;
+import org.sarge.textrpg.common.MovementNotification;
+import org.sarge.textrpg.common.Notification;
 import org.sarge.textrpg.common.Notification.Handler;
+import org.sarge.textrpg.common.Parent;
+import org.sarge.textrpg.common.RevealNotification;
+import org.sarge.textrpg.common.Thing;
 import org.sarge.textrpg.object.Money;
 import org.sarge.textrpg.object.TrackedContents;
 import org.sarge.textrpg.object.WorldObject;
@@ -29,7 +38,7 @@ public class Player extends CharacterEntity {
 	// TODO...
 	public static DescriptionStore.Repository repo;
 	// ...TODO
-	
+
 	/**
 	 * Listener for player updates.
 	 */
@@ -49,35 +58,35 @@ public class Player extends CharacterEntity {
 			add(hidden);
 			write(reveal);
 		}
-		
+
 		@Override
 		public void handle(EnvironmentNotification env) {
 			write(env);
 		}
-		
+
 		@Override
 		public void handle(MovementNotification move) {
 			write(move);
 		}
-		
+
 		@Override
 		public void handle(Notification n) {
 			write(n);
 		}
 	};
-	
+
 	/**
 	 * Character inventory.
 	 */
 	private final Contents inv = new TrackedContents() {
 		// TODO
 		// - limits based on character attributes, e.g. strength > weight
-		
+
 		@Override
 		public void add(Thing obj) {
 			if(obj instanceof Money) {
 				final Money money = (Money) obj;
-				modify(EntityValue.CASH, money.getValue());
+				modify(EntityValue.CASH, money.value());
 				// TODO
 				// obj.destroy();
 			}
@@ -121,15 +130,15 @@ public class Player extends CharacterEntity {
 			formatter = new DescriptionFormatter(repo.find(Locale.UK)::getString); // TODO
 		else
 			formatter = null;
-		
+
 		// ...TODO
 	}
-	
+
 	@Override
 	public boolean isPlayer() {
 		return true;
 	}
-	
+
 	/**
 	 * @return Previous object used by this player
 	 */
@@ -145,12 +154,12 @@ public class Player extends CharacterEntity {
 		Check.notNull(prev);
 		this.prev = prev;
 	}
-	
+
 	@Override
 	public Contents getContents() {
 		return inv;
 	}
-	
+
 	@Override
 	protected String getDescriptionKey() {
 		return "character";
@@ -170,17 +179,17 @@ public class Player extends CharacterEntity {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
-	public Holder getEventHolder() {
+	public EventHolder getEventHolder() {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public Handler getNotificationHandler() {
 		return handler;
 	}
-	
+
 	@Override
 	public boolean perceives(Hidden obj) {
 		if(super.perceives(obj)) {
@@ -199,7 +208,7 @@ public class Player extends CharacterEntity {
 		known.add(hidden);
 		getEventQueue().add(() -> forget(hidden), hidden.getForgetPeriod());
 	}
-	
+
 	/**
 	 * Forgets the given hidden object.
 	 * @param hidden Hidden object
@@ -212,7 +221,7 @@ public class Player extends CharacterEntity {
 	public boolean isSwimming() {
 		return swim;
 	}
-	
+
 	/**
 	 * Sets whether this player can enter water locations.
 	 * @param swim Swimming
@@ -243,7 +252,7 @@ public class Player extends CharacterEntity {
 			}
 		}
 	}
-	
+
 	@Override
 	public void setParent(Parent parent) throws ActionException {
 		update(parent);

@@ -18,7 +18,7 @@ import org.sarge.lib.util.Check;
 import org.sarge.lib.util.Converter;
 import org.sarge.lib.util.ConverterAdapter;
 import org.sarge.lib.xml.Element;
-import org.sarge.textrpg.common.DefaultTopic;
+import org.sarge.textrpg.common.Topic;
 import org.sarge.textrpg.common.Script;
 import org.sarge.textrpg.common.Size;
 import org.sarge.textrpg.common.Topic;
@@ -155,7 +155,7 @@ public class EntityLoader {
 	private Topic loadTopic(Element node) {
 		final String name = node.attributes().toString("name", null);
 		final Script script = scriptLoader.load(node.child());
-		return new DefaultTopic(name, script);
+		return new Topic(name, script);
 	}
 
 	/**

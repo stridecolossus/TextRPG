@@ -16,8 +16,8 @@ public class MoneyTest {
 	
 	@Test
 	public void constructor() {
-		assertEquals(42, money.getValue());
-		assertEquals(42, money.getWeight());
+		assertEquals(42, money.value());
+		assertEquals(42, money.weight());
 	}
 	
 	@Test

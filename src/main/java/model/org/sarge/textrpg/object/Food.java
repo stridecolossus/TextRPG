@@ -3,7 +3,7 @@ package org.sarge.textrpg.object;
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Actor;
-import org.sarge.textrpg.common.Event;
+import org.sarge.textrpg.common.EventHolder;
 import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.common.Message;
 
@@ -75,7 +75,7 @@ public class Food extends WorldObject {
 		}
 	}
 
-	private final Event.Holder holder = new Event.Holder();
+	private final EventHolder holder = new EventHolder();
 
 	private Type type;
 

@@ -1,11 +1,10 @@
 package org.sarge.textrpg.object;
 
-import java.util.HashMap;
-import java.util.Map;
+import static org.sarge.lib.util.Check.notEmpty;
+
 import java.util.Optional;
 import java.util.Set;
 
-import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.common.Openable;
 import org.sarge.textrpg.common.Parent;
@@ -20,40 +19,28 @@ import org.sarge.textrpg.object.TrackedContents.Limit;
  */
 public class Container extends WorldObject implements Parent {
 	/**
-	 * Container placement.
-	 * TODO
-	 */
-	public enum Placement {
-		IN,
-		ON,
-		UNDER,
-		BEHIND
-	}
-
-	/**
 	 * Descriptor for this container.
 	 */
-	public static class Descriptor extends ObjectDescriptor {
-		private final Placement placement;
+	public static class Descriptor extends ContentsObjectDescriptor {
+		private final String placement;
 		private final Optional<Openable.Lock> lock;
-		private final Map<Limit, String> limits;
 		private final Optional<DeploymentSlot> slot;
 
 		/**
 		 * Constructor.
 		 * @param descriptor		Descriptor for this container
+		 * @param placement         Container placement identifier
 		 * @param lock				Optional descriptor for an openable container
-		 * @param limits			None-or-more limits applied to the contents of this container with associated reason codes prefixes
-		 * @param slot				Optional deployment slot for containers that than carry equipment such as a key-ring or belt.
+		 * @param slot				Optional deployment slot for containers that than carry equipment such as a key-ring or belt
 		 */
-		public Descriptor(ObjectDescriptor descriptor, Placement placement, Openable.Lock lock, Map<Limit, String> limits, DeploymentSlot slot) {
+		public Descriptor(ContentsObjectDescriptor descriptor, String placement, Openable.Lock lock, DeploymentSlot slot) {
 			super(descriptor);
-			Check.notNull(placement);
-			this.placement = placement;
+			this.placement = notEmpty(placement);
 			this.lock = Optional.ofNullable(lock);
-			this.limits = new HashMap<>(limits);
 			this.slot = Optional.ofNullable(slot);
-			if(lock != null) verifyResetable();
+			if(lock != null) {
+			    verifyResetable();
+			}
 		}
 
 		@Override
@@ -64,7 +51,7 @@ public class Container extends WorldObject implements Parent {
 		/**
 		 * @return Container placement
 		 */
-		public Placement getPlacement() {
+		public String getPlacement() {
 			return placement;
 		}
 
@@ -151,8 +138,8 @@ public class Container extends WorldObject implements Parent {
 	}
 
 	@Override
-	public int getWeight() {
-		return super.getWeight() + contents.getWeight();
+	public int weight() {
+		return super.weight() + contents.getWeight();
 	}
 
 	@Override

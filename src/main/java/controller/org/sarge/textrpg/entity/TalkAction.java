@@ -31,7 +31,7 @@ public class TalkAction extends AbstractAction {
 	 */
 	@SuppressWarnings("unused")
 	public ActionResponse listTopics(Entity actor, Entity entity) throws ActionException {
-		final List<Description> topics = entity.getTopics().map(Topic::getName).map(Description::new).collect(toList());
+		final List<Description> topics = entity.getTopics().map(Topic::name).map(Description::new).collect(toList());
 		return new ActionResponse(Description.create("talk.list.topics", topics));
 	}
 
@@ -40,6 +40,6 @@ public class TalkAction extends AbstractAction {
 	 */
 	public void discussTopic(Entity actor, Entity entity, Topic topic) throws ActionException {
 		if(!entity.getTopics().anyMatch(t -> t == topic)) throw new ActionException("talk.unknown.topic");
-		topic.getScript().execute(actor);
+		topic.script().execute(actor);
 	}
 }

@@ -12,7 +12,6 @@ import org.sarge.textrpg.common.AbstractActiveAction;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.Description;
-import org.sarge.textrpg.common.Event;
 import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.common.Notification;
 import org.sarge.textrpg.common.RevealNotification;
@@ -46,7 +45,7 @@ public class SearchAction extends AbstractActiveAction {
 	/**
 	 * Discovery event.
 	 */
-	private class DiscoverEvent implements Event {
+	private class DiscoverEvent implements Runnable {
 		private final Thing obj;
 		private final Entity actor;
 
@@ -61,7 +60,7 @@ public class SearchAction extends AbstractActiveAction {
 		}
 
 		@Override
-		public void execute() {
+		public void run() {
 			final Notification n = new RevealNotification("search.found.hidden", obj);
 			actor.getNotificationHandler().handle(n);
 		}

@@ -2,8 +2,6 @@ package org.sarge.textrpg.object;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Optional;
-
 import org.junit.Test;
 import org.sarge.textrpg.entity.Effect;
 
@@ -11,23 +9,23 @@ public class LiquidTest {
 	@Test
 	public void constructor() {
 		final Liquid liquid = new Liquid("liquid", 5, Effect.NONE);
-		assertEquals("liquid", liquid.getName());
-		assertEquals(5, liquid.getAlcohol());
+		assertEquals("liquid", liquid.name());
+		assertEquals(5, liquid.alcohol());
 		assertEquals(true, liquid.isDrinkable());
-		assertEquals(Optional.of(Effect.NONE), liquid.getEffect());
+		assertEquals(Effect.NONE, liquid.effects());
 	}
-	
+
 	@Test
 	public void water() {
-		assertEquals("water", Liquid.WATER.getName());
+		assertEquals("water", Liquid.WATER.name());
 		assertEquals(true, Liquid.WATER.isDrinkable());
-		assertEquals(Optional.of(Effect.NONE), Liquid.WATER.getEffect());
+		assertEquals(Effect.NONE, Liquid.WATER.effects());
 	}
-	
+
 	@Test
 	public void oil() {
-		assertEquals("oil", Liquid.OIL.getName());
+		assertEquals("oil", Liquid.OIL.name());
 		assertEquals(false, Liquid.OIL.isDrinkable());
-		assertEquals(Optional.empty(), Liquid.OIL.getEffect());
+		assertEquals(Effect.NONE, Liquid.OIL.effects());
 	}
 }

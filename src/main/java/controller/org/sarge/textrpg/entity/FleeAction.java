@@ -32,7 +32,7 @@ public class FleeAction extends AbstractAction {
 		this.mover = notNull(mover);
 		this.mod = oneOrMore(mod);
 	}
-	
+
 	@Override
 	public boolean isLightRequiredAction() {
 		return false;
@@ -42,7 +42,7 @@ public class FleeAction extends AbstractAction {
 	public boolean isCombatBlockedAction() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean isVisibleAction() {
 		return true;
@@ -59,24 +59,21 @@ public class FleeAction extends AbstractAction {
 	public ActionResponse execute(Entity actor) throws ActionException {
 		// Enumerate available links
 		final Location loc = actor.getLocation();
-		final List<Direction> available = loc
-			.getExits()
-			.entrySet()
-			.stream()
+		final List<Direction> available = loc.getExits().entrySet().stream()
 			.filter(entry -> entry.getValue().getLink().isTraversable(actor))
 			.filter(entry -> entry.getValue().perceivedBy(actor))
 			.map(entry -> entry.getKey())
 			.collect(toList());
-		
+
 		// Panic if no available links
 		if(available.isEmpty()) {
 			// TODO - inc panic
 			throw new ActionException("flee.cannot.flee");
 		}
-		
+
 		// Select random link
 		final Direction dir = Randomiser.random(available);
-		
+
 		// Clear stance
 		switch(actor.getStance()) {
 		case COMBAT:
@@ -88,9 +85,9 @@ public class FleeAction extends AbstractAction {
 
 		// Traverse link
 		final Description desc = mover.move(actor, dir, mod, true);
-		
+
 		// TODO - inc panic
-		
+
 		return new ActionResponse(Arrays.asList(new Description("flee.response"), desc));
 	}
 }

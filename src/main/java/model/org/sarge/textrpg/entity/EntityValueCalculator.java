@@ -7,6 +7,19 @@ import org.sarge.lib.collection.StrictMap;
 
 /**
  * Helper that initialises entity values.
+ * <p>
+ * Usage:
+ * <pre>
+ * // Configure calculator to initialise stamina based on endurance and strength
+ * final EntityValueCalculator calc = new EntityValueCalculator();
+ * calc.add(EntityValue.STAMINA, Attribute.ENDURANCE, 2);
+ * calc.add(EntityValue.STAMINA, Attribute.STRENGTH, 3);
+ * ...
+ *
+ * // Initialise a new entity
+ * final Entity entity = ...
+ * calc.init(entity);
+ * </pre>
  * @author Sarge
  */
 public class EntityValueCalculator {
@@ -23,7 +36,7 @@ public class EntityValueCalculator {
 		final Pair<EntityValue, Attribute> key = new Pair<>(value, attr);
 		modifiers.put(key, mod);
 	}
-	
+
 	/**
 	 * Initialises the transient values for the given entity.
 	 * @param e Entity to initialise
@@ -33,13 +46,13 @@ public class EntityValueCalculator {
 		for(Pair<EntityValue, Attribute> key : modifiers.keySet()) {
 			init(e, key);
 		}
-		
+
 		// Copy values from maximums
 		modifiers.keySet().stream()
 			.map(key -> key.getLeft())
 			.distinct()
 			.forEach(val -> init(e, val));
-		
+
 		// TODO
 		e.modify(EntityValue.HUNGER, 25);
 		e.modify(EntityValue.THIRST, 25);
@@ -56,7 +69,7 @@ public class EntityValueCalculator {
 		final int num = e.getAttributes().get(key.getRight());
 		e.modify(key.getLeft(), (int) (num * mod));
 	}
-	
+
 	/**
 	 * Initialises an entity-value to its associated maximum.
 	 * @param e			Entity
@@ -68,7 +81,7 @@ public class EntityValueCalculator {
 		assert e.getValues().get(max) == 0;
 		e.modify(max, num);
 	}
-	
+
 	@Override
 	public String toString() {
 		return modifiers.toString();

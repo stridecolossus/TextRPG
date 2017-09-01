@@ -13,7 +13,7 @@ import org.sarge.textrpg.object.Receptacle.Descriptor;
 public class ReceptacleTest extends ActionTest {
 	private Receptacle rec, inf;
 	private Descriptor descriptor;
-	
+
 	@Before
 	public void before() {
 		final ObjectDescriptor obj = new Builder("receptacle").weight(2).build();
@@ -21,22 +21,21 @@ public class ReceptacleTest extends ActionTest {
 		rec = new Receptacle(descriptor);
 		inf = new Receptacle(new Descriptor(obj, Liquid.WATER, Receptacle.INFINITE, false));
 	}
-	
+
 	@Test
 	public void constructor() {
 		assertEquals(descriptor, rec.getDescriptor());
 		assertEquals("receptacle", descriptor.getDescriptionKey());
 		assertEquals(3, rec.getLevel());
-		assertEquals(2 + 3, rec.getWeight());
+		assertEquals(2 + 3, rec.weight());
 		assertEquals(false, rec.isFixture());
 	}
-	
+
 	@Test
 	public void constructorInfinite() {
 		assertEquals(Receptacle.INFINITE, inf.getLevel());
-		assertEquals(true, inf.isFixture());
 	}
-	
+
 	@Test
 	public void describe() {
 		final Description desc = rec.describe();
@@ -44,34 +43,34 @@ public class ReceptacleTest extends ActionTest {
 		assertEquals("3", desc.get("level"));
 		assertEquals("water", desc.get("liquid"));
 	}
-	
+
 	@Test
 	public void consume() throws ActionException {
 		// Consume some of the contents
 		int actual = rec.consume(2);
 		assertEquals(2, actual);
 		assertEquals(1, rec.getLevel());
-		assertEquals(2 + 1, rec.getWeight());
-		
+		assertEquals(2 + 1, rec.weight());
+
 		// Consume the remainder
 		actual = rec.consume(999);
 		assertEquals(1, actual);
 		assertEquals(0, rec.getLevel());
 	}
-	
+
 	@Test
 	public void consumeEmpty() throws ActionException {
 		rec.consume(999);
 		expect("receptacle.consume.empty");
 		rec.consume(1);
 	}
-	
+
 	@Test
 	public void consumeInfinite() throws ActionException {
 		assertEquals(999, inf.consume(999));
 		assertEquals(Receptacle.INFINITE, inf.getLevel());
 	}
-	
+
 	@Test
 	public void fill() throws ActionException {
 		final Receptacle src = new Receptacle(descriptor);
@@ -88,14 +87,14 @@ public class ReceptacleTest extends ActionTest {
 		expect("fill.invalid.source");
 		rec.fill(src);
 	}
-	
+
 	@Test
 	public void fillAlreadyFull() throws ActionException {
 		final Receptacle src = new Receptacle(descriptor);
 		expect("fill.already.full");
 		rec.fill(src);
 	}
-	
+
 	@Test
 	public void fillSelf() throws ActionException {
 		rec.consume(1);
@@ -108,7 +107,7 @@ public class ReceptacleTest extends ActionTest {
 		expect("fill.infinite.receptacle");
 		inf.fill(rec);
 	}
-	
+
 	@Test
 	public void fillEmptySource() throws ActionException {
 		final Receptacle src = new Receptacle(descriptor);
@@ -117,7 +116,7 @@ public class ReceptacleTest extends ActionTest {
 		expect("fill.empty.source");
 		rec.fill(src);
 	}
-	
+
 	@Test
 	public void fillInfiniteSource() throws ActionException {
 		rec.consume(3);
@@ -144,7 +143,7 @@ public class ReceptacleTest extends ActionTest {
 		expect("receptacle.empty.infinite");
 		inf.empty();
 	}
-	
+
 	@Test
 	public void destroy() {
 		rec.destroy();

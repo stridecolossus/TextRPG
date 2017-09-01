@@ -44,17 +44,12 @@ public class ObjectLink extends ExtendedLink {
 	}
 
 	@Override
-	public boolean isTraversable(Actor actor) {
-		return isOpen() && super.isTraversable(actor);
-	}
-
-	@Override
-	public String getReason() {
-		if(!isOpen()) {
-			return reason;
+	public String reason(Actor actor) {
+		if(isOpen()) {
+		    return super.reason(actor);
 		}
 		else {
-			return super.getReason();
+			return reason;
 		}
 	}
 

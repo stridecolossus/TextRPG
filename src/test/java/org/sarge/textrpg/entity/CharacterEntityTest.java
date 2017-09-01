@@ -13,7 +13,7 @@ import org.junit.Test;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionTest;
 import org.sarge.textrpg.common.Contents;
-import org.sarge.textrpg.common.DefaultTopic;
+import org.sarge.textrpg.common.Topic;
 import org.sarge.textrpg.common.Script;
 import org.sarge.textrpg.common.Topic;
 import org.sarge.textrpg.entity.Race.Builder;
@@ -27,7 +27,7 @@ public class CharacterEntityTest extends ActionTest {
 	@Before
 	public void before() {
 		race = new Builder("race").build();
-		topic = new DefaultTopic("topic", Script.NONE);
+		topic = new Topic("topic", Script.NONE);
 		character = new CharacterEntity("name", race, new MutableIntegerMap<>(Attribute.class), EntityManager.IDLE, Gender.FEMALE, Alignment.EVIL, Collections.singletonList(topic));
 		other = new CharacterEntity("other", race, new MutableIntegerMap<>(Attribute.class), EntityManager.IDLE, Gender.FEMALE, Alignment.EVIL, Collections.emptyList());
 	}
@@ -37,7 +37,7 @@ public class CharacterEntityTest extends ActionTest {
 		assertEquals("name", character.getName());
 		assertEquals(Gender.FEMALE, character.getGender());
 		assertEquals(Alignment.EVIL, character.getAlignment());
-		assertEquals(Contents.IMMUTABLE, character.getContents());
+		assertEquals(Contents.EMPTY, character.getContents());
 		assertNotNull(character.getTopics());
 		assertEquals(1, character.getTopics().count());
 		assertEquals(topic, character.getTopics().iterator().next());

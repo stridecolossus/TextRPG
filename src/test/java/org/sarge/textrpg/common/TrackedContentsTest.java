@@ -20,7 +20,7 @@ public class TrackedContentsTest extends ActionTest {
 	public void before() {
 		contents = new TrackedContents(Collections.singletonMap(Limit.number(1), "limit"));
 		obj = mock(WorldObject.class);
-		when(obj.getWeight()).thenReturn(1);
+		when(obj.weight()).thenReturn(1);
 		when(obj.getSize()).thenReturn(Size.MEDIUM);
 	}
 	
@@ -57,7 +57,7 @@ public class TrackedContentsTest extends ActionTest {
 	public void weightLimit() {
 		final Limit weight = Limit.weight(1);
 		assertEquals(false, weight.exceeds(obj, contents));
-		when(obj.getWeight()).thenReturn(2);
+		when(obj.weight()).thenReturn(2);
 		assertEquals(true, weight.exceeds(obj, contents));
 	}
 	

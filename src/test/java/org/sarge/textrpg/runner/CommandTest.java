@@ -133,7 +133,7 @@ public class CommandTest extends ActionTest {
 	@Test
 	public void executeRequiresLight() throws ActionException {
 		light = true;
-		loc = new Location("underground", Area.ROOT, Terrain.UNDERGROUND, false, Collections.emptyList());
+		loc = new Location("underground", Area.ROOT, Terrain.UNDERGROUND, Collections.emptySet(), Collections.emptyList());
 		when(player.getLocation()).thenReturn(loc);
 		expect("action.requires.light");
 		cmd.execute(player, false);

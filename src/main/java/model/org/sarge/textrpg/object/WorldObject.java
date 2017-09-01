@@ -92,7 +92,7 @@ public class WorldObject extends Thing {
 	}
 
 	@Override
-	public int getWeight() {
+	public int weight() {
 		return descriptor.getProperties().getWeight();
 	}
 
@@ -113,7 +113,7 @@ public class WorldObject extends Thing {
 	 * @return Value of this object
 	 * @see ObjectDescriptor.Properties#getValue()
 	 */
-	public int getValue() {
+	public int value() {
 		return descriptor.getProperties().getValue();
 	}
 

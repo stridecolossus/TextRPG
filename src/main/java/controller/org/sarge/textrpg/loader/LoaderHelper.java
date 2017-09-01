@@ -6,8 +6,6 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Consumer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.sarge.lib.util.Converter;
@@ -38,28 +36,27 @@ public class LoaderHelper {
 
 	/**
 	 * Parses a duration.
-	 * @param str Duration as a string
+	 * <br>
+	 * The duration is a colon-separated string with the format <tt>dd:hh:mm:ss</tt> specifying the number of days, hours, minutes and seconds, with the first three being optional.
+	 * <br>
+	 * Examples:
+	 * <ul>
+	 * <li><tt>01:02:03</tt> - 1 hour, 2 minutes and 3 seconds.</li>
+	 * <li><tt>4:5</tt> - 4 minutes and 5 seconds.</li>
+	 * <li><tt>06</tt> - 6 seconds.</li>
+	 * </ul>
+	 * @param str Duration string
 	 * @return Duration
 	 */
 	public static Duration parseDuration(String str) {
-	    /**
-	     * 99h99m99s
-	     */
-
-
-	    final Pattern pattern = Pattern.compile("(\\d{1,2}h)?(\\d{1,2}m)?(\\d{1,2}s)?");
-	    final Matcher m = pattern.matcher(str);
-
-//	    Duration.ofSeconds(Arrays.stream(runtime.split(":"))
-//                .mapToInt(n -> Integer.parseInt(n))
-//                .reduce(0, (n, m) -> n * 60 + m));
-
-	    while(m.find()) {
-	        System.out.println(m.start()+" "+m.end()+" "+m.group());
+	    if(str.startsWith("P")) {
+	        return Duration.parse(str);
 	    }
-
-//	    return Duration.parse(str);
-	    return null;
+	    else {
+	        return Duration.ofSeconds(Arrays.stream(str.split(":"))
+                .mapToInt(n -> Integer.parseInt(n))
+                .reduce(0, (n, m) -> n * 60 + m));
+	    }
 	}
 
 	/**

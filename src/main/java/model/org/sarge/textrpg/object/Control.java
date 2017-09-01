@@ -5,7 +5,7 @@ import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.DamageType;
 import org.sarge.textrpg.common.Description;
-import org.sarge.textrpg.common.Event;
+import org.sarge.textrpg.common.EventHolder;
 import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.common.Script;
 
@@ -56,7 +56,7 @@ public class Control extends WorldObject {
 		}
 	}
 
-	private final Event.Holder holder = new Event.Holder();
+	private final EventHolder holder = new EventHolder();
 
 	private boolean pushed;
 
@@ -104,7 +104,7 @@ public class Control extends WorldObject {
 		script.execute(actor);
 
 		// Register reset event
-		final Event event = () -> {
+		final Runnable event = () -> {
 			pushed = false;
 			control.close.execute(actor);
 		};

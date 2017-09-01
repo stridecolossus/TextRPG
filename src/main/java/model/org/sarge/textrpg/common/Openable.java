@@ -105,7 +105,7 @@ public class Openable {
 	public static final Lock FIXED = new Lock();
 
 	private final Lock lock;
-	private final Event.Holder reset = new Event.Holder();
+	private final EventHolder reset = new EventHolder();
 
 	private State state;
 
@@ -157,7 +157,7 @@ public class Openable {
 	/**
 	 * @return Holder for the current reset event
 	 */
-	public Event.Holder getResetEventHolder() {
+	public EventHolder getResetEventHolder() {
 		return reset;
 	}
 

@@ -13,8 +13,6 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.common.DefaultTopic;
-import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.common.Openable;
 import org.sarge.textrpg.common.Script;
 import org.sarge.textrpg.common.Thing;
@@ -69,16 +67,15 @@ public class ActionHelperTest extends ActionTest {
 
 	@Test
 	public void registerOpenableEvent() throws ActionException {
-		final EventQueue queue = new EventQueue();
 		final WorldObject portal = new Portal(new Portal.Descriptor(new ObjectDescriptor.Builder("door").reset(1).build(), Openable.UNLOCKABLE), loc);
 		portal.getOpenableModel().get().apply(Openable.Operation.OPEN);
 		ActionHelper.registerOpenableEvent(loc, loc, portal, "key");
-		assertEquals(1, queue.stream().count());
-		queue.execute(1);
+		assertEquals(1, ActionHelper.QUEUE.stream().count());
+		ActionHelper.QUEUE.execute(1);
 		// TODO
 		//verify(loc, times(2)).broadcast(Actor.SYSTEM, new Message("key", portal));
 		assertEquals(false, portal.getOpenableModel().get().isOpen());
-		assertEquals(0, queue.stream().count());
+		assertEquals(0, ActionHelper.QUEUE.stream().count());
 	}
 
 	@Test
@@ -90,7 +87,7 @@ public class ActionHelperTest extends ActionTest {
 	public void findTopic() {
 		// Add a topic to this location
 		final Entity entity = mock(Entity.class);
-		final Topic topic = new DefaultTopic("name", Script.NONE);
+		final Topic topic = new Topic("name", Script.NONE);
 		when(entity.getTopics()).thenReturn(Stream.of(topic));
 		loc.getContents().add(entity);
 

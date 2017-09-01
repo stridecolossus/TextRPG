@@ -14,19 +14,19 @@ import org.sarge.textrpg.world.Route;
 
 public class VehicleTest extends ActionTest {
 	private Vehicle vehicle;
-	
+
 	@Before
 	public void before() {
-		final Descriptor descriptor = new Descriptor(new ObjectDescriptor("cart"), Collections.emptyMap(), Collections.singleton(Route.LANE), 1);
+		final Descriptor descriptor = new Descriptor(new ContentsObjectDescriptor(new ObjectDescriptor("cart"), Collections.emptyMap()), Collections.singleton(Route.LANE), 1);
 		vehicle = descriptor.create();
 	}
-	
+
 	@Test
 	public void constructor() {
 		assertEquals("vehicle", vehicle.getParentName());
 		assertNotNull(vehicle.getContents());
 	}
-	
+
 	@Test
 	public void verify() throws ActionException {
 		assertEquals(true, vehicle.getDescriptor().isValid(Route.LANE));

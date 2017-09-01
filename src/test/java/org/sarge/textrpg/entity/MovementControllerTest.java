@@ -34,7 +34,7 @@ public class MovementControllerTest extends ActionTest {
 	private MovementController controller;
 	private Location dest;
 	private Link link;
-	
+
 	@Before
 	public void before() {
 		// Create controller
@@ -48,14 +48,13 @@ public class MovementControllerTest extends ActionTest {
 		// Create a link with a controller
 		final Thing obj = mock(Thing.class);
 		link = mock(Link.class);
-		when(link.isTraversable(actor)).thenReturn(true);
 		when(link.getController()).thenReturn(Optional.of(obj));
 		when(link.getScript()).thenReturn(mock(Script.class));
 		when(link.getSize()).thenReturn(Size.MEDIUM);
 		when(actor.perceives(obj)).thenReturn(true);
 
 		// Link to location
-		dest = new Location("dest", Area.ROOT, Terrain.DESERT, false, Collections.emptyList());
+		dest = new Location("dest", Area.ROOT, Terrain.DESERT, Collections.emptySet(), Collections.emptyList());
 		loc.add(new LinkWrapper(Direction.EAST, link, dest));
 
 		// Ensure sufficient stamina
@@ -63,40 +62,40 @@ public class MovementControllerTest extends ActionTest {
 		final IntegerMap<EntityValue> values = mock(IntegerMap.class);
 		when(values.get(EntityValue.STAMINA)).thenReturn(3);
 		when(actor.getValues()).thenReturn(values);
-		
+
 		// Give the actor a race (for tracks)
 		final Race race = new Race.Builder("race").build();
 		when(actor.getRace()).thenReturn(race);
 		when(actor.getSize()).thenReturn(Size.SMALL);
-		
+
 		// Add an emission to the actor
 		final Emission emission = Emission.light(Percentile.ONE);
 		when(actor.getEmission(any(Emission.Type.class))).thenReturn(Optional.empty());
 		when(actor.getEmission(Emission.Type.LIGHT)).thenReturn(Optional.of(emission));
 	}
-	
+
 	@Test
 	public void move() throws ActionException {
 		// Move
 		final Description next = controller.move(actor, Direction.EAST, 2, true);
 		verify(actor).setParent(dest);
 		assertNotNull(next);
-		
+
 		// Check stamina consumed
 		verify(actor).modify(EntityValue.STAMINA, -1);
-		
+
 		// Check script
 		verify(link.getScript()).execute(actor);
-		
+
 		// Check movement notifications
 		// TODO
 		//verify(loc).broadcast(actor, new MovementNotification(actor, false, Direction.EAST));
 		//verify(dest).broadcast(actor, new MovementNotification(actor, true, Direction.WEST));
-		
+
 		// Check emission notification
 		// TODO
 		// verify(start).notify(new MovementNotification(actor, false, Direction.EAST));
-		
+
 		// Check tracks
 		// TODO
 		/*
@@ -109,24 +108,22 @@ public class MovementControllerTest extends ActionTest {
 		assertTrue(t.getCreationTime() == 0);
 		*/
 	}
-	
+
 	@Test
 	public void moveNotTraversable() throws ActionException {
-		when(link.isTraversable(actor)).thenReturn(false);
-		when(link.getReason()).thenReturn("move.cannot.traverse");
+		when(link.reason(actor)).thenReturn("move.cannot.traverse");
 		expect("move.cannot.traverse");
 		controller.move(actor, Direction.EAST, 1, true);
 	}
 
 	@Test
 	public void moveSizeConstraint() throws ActionException {
-		when(link.isTraversable(actor)).thenReturn(false);
-		when(link.getReason()).thenReturn("move.link.constraint");
+		when(link.reason(actor)).thenReturn("move.link.constraint");
 		when(actor.getSize()).thenReturn(Size.LARGE);
 		expect("move.link.constraint");
 		controller.move(actor, Direction.EAST, 1, true);
 	}
-	
+
 	@Test
 	public void moveInsufficientStamina() throws ActionException {
 		when(actor.getValues().get(EntityValue.STAMINA)).thenReturn(0);

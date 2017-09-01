@@ -26,7 +26,7 @@ public class ThingTest {
 			}
 			
 			@Override
-			public int getWeight() {
+			public int weight() {
 				return 0;
 			}
 			

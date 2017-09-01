@@ -81,6 +81,6 @@ public class ContentsTest {
 
 	@Test(expected = RuntimeException.class)
 	public void immutable() throws ActionException {
-		Contents.IMMUTABLE.add(obj);
+		Contents.EMPTY.add(obj);
 	}
 }

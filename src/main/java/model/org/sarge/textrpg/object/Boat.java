@@ -1,11 +1,9 @@
 package org.sarge.textrpg.object;
 
 import java.util.Collections;
-import java.util.Map;
 
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Parent;
-import org.sarge.textrpg.object.TrackedContents.Limit;
 import org.sarge.textrpg.world.Location;
 import org.sarge.textrpg.world.Route;
 import org.sarge.textrpg.world.Terrain;
@@ -24,34 +22,33 @@ public class Boat extends Vehicle {
 		/**
 		 * Constructor.
 		 * @param descriptor		Object descriptor
-		 * @param limits			Contents limits
 		 * @param mod				Movement cost modifier
 		 * @param raft				Whether this is a raft or a boat
 		 */
-		public Descriptor(ObjectDescriptor descriptor, Map<Limit, String> limits, float mod, boolean raft) {
-			super(descriptor, limits, Collections.emptySet(), mod);
+		public Descriptor(ContentsObjectDescriptor descriptor, float mod, boolean raft) {
+			super(descriptor, Collections.emptySet(), mod);
 			this.raft = raft;
 		}
-		
+
 		@Override
 		public boolean isValid(Route route) {
 			return true;
 		}
-		
+
 		/**
 		 * @return Whether this vehicle is a raft or a boat
 		 */
 		public boolean isRaft() {
 			return raft;
 		}
-		
+
 		@Override
 		public Boat create() {
 			return new Boat(this);
 		}
 	}
-	
-	
+
+
 	private boolean moored = true;
 
 	/**
@@ -61,7 +58,7 @@ public class Boat extends Vehicle {
 	public Boat(Descriptor descriptor) {
 		super(descriptor);
 	}
-	
+
 	@Override
 	protected String getFullDescriptionKey() {
 		if(moored) {
@@ -78,13 +75,13 @@ public class Boat extends Vehicle {
 	public boolean isMoored() {
 		return moored;
 	}
-	
+
 	@Override
 	public void setParent(Parent parent) throws ActionException {
 		// Moor boat if moved into non-water location
 		final Location loc = (Location) parent;
 		moored = loc.getTerrain() != Terrain.WATER;
-		
+
 		// Delegate
 		super.setParent(parent);
 	}

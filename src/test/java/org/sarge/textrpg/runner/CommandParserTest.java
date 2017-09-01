@@ -28,7 +28,7 @@ public class CommandParserTest {
 		public MockAction() {
 			super("action");
 		}
-		
+
 		@Override
 		public ActionResponse execute(Entity actor) {
 			return null;
@@ -44,47 +44,47 @@ public class CommandParserTest {
 			// Empty
 		}
 	}
-	
+
 	@Rule
 	public final ExpectedException expected = ExpectedException.none();
-	
+
 	private CommandParser parser;
 	private DescriptionStore store;
 	private Player player;
 	private MockAction action;
 	private WorldObject obj;
-	
+
 	@Before
 	public void before() {
 		// Create an action
 		action = new MockAction();
-		
+
 		// Create word store
 		store = mock(DescriptionStore.class);
 		when(store.getStringArray("action.action")).thenReturn(new String[]{"action"});
-		
+
 		// Create parser
 		parser = new CommandParser(Collections.singletonList(action), Collections.singleton("the"), store);
-		
+
 		// Create player
 		player = mock(Player.class);
 		when(player.getContents()).thenReturn(new Contents());
-		
+
 		// Put in a location
 		final Location loc = mock(Location.class);
 		when(loc.getContents()).thenReturn(new Contents());
 		when(player.getLocation()).thenReturn(loc);
-		
+
 		// Create argument
 		obj = new ObjectDescriptor("object").create();
 		when(player.perceives(obj)).thenReturn(true);
 	}
-	
+
 	@Test
 	public void parse() throws Exception {
 		final Command cmd = parser.parse(player, "action");
 		assertEquals(action, cmd.getAction());
-		assertEquals(cmd, new Command(action, MockAction.class.getMethod("execute", new Class<?>[]{Entity.class}), new Object[]{}));
+        assertEquals(cmd, new Command(action, MockAction.class.getMethod("execute", new Class<?>[]{Entity.class}), new Object[]{}));
 	}
 
 	@Test
@@ -109,12 +109,12 @@ public class CommandParserTest {
 	public void parseDecoration() throws Exception {
 		final String decoration = "decoration";
 		when(store.getStringArray(decoration)).thenReturn(new String[]{decoration});
-		final Location loc = new Location("loc", Area.ROOT, Terrain.DESERT, false, Collections.singleton(decoration));
+		final Location loc = new Location("loc", Area.ROOT, Terrain.DESERT, Collections.emptySet(), Collections.singleton(decoration));
 		when(player.getLocation()).thenReturn(loc);
 		final Command cmd = parser.parse(player, "action decoration");
 		verify(cmd, String.class, decoration);
 	}
-	
+
 	@Test
 	public void parseSurface() throws Exception {
 		final String floor = "surface.floor";
@@ -122,12 +122,12 @@ public class CommandParserTest {
 		final Command cmd = parser.parse(player, "action floor");
 		verify(cmd, String.class, floor);
 	}
-	
+
 	private void verify(Command cmd, Class<?> clazz, Object arg) throws Exception {
 		assertEquals(action, cmd.getAction());
 		assertEquals(cmd, new Command(action, MockAction.class.getMethod("execute", new Class<?>[]{Entity.class, clazz}), new Object[]{arg}));
 	}
-	
+
 	@Test
 	public void parseUnknownArgument() throws ActionException {
 		expected.expect(ActionException.class);

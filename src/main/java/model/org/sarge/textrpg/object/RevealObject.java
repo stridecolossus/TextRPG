@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.Event;
 import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.common.Parent;
 import org.sarge.textrpg.util.Percentile;
@@ -122,7 +121,7 @@ public class RevealObject extends WorldObject {
 		revealed = true;
 
 		// Register reset event
-		final Event event = () -> {
+		final Runnable event = () -> {
 			// Hide or remove revealed object
 			if(fixed) {
 				// Hide fixture

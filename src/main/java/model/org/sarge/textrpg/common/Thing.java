@@ -5,9 +5,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import org.sarge.lib.util.Check;
 import org.sarge.lib.util.StreamUtil;
-import org.sarge.textrpg.util.Percentile;
 
 /**
  * Base-class for an object or entity in the world.
@@ -25,7 +23,7 @@ public abstract class Thing implements Hidden {
 	public static final Parent LIMBO = new Parent() {
 		@Override
 		public Contents getContents() {
-			return Contents.IMMUTABLE;
+			return Contents.EMPTY;
 		}
 
 		@Override
@@ -33,58 +31,6 @@ public abstract class Thing implements Hidden {
 			return null;
 		}
 	};
-
-	/**
-	 * Creates a proxy object that appears as a thing.
-	 * @param name		Name
-	 * @param vis		Visibility
-	 * @param forget	Forget duration (ms)
-	 * @return Proxy object
-	 * TODO - description key
-	 * TODO - move to a helper
-	 */
-	public static Thing create(String name, Percentile vis, boolean quiet, long forget) {
-		Check.notEmpty(name);
-		Check.notNull(vis);
-		Check.zeroOrMore(forget);
-
-		return new Thing() {
-			@Override
-			public String getName() {
-				return name;
-			}
-
-			@Override
-			public Percentile getVisibility() {
-				return vis;
-			}
-
-			@Override
-			public boolean isQuiet() {
-				return quiet;
-			}
-
-			@Override
-			public long getForgetPeriod() {
-				return forget;
-			}
-
-			@Override
-			public int getWeight() {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public Size getSize() {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public Description describe() {
-				return new Description("description.dropped", "name", name); // TODO - description key
-			}
-		};
-	}
 
 	private Parent parent = LIMBO;
 
@@ -96,7 +42,7 @@ public abstract class Thing implements Hidden {
 	/**
 	 * @return Weight of this thing and any contents
 	 */
-	public abstract int getWeight();
+	public abstract int weight();
 
 	/**
 	 * @return Size of this thing

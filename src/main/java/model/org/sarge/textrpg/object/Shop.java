@@ -12,8 +12,6 @@ import java.util.stream.Stream;
 import org.sarge.lib.collection.StrictSet;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Actor;
-import org.sarge.textrpg.common.DefaultTopic;
-import org.sarge.textrpg.common.Script;
 import org.sarge.textrpg.common.Topic;
 
 /**
@@ -85,9 +83,9 @@ public class Shop {
 	 * @return Shop topic
 	 */
 	public Topic topic(String text) {
-		return new DefaultTopic(TOPIC_NAME, Script.message(text)) {
+		return new Topic(TOPIC_NAME, text) {
 			@Override
-			public Shop getShop() {
+			public Shop shop() {
 				return Shop.this;
 			}
 		};

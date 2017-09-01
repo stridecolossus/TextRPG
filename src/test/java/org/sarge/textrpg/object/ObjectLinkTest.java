@@ -34,7 +34,7 @@ public class ObjectLinkTest extends ActionTest {
 		assertEquals(false, link.isTraversable(actor));
 		assertEquals(true, link.isVisible(actor));
 		assertEquals(Optional.of(obj), link.getController());
-		assertEquals("reason", link.getReason());
+		assertEquals("reason", link.reason(actor));
 		assertEquals("{object}", link.describe().build().get("object"));
 	}
 
@@ -43,11 +43,10 @@ public class ObjectLinkTest extends ActionTest {
 		obj.getOpenableModel().get().setOpen(true);
 		assertEquals(true, link.isOpen());
 		assertEquals(true, link.isTraversable(actor));
-		assertEquals("move.link.constraint", link.getReason());
+		assertEquals(null, link.reason(actor));
 		assertEquals(null, link.describe().build().get("object"));
 	}
 
-	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void invalidObject() {
 		when(obj.getOpenableModel()).thenReturn(Optional.empty());

@@ -29,9 +29,9 @@ public class DrinkAction extends AbstractAction {
 	 * Matcher for water receptacles.
 	 */
 	private static final Predicate<WorldObject> WATER = ContentsHelper.receptacleMatcher(Liquid.WATER);
-	
+
 	private final Clock clock;
-	
+
 	public DrinkAction(Clock clock) {
 		this.clock = notNull(clock);
 	}
@@ -63,7 +63,7 @@ public class DrinkAction extends AbstractAction {
 		// Look for receptacle in location first
 		final Location loc = actor.getLocation();
 		if(loc.isLightAvailable(clock.isDaylight())) {
-			if(loc.isWaterAvailable()) {
+			if(loc.isProperty(Location.Property.WATER)) {
 				// Drink from global source
 				return drink(Receptacle.WATER, actor, "drink.response.water");
 			}
@@ -122,7 +122,7 @@ public class DrinkAction extends AbstractAction {
 			rec.consume(1);
 
 			// Apply effects
-			liquid.getEffect().apply(Collections.singletonList(actor), actor);
+			liquid.effects().apply(Collections.singletonList(actor), actor);
 		}
 
 		// Build response

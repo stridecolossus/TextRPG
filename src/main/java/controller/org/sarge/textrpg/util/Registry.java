@@ -6,7 +6,7 @@ import java.util.function.Function;
 
 import org.sarge.lib.collection.StrictMap;
 import org.sarge.lib.xml.Element;
-import org.sarge.textrpg.common.LoaderException;
+import org.sarge.textrpg.loader.LoaderException;
 
 /**
  * Registry.

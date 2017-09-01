@@ -9,7 +9,6 @@ import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.Description;
-import org.sarge.textrpg.common.Event;
 import org.sarge.textrpg.common.EventQueue;
 
 /**
@@ -27,11 +26,11 @@ public class AuctionHouse {
 		private final ObjectDescriptor descriptor;
 		private final int min;
 		private final long time;
-		private final Event expiry = this::complete;
-		
+		private final Runnable expiry = this::complete;
+
 		private int bid;
 		private Actor bidder;
-		
+
 		/**
 		 * Constructor.
 		 * @param poster			Poster
@@ -60,15 +59,15 @@ public class AuctionHouse {
 				.add("descriptor", descriptor)
 				.add("min", min)
 				.add("time", time);
-			
+
 			if(bidder != null) {
 				builder.add("bidder", bidder);
 				builder.add("bid", bid);
 			}
-			
+
 			return builder.build();
 		}
-		
+
 		/**
 		 * Completes this auction post on expiry.
 		 */
@@ -82,7 +81,7 @@ public class AuctionHouse {
 				// TODO
 			}
 		}
-		
+
 		@Override
 		public String toString() {
 			return ToString.toString(this);
@@ -126,9 +125,9 @@ public class AuctionHouse {
 //			return ToString.toString(this);
 //		}
 //	}
-	
+
 	private final List<Post> posts = new StrictList<>();
-	
+
 	/**
 	 * @return Auction postings
 	 */
@@ -150,7 +149,7 @@ public class AuctionHouse {
 		// Check can auction this object
 		if(obj.isDamaged()) throw new ActionException("post.damaged.object");
 		if(obj.getOwner() != actor) throw new ActionException("post.not.carried");
-		
+
 		// Create new auction post
 		final Post post = new Post(actor, obj.descriptor, min, time);
 		posts.add(post);
@@ -160,10 +159,10 @@ public class AuctionHouse {
 
 		// Remove from inventory
 		obj.destroy();
-		
+
 		return post;
 	}
-	
+
 	/**
 	 * Cancels an auction posting.
 	 * @param actor		Actor
@@ -195,12 +194,12 @@ public class AuctionHouse {
 
 		// Return previous offer
 		restore(post);
-		
+
 		// Register new offer
 		post.bid = bid;
 		post.bidder = actor;
 	}
-	
+
 	/**
 	 * Buys the given post.
 	 * @param actor

@@ -12,7 +12,20 @@ import java.util.stream.Stream;
 
 import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
-import org.sarge.textrpg.common.*;
+import org.sarge.textrpg.common.ActionException;
+import org.sarge.textrpg.common.Actor;
+import org.sarge.textrpg.common.Contents;
+import org.sarge.textrpg.common.DamageType;
+import org.sarge.textrpg.common.Description;
+import org.sarge.textrpg.common.Emission;
+import org.sarge.textrpg.common.EventHolder;
+import org.sarge.textrpg.common.EventQueue;
+import org.sarge.textrpg.common.Hidden;
+import org.sarge.textrpg.common.Message;
+import org.sarge.textrpg.common.Notification;
+import org.sarge.textrpg.common.Size;
+import org.sarge.textrpg.common.Thing;
+import org.sarge.textrpg.common.Topic;
 import org.sarge.textrpg.object.DeploymentSlot;
 import org.sarge.textrpg.object.WorldObject;
 import org.sarge.textrpg.util.IntegerMap;
@@ -30,25 +43,25 @@ import org.sarge.textrpg.world.Tracks;
  */
 public abstract class Entity extends Thing implements Actor {
 	private static final long FORGET_DURATION = Duration.ofMinutes(5).toMillis();
-	
+
 	protected final Race race;
-	
+
 	private final MutableIntegerMap<Attribute> attrs;
 	private final MutableIntegerMap<EntityValue> values = new MutableIntegerMap<>(EntityValue.class);
 	private final SkillSet skills;
 	private final Equipment equipment = new Equipment();
 	private final List<AppliedEffect> applied = new ArrayList<>();
-	private final LinkedList<Tracks> tracks = new LinkedList<Tracks>();
-	
+	private final LinkedList<Tracks> tracks = new LinkedList<>();
+
 	private final EventQueue queue = new EventQueue();
-	private final Event.Holder holder = new Event.Holder();
+	private final EventHolder holder = new EventHolder();
 	private final EntityManager manager;
 
 	private Stance stance = Stance.DEFAULT;
 	private Optional<Group> group = Optional.empty();
 	private Percentile vis = Percentile.ONE;
 	private Induction induction;
-	
+
 	/**
 	 * Constructor.
 	 * @param race		Entity race
@@ -68,7 +81,7 @@ public abstract class Entity extends Thing implements Actor {
 	public String getName() {
 		return race.getName();
 	}
-	
+
 	/**
 	 * @return Event queue for this entity
 	 */
@@ -76,48 +89,48 @@ public abstract class Entity extends Thing implements Actor {
 	public EventQueue getEventQueue() {
 		return queue;
 	}
-	
+
 	/**
 	 * @return Event holder for the current AI action
 	 */
-	public Event.Holder getEventHolder() {
+	public EventHolder getEventHolder() {
 		return holder;
 	}
-	
+
 	/**
 	 * @return Entity manager
 	 */
 	public EntityManager getEntityManager() {
 		return manager;
 	}
-	
+
 	/**
 	 * @return Notification handler
 	 */
 	public abstract Notification.Handler getNotificationHandler();
-	
+
 	/**
 	 * @return Race of this entity
 	 */
 	public Race getRace() {
 		return race;
 	}
-	
+
 	@Override
 	public Size getSize() {
 		return race.getAttributes().getSize();
 	}
-	
+
 	/**
 	 * @return Gender of this entity
 	 */
 	public abstract Gender getGender();
-	
+
 	/**
 	 * @return Alignment of this entity
 	 */
 	public abstract Alignment getAlignment();
-	
+
 	@Override
 	public Percentile getVisibility() {
 		if(vis == null) {
@@ -128,17 +141,17 @@ public abstract class Entity extends Thing implements Actor {
 			return vis;
 		}
 	}
-	
+
 	@Override
 	public boolean isSentient() {
 		return true;
 	}
-	
+
 	@Override
 	public long getForgetPeriod() {
 		return FORGET_DURATION;
 	}
-	
+
 	/**
 	 * Sets the visibility of this entity.
 	 * @param vis Visibility or <tt>null</tt> for default for this entity
@@ -146,30 +159,30 @@ public abstract class Entity extends Thing implements Actor {
 	void setVisibility(Percentile vis) {
 		this.vis = vis;
 	}
-	
+
 	@Override
 	public Optional<Emission> getEmission(Emission.Type type) {
 		return equipment.stream().map(obj -> obj.getEmission(type)).findFirst().filter(Optional::isPresent).map(Optional::get);
 	}
-	
+
 	@Override
-	public final int getWeight() {
+	public final int weight() {
 		// TODO
 		return 42/*weight*/ + getContents().getWeight();
 	}
-	
+
 	/**
 	 * @return Whether this entity can enter water locations
 	 */
 	public boolean isSwimming() {
 		return false;
 	}
-	
+
 	/**
 	 * @return Entity description key
 	 */
 	protected abstract String getDescriptionKey();
-	
+
 	@Override
 	public Description describe() {
 		final Description.Builder builder = new Description.Builder("description." + getDescriptionKey());
@@ -179,14 +192,14 @@ public abstract class Entity extends Thing implements Actor {
 		// TODO - current action/induction/emote
 		return builder.build();
 	}
-	
+
 	/**
 	 * @return Current location of this entity
 	 */
 	public Location getLocation() {
 		return (Location) super.root();
 	}
-	
+
 	/**
 	 * @return Group containing this entity (if any)
 	 */
@@ -201,14 +214,14 @@ public abstract class Entity extends Thing implements Actor {
 	void setGroup(Group group) {
 		this.group = Optional.ofNullable(group);
 	}
-	
+
 	/**
 	 * @return Attributes of this entity
 	 */
 	public IntegerMap<Attribute> getAttributes() {
 		return attrs;
 	}
-	
+
 	/**
 	 * Modifies an attribute value.
 	 * @param attr		Attribute to modify
@@ -217,14 +230,14 @@ public abstract class Entity extends Thing implements Actor {
 	void modify(Attribute attr, int value) {
 		attrs.add(attr, value);
 	}
-	
+
 	/**
 	 * @return Values of this entity
 	 */
 	public IntegerMap<EntityValue> getValues() {
 		return values;
 	}
-	
+
 	/**
 	 * Modifies an entity-value.
 	 * @param value		Value to modify
@@ -232,7 +245,7 @@ public abstract class Entity extends Thing implements Actor {
 	 */
 	public void modify(EntityValue value, int amount) {
 		values.add(value, amount); // TODO - addClamp()
-		
+
 		if(values.get(value) < 0) {
 			values.set(value, 0);
 		}
@@ -242,20 +255,20 @@ public abstract class Entity extends Thing implements Actor {
 	public boolean isDead() {
 		return values.get(EntityValue.HEALTH) <= 0;
 	}
-	
+
 	@Override
 	protected void damage(DamageType type, int amount) {
 		// Apply damage
 		// TODO - resistances
 		values.add(EntityValue.HEALTH, -amount);
-		
+
 		// Destroy this entity if dead
 		if(isDead()) {
 			// TODO - notify entity, group, location
 			destroy();
 		}
 	}
-	
+
 	/**
 	 * @return Skill-set
 	 */
@@ -271,14 +284,14 @@ public abstract class Entity extends Thing implements Actor {
 	public Optional<Integer> getSkillLevel(Skill skill) {
 		return skills.getLevel(skill);
 	}
-	
+
 	/**
 	 * @return Stance of this entity
 	 */
 	public Stance getStance() {
 		return stance;
 	}
-	
+
 	/**
 	 * Changes the stance of this entity.
 	 * @param stance New stance
@@ -291,10 +304,10 @@ public abstract class Entity extends Thing implements Actor {
 		this.stance = stance;
 		setVisibility(null);
 	}
-	
+
 	@Override
 	public Contents getContents() {
-		return Contents.IMMUTABLE;
+		return Contents.EMPTY;
 	}
 
 	/**
@@ -324,24 +337,24 @@ public abstract class Entity extends Thing implements Actor {
 		if((perception * 3) > obj.getVisibility().invert().intValue()) {
 			return true;
 		}
-		
+
 		// Check group members
 		if(group.isPresent()) {
 			final boolean result = group.get().getMembers().anyMatch(e -> e.perceives(obj));
 			if(result) return true;
 		}
-		
+
 		// Not perceived
 		return false;
 	}
-	
+
 	/**
 	 * @return Conversation topics of this entity
 	 */
 	public Stream<Topic> getTopics() {
 		return Stream.empty();
 	}
-	
+
 	/**
 	 * @return Tracks generated by this entity
 	 */
@@ -360,11 +373,11 @@ public abstract class Entity extends Thing implements Actor {
 		final Collection<Tracks> old = this.tracks.stream().filter(t -> t.getCreationTime() < time).collect(toList());
 		old.stream().forEach(Tracks::remove);
 		this.tracks.removeAll(old);
-		
+
 		// Add new tracks
 		this.tracks.add(tracks);
 	}
-	
+
 	/**
 	 * @param e Entity
 	 * @return Whether this entity is following the given entity
@@ -372,14 +385,14 @@ public abstract class Entity extends Thing implements Actor {
 	public boolean isFollowing(Entity e) {
 		return false;
 	}
-	
+
 	/**
 	 * @return Followers of this entity (default is empty)
 	 */
 	public Stream<Entity> getFollowers() {
 		return Stream.empty();
 	}
-	
+
 	/**
 	 * Follows the given entity.
 	 * @param e Entity to follow or <tt>null</tt> to stop following
@@ -389,14 +402,14 @@ public abstract class Entity extends Thing implements Actor {
 	protected void follow(Entity e) throws ActionException {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	/**
 	 * Transient effect applied to this entity.
 	 */
 	public final class AppliedEffect {
 		private final EffectMethod effect;
 		private final int size;
-		
+
 		/**
 		 * Constructor.
 		 * @param effect	Effect
@@ -406,22 +419,22 @@ public abstract class Entity extends Thing implements Actor {
 			this.effect = effect;
 			this.size = size;
 		}
-		
+
 		public EffectMethod getEffect() {
 			return effect;
 		}
-		
+
 		public int getSize() {
 			return size;
 		}
-		
+
 		/**
 		 * Removes this applied effect.
 		 */
 		protected void remove() {
 			effect.apply(Entity.this, -size);
 		}
-		
+
 		@Override
 		public String toString() {
 			return ToString.toString(this);
@@ -445,21 +458,21 @@ public abstract class Entity extends Thing implements Actor {
 	protected void apply(EffectMethod effect, int size, Optional<Integer> duration, EventQueue queue) {
 		// Apply effect
 		effect.apply(this, size);
-		
+
 		// Register applied effect
 		final AppliedEffect e = new AppliedEffect(effect, size);
 		this.applied.add(e);
-		
+
 		// Create expiry event for transient effects
 		duration.ifPresent(t -> {
-			final Event expiry = () -> {
+			final Runnable expiry = () -> {
 				e.remove();
 				this.applied.remove(e);
 			};
 			queue.add(expiry, t);
 		});
 	}
-	
+
 	/**
 	 * Dispels all transient effects.
 	 */
@@ -487,10 +500,10 @@ public abstract class Entity extends Thing implements Actor {
 		this.induction = induction;
 
 		// Add completion event
-		final Event event = () -> {
+		final Runnable event = () -> {
 			// Ignore interrupted inductions
 			if(this.induction == null) return;
-			
+
 			// Complete induction
 			try {
 				final Description description = induction.complete();
@@ -501,7 +514,7 @@ public abstract class Entity extends Thing implements Actor {
 			catch(ActionException e) {
 				alert(Message.of(e));
 			}
-			
+
 			// Stop if induction is finished
 			if(!repeat) {
 				this.induction = null;

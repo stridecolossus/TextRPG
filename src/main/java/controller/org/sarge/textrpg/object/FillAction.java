@@ -53,7 +53,7 @@ public class FillAction extends AbstractAction {
 		// Find source
 		final Receptacle src;
 		final Location loc = actor.getLocation();
-		if(loc.isWaterAvailable()) {
+		if(loc.isProperty(Location.Property.WATER)) {
 			// Fill from global source
 			src = Receptacle.WATER;
 		}

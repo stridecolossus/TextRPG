@@ -77,7 +77,7 @@ public class EntityTest extends ActionTest {
 		// Check entity attributes
 		assertEquals(race, entity.getRace());
 		assertEquals("race", entity.getName());
-		assertEquals(42, entity.getWeight());
+		assertEquals(42, entity.weight());
 		assertEquals(true, entity.isSentient());
 		assertEquals(loc, entity.getLocation());
 		

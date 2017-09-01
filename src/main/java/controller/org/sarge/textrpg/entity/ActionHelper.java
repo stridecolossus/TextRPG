@@ -3,14 +3,13 @@ package org.sarge.textrpg.entity;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
-import java.util.WeakHashMap;
 
+import org.sarge.lib.collection.Cache;
+import org.sarge.lib.collection.Pair;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.ContentsHelper;
 import org.sarge.textrpg.common.Description;
-import org.sarge.textrpg.common.Event;
 import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.common.Message;
 import org.sarge.textrpg.common.Notification;
@@ -28,8 +27,16 @@ import org.sarge.textrpg.world.Location;
  * @author Sarge
  */
 public final class ActionHelper {
-	private static final Map<String, Optional<Topic>> TOPICS = new WeakHashMap<>();
-	private static final EventQueue QUEUE = new EventQueue();
+    /**
+     * Openable event queue.
+     * @see #registerOpenableEvent(Location, Location, WorldObject, String)
+     */
+    public static final EventQueue QUEUE = new EventQueue();
+
+    private static final Cache<Pair<Location, String>, Optional<Topic>> TOPICS = new Cache<>(ActionHelper::loadTopic, Cache.EvictionPolicy.NONE);
+    // TODO
+    // - size limited
+    // - will *always* add an entry because loader returns optional!
 
 	private ActionHelper() {
 		// Utility class
@@ -82,22 +89,20 @@ public final class ActionHelper {
 	 * @return Topic
 	 */
 	public static Optional<Topic> findTopic(Location loc, String name) {
-		// Check cache
-		final Optional<Topic> topic = TOPICS.get(name);
-		if(topic != null) return topic;
+	    return TOPICS.get(new Pair<>(loc, name));
+	}
 
-		// Otherwise find in location
-		final Optional<Topic> found = ContentsHelper.select(loc.getContents().stream(), Entity.class)
-			.flatMap(Entity::getTopics)
-			.filter(t -> t.getName().equals(name))
-			.findFirst();
-
-		// Cache
-		if(found.isPresent()) {
-			TOPICS.put(name, found);
-		}
-
-		return found;
+	/**
+	 * Loader for topics cache.
+	 * @param key Topic key
+	 * @return Topic
+	 */
+	private static Optional<Topic> loadTopic(Pair<Location, String> key) {
+	    final String name = key.getRight();
+        return ContentsHelper.select(key.getLeft().getContents().stream(), Entity.class)
+            .flatMap(Entity::getTopics)
+            .filter(t -> t.name().equals(name))
+            .findFirst();
 	}
 
 	/**
@@ -140,7 +145,7 @@ public final class ActionHelper {
 	public static void registerOpenableEvent(Location loc, Location other, WorldObject obj, String key) {
 		// Create reset event
 		final Openable model = obj.getOpenableModel().get();
-		final Event event = () -> {
+		final Runnable event = () -> {
 			model.reset();
 			final Notification notification = new Message(key, obj);
 			loc.broadcast(Actor.SYSTEM, notification);

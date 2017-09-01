@@ -21,7 +21,6 @@ import org.sarge.lib.util.ConverterAdapter;
 import org.sarge.lib.util.StreamUtil;
 import org.sarge.lib.xml.Element;
 import org.sarge.lib.xml.ElementLoader;
-import org.sarge.textrpg.common.LoaderException;
 import org.sarge.textrpg.entity.Race;
 import org.sarge.textrpg.object.LootFactory;
 import org.sarge.textrpg.world.Area;

@@ -8,13 +8,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class EventHolderTest {
-	private Event.Holder holder;
+	private EventHolder holder;
 
 	@Before
 	public void before() {
-		holder = new Event.Holder();
+		holder = new EventHolder();
 	}
-	
+
 	@Test
 	public void set() {
 		final EventQueue.Entry prev = mock(EventQueue.Entry.class);

@@ -6,7 +6,7 @@ import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.common.Emission;
-import org.sarge.textrpg.common.Event;
+import org.sarge.textrpg.common.EventHolder;
 import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.util.Percentile;
 
@@ -46,12 +46,11 @@ public class Light extends WorldObject {
 				assert light.lifetime > 0;
 
 				// Light
-				final long time = EventQueue.getTime();
 				light.lit = true;
-				light.start = time;
+				light.start = QUEUE.time();
 
 				// Register expiry event
-				final Event event = () -> {
+				final Runnable event = () -> {
 					light.lit = false;
 					light.lifetime = 0;
 					light.alertOwner("light.expired");
@@ -60,8 +59,8 @@ public class Light extends WorldObject {
 				light.expiry.set(entry);
 
 				// Register warning event
-				final long when = time + (long) (light.lifetime * 0.9f);
-				final Event warning = () -> light.alertOwner("light.expire.warning");
+				final long when = QUEUE.time() + (long) (light.lifetime * 0.9f);
+				final Runnable warning = () -> light.alertOwner("light.expire.warning");
 				final EventQueue.Entry warnEntry = QUEUE.add(warning, when);
 				light.warning.set(warnEntry);
 			}
@@ -72,7 +71,7 @@ public class Light extends WorldObject {
 			protected void execute(Light light) throws ActionException {
 				if(!light.lit) throw new ActionException("snuff.not.lit");
 				light.lit = false;
-				light.lifetime -= EventQueue.getTime() - light.start;
+				light.lifetime -= QUEUE.time() - light.start;
 				light.expiry.cancel();
 				light.warning.cancel();
 			}
@@ -151,8 +150,8 @@ public class Light extends WorldObject {
 	}
 
 	private final Type type;
-	private final Event.Holder expiry = new Event.Holder();
-	private final Event.Holder warning = new Event.Holder();
+	private final EventHolder expiry = new EventHolder();
+	private final EventHolder warning = new EventHolder();
 
 	private long lifetime;
 	private long start;
@@ -174,12 +173,12 @@ public class Light extends WorldObject {
 	}
 
 	@Override
-	public int getWeight() {
+	public int weight() {
 		if(isLantern()) {
-			return super.getWeight() + (int) lifetime;
+			return super.weight() + (int) lifetime;
 		}
 		else {
-			return super.getWeight();
+			return super.weight();
 		}
 	}
 
@@ -265,7 +264,7 @@ public class Light extends WorldObject {
 
 	/**
 	 * Performs the given operation on this light.
-	 * @param time Current time
+	 * @param op Light operation
 	 * @throws ActionException if the operation cannot be performed
 	 */
 	// TODO - public

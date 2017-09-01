@@ -13,9 +13,9 @@ import org.sarge.lib.util.Check;
  */
 public class Contents {
 	/**
-	 * Immutable set of contents.
+	 * Immutable and empty set of contents.
 	 */
-	public static final Contents IMMUTABLE = new Contents() {
+	public static final Contents EMPTY = new Contents() {
 		@Override
 		public void add(Thing obj) {
 			throw new RuntimeException();
@@ -66,7 +66,7 @@ public class Contents {
 	private static void stream(Contents c, Stream.Builder<Thing> stream, int depth) {
 		// Add this set of contents
 		c.contents.stream().forEach(stream::accept);
-		
+
 		// Recurse to children
 		if(depth > 0) {
 			c.contents.stream()
@@ -82,14 +82,14 @@ public class Contents {
 	public final int size() {
 		return contents.size();
 	}
-	
+
 	/**
 	 * @return Total weight of this set of contents (default implementation is zero)
 	 */
 	public int getWeight() {
 		return 0;
 	}
-	
+
 	/**
 	 * Tests whether the given object can be added to this set of contents.
 	 * @param obj Object to add
@@ -109,7 +109,7 @@ public class Contents {
 		contents.add(obj);
 		listeners.forEach(listener -> listener.contentsChanged(true, obj));
 	}
-	
+
 	/**
 	 * Removes an object from this set of contents.
 	 * @param obj Object to remove
@@ -127,7 +127,7 @@ public class Contents {
 	public void add(Listener listener) {
 		listeners.add(listener);
 	}
-	
+
 	/**
 	 * Moves this set of contents to the given parent.
 	 */

@@ -164,7 +164,7 @@ public final class Command {
 		final int len = 1 + this.args.length;
 		final Object[] args = new Object[len];
 		args[0] = actor;
-		System.arraycopy(this.args, 0, args, 2, this.args.length);
+		System.arraycopy(this.args, 0, args, 1, this.args.length);
 		return args;
 	}
 

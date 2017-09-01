@@ -42,7 +42,7 @@ public interface Actor extends Parent {
 	Actor SYSTEM = new Actor() {
 		@Override
 		public Contents getContents() {
-			return Contents.IMMUTABLE;
+			return Contents.EMPTY;
 		}
 
 		@Override

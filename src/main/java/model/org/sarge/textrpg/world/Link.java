@@ -74,18 +74,18 @@ public class Link {
 	 * Over-ride to customise whether this link can be traversed.
 	 * @param actor Actor
 	 * @return Whether this link can be traversed by the given actor (default is <tt>true</tt>)
-	 * @see #getReason()
+	 * @see #reason()
 	 */
-	public boolean isTraversable(Actor actor) {
-		return true;
+	public final boolean isTraversable(Actor actor) {
+		return reason(actor) == null;
 	}
 
 	/**
 	 * @return Reason code if this link cannot be traversed
 	 * @see #isTraversable(Actor)
 	 */
-	public String getReason() {
-		return "move.link.constraint";
+	public String reason(Actor actor) {
+	    return null;
 	}
 
 	/**

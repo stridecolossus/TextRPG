@@ -38,7 +38,7 @@ public class ContainerLink extends ExtendedLink {
 		Check.notEmpty(name);
 		Check.notNull(descriptor);
 		this.descriptor = descriptor;
-		this.controller = Optional.of(Thing.create(name, Percentile.ONE, true, 0));
+		this.controller = Optional.of(createController(name, Percentile.ONE, true, 0));
 	}
 
 	@Override
@@ -52,14 +52,14 @@ public class ContainerLink extends ExtendedLink {
 	}
 
 	@Override
-	public boolean isTraversable(Actor actor) {
-		update();
-		return (obj != null) && super.isTraversable(actor);
-	}
-
-	@Override
-	public String getReason() {
-		return "move.link.object";
+	public String reason(Actor actor) {
+        update();
+	    if(obj == null) {
+	        return "move.link.object";
+	    }
+	    else {
+	        return super.reason(actor);
+	    }
 	}
 
 	@Override

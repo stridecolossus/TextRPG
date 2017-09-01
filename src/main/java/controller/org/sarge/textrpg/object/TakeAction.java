@@ -40,7 +40,7 @@ public class TakeAction extends AbstractAction {
 		obj.take(actor);
 
 		// Check not too heavy
-		final int weight = obj.getWeight();
+		final int weight = obj.weight();
 		if(weight > actor.getAttributes().get(Attribute.STRENGTH)) {		// TODO - modifier?
 			throw new ActionException("take.too.heavy");
 		}

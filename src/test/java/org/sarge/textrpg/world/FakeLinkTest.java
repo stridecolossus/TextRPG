@@ -10,7 +10,7 @@ public class FakeLinkTest {
 	public void constructor() {
 		final Link link = new FakeLink(Route.CORRIDOR, Size.NONE, "dest", "message");
 		assertEquals(false, link.isTraversable(null));
-		assertEquals("message", link.getReason());
+		assertEquals("message", link.reason(null));
 		assertEquals("dest", link.getDestinationName(null));
 	}
 }

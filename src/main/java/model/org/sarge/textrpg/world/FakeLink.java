@@ -29,12 +29,7 @@ public class FakeLink extends ExtendedLink {
 	}
 
 	@Override
-	public boolean isTraversable(Actor actor) {
-		return false;
-	}
-
-	@Override
-	public String getReason() {
+	public String reason(Actor actor) {
 		return message;
 	}
 

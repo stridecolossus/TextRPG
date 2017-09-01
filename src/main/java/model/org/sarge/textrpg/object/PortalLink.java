@@ -46,14 +46,9 @@ public class PortalLink extends ExtendedLink {
 	}
 
 	@Override
-	public boolean isTraversable(Actor actor) {
-		return isOpen() && super.isTraversable(actor);
-	}
-
-	@Override
-	public String getReason() {
+	public String reason(Actor actor) {
 		if(isOpen()) {
-			return super.getReason();
+			return super.reason(actor);
 		}
 		else {
 			return "move.link.closed";

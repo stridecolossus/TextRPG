@@ -109,6 +109,6 @@ public class AbstractActionTest extends ActionTest {
 	@Test
 	public void response() {
 		final ActionResponse res = action.response("arg");
-		assertEquals(new ActionResponse(new Description("mock.response", "name", "arg")), res);
+        assertEquals(new ActionResponse(new Description("action.mock.response", "name", "arg")), res);
 	}
 }

@@ -10,7 +10,6 @@ import java.util.Map;
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.Description;
-import org.sarge.textrpg.common.Event;
 import org.sarge.textrpg.common.EventQueue;
 import org.sarge.textrpg.common.Message;
 import org.sarge.textrpg.common.Notification;
@@ -108,7 +107,7 @@ public class MoveableLocation extends Location {
 	 * Registers event to move to next stage.
 	 */
 	private void next() {
-		final Event event = () -> {
+		final Runnable event = () -> {
 			move();
 			next();
 		};
@@ -171,13 +170,13 @@ public class MoveableLocation extends Location {
 	}
 
 	@Override
-	public Map<Direction, Exit> getExits() {
-		return getLocation().getExits();
+	public boolean isProperty(Property p) {
+	    return getLocation().isProperty(p);
 	}
 
 	@Override
-	public boolean isWaterAvailable() {
-		return getLocation().isWaterAvailable();
+	public Map<Direction, Exit> getExits() {
+		return getLocation().getExits();
 	}
 
 	@Override

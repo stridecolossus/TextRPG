@@ -22,7 +22,7 @@ public class SelectFollowerTest {
 	private Entity actor;
 	private Location loc, dest;
 	private Link link;
-	
+
 	@Before
 	public void before() {
 		// Create follower
@@ -39,20 +39,19 @@ public class SelectFollowerTest {
 		// Create link with a controller
 		final Thing obj = mock(Thing.class);
 		link = mock(Link.class);
-		when(link.isTraversable(actor)).thenReturn(true);
 		when(link.getController()).thenReturn(Optional.of(obj));
 		when(actor.perceives(obj)).thenReturn(true);
-		
+
 		// Add link
 		final LinkWrapper wrapper = new LinkWrapper(Direction.EAST, link, dest, Direction.WEST, ReversePolicy.ONE_WAY);
 		loc.add(wrapper);
 	}
-	
+
 	@Test
 	public void next() {
 		assertEquals(Direction.EAST, follower.next(actor));
 	}
-	
+
 	@Test
 	public void nextEmpty() {
 		final Location empty = ActionTest.createLocation();
@@ -62,7 +61,7 @@ public class SelectFollowerTest {
 
 	@Test
 	public void nextClosed() {
-		when(link.isTraversable(actor)).thenReturn(false);
+		when(link.reason(actor)).thenReturn("closed");
 		assertEquals(null, follower.next(actor));
 	}
 
@@ -106,14 +105,14 @@ public class SelectFollowerTest {
 		follower = new SelectFollower(exit -> true, Policy.RANDOM);
 		assertNotNull(follower.next(actor));
 	}
-	
+
 	@Test
 	public void terrainFilter() {
 		final Predicate<Exit> filter = SelectFollower.terrain(Collections.singleton(Terrain.DESERT));
 		when(dest.getTerrain()).thenReturn(Terrain.DESERT);
 		assertEquals(true, filter.test(loc.getExits().get(Direction.EAST)));
 	}
-	
+
 	@Test
 	public void routeFilter() {
 		final Predicate<Exit> filter = SelectFollower.route(Collections.singleton(Route.BRIDGE));

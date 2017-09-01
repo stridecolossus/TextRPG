@@ -29,7 +29,7 @@ public abstract class ActionTest {
 
 	protected Entity actor;
 	protected Location loc;
-	
+
 	@Before
 	public void beforeActionTest() {
 		// Create a location
@@ -48,12 +48,12 @@ public abstract class ActionTest {
 		when(actor.getGroup()).thenReturn(Optional.empty());
 		when(actor.getFollowers()).thenReturn(Stream.empty());
 		when(actor.getEventQueue()).thenReturn(queue);
-		
+
 		// Create inventory
 		final Contents inv = new Contents();
 		when(actor.getContents()).thenReturn(inv);
 	}
-	
+
 	/**
 	 * Registers an expected {@link ActionException} with the given reason
 	 * @param reason Reason identifier
@@ -62,14 +62,14 @@ public abstract class ActionTest {
 		expected.expect(ActionException.class);
 		expected.expectMessage(reason);
 	}
-	
+
 	/**
 	 * @return Mock location
 	 */
 	public static Location createLocation() {
-		return new Location("loc", Area.ROOT, Terrain.DESERT, false, Collections.emptyList());
+		return new Location("loc", Area.ROOT, Terrain.DESERT, Collections.emptySet(), Collections.emptyList());
 	}
-	
+
 	/**
 	 * @return Mock parent/contents
 	 */

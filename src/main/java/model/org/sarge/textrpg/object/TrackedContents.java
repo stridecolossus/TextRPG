@@ -44,7 +44,7 @@ public class TrackedContents extends Contents {
 		 */
 		static Limit weight(int max) {
 			Check.zeroOrMore(max);
-			return (obj, c) -> c.getWeight() + obj.getWeight() > max;
+			return (obj, c) -> c.getWeight() + obj.weight() > max;
 		}
 
 		/**
@@ -59,9 +59,9 @@ public class TrackedContents extends Contents {
 	}
 
 	private final Map<Limit, String> limits;
-	
+
 	private int weight;
-	
+
 	/**
 	 * Default constructor for contents with no limits.
 	 */
@@ -76,7 +76,7 @@ public class TrackedContents extends Contents {
 	public TrackedContents(Map<Limit, String> limits) {
 		this.limits = new HashMap<>(limits);
 	}
-	
+
 	/**
 	 * @return Total weight of this set of contents
 	 */
@@ -84,29 +84,22 @@ public class TrackedContents extends Contents {
 	public int getWeight() {
 		return weight;
 	}
-	
+
 	@Override
 	public String getReason(Thing obj) {
-		// Check limits
 		final Optional<Limit> exceeded = limits.keySet().stream().filter(f -> f.exceeds(obj, this)).findFirst();
-		if(exceeded.isPresent()) {
-			final String reason = limits.get(exceeded.get());
-			return "contents.add." + reason;
-		}
-
-		// Delegate
-		return super.getReason(obj);
+		return exceeded.map(limits::get).map(reason -> "contents.add." + reason).orElseGet(() -> super.getReason(obj));
 	}
-	
+
 	@Override
 	public void add(Thing obj) {
 		super.add(obj);
-		weight += obj.getWeight();
+		weight += obj.weight();
 	}
-	
+
 	@Override
 	public void remove(Thing obj) {
 		super.remove(obj);
-		weight -= obj.getWeight();
+		weight -= obj.weight();
 	}
 }

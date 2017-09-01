@@ -7,16 +7,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class EventQueueTest {
 	private EventQueue queue;
-	private Event event;
+	private Runnable event;
 
 	@Before
 	public void before() {
 		queue = new EventQueue();
-		event = mock(Event.class);
+		event = mock(Runnable.class);
 	}
 
 	@Test
@@ -45,15 +46,16 @@ public class EventQueueTest {
 
 	@Test
 	public void update() {
-		final EventQueue.Entry other = queue.add(mock(Event.class), 2L);
+		final EventQueue.Entry other = queue.add(mock(Runnable.class), 2L);
 		final EventQueue.Entry entry = queue.add(event, 1L);
 		EventQueue.update(1L);
-		verify(event).execute();
+		verify(event).run();
 		assertEquals(1, queue.stream().count());
 		assertEquals(other, queue.stream().iterator().next());
 		assertEquals(true, entry.isCancelled());
 	}
 
+	@Ignore("No longer checked")
 	@Test(expected = RuntimeException.class)
 	public void executeInvalidTime() {
 		EventQueue.update(-1L);
@@ -63,7 +65,7 @@ public class EventQueueTest {
 	public void repeating() {
 		queue.add(event, 1L, true);
 		EventQueue.update(1L);
-		verify(event).execute();
+		verify(event).run();
 		assertEquals(1, queue.stream().count());
 	}
 

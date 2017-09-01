@@ -45,8 +45,8 @@ public class Corpse extends WorldObject implements Parent {
 	}
 
 	@Override
-	public int getWeight() {
-		return super.getWeight() + contents.getWeight();
+	public int weight() {
+		return super.weight() + contents.getWeight();
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class Corpse extends WorldObject implements Parent {
 	@Override
 	protected void describe(Builder builder) {
 		if(butchered) {
-			builder.add("butchered", "{butchered}");
+			builder.wrap("butchered", "butchered");
 		}
 	}
 

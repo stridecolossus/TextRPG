@@ -10,7 +10,6 @@ import org.sarge.lib.collection.Pair;
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Actor;
-import org.sarge.textrpg.common.Event;
 import org.sarge.textrpg.common.EventQueue;
 
 /**
@@ -79,12 +78,12 @@ public class RepairShop {
 
 		// Generate repair event
 		final Pair<Actor, WorldObject> entry = new Pair<>(actor, obj);
-		final Event event = () -> repaired.add(entry);
+		final Runnable event = () -> repaired.add(entry);
 		final long duration = this.duration * cost;
 		queue.add(event, duration);
 
 		// Generate discard event
-		final Event discardEvent = () -> repaired.stream().filter(e -> e == entry).findFirst().ifPresent(repaired::remove);
+		final Runnable discardEvent = () -> repaired.stream().filter(e -> e == entry).findFirst().ifPresent(repaired::remove);
 		queue.add(discardEvent, discard + duration);
 
 		return duration;

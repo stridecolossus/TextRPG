@@ -18,35 +18,19 @@ public enum Terrain {
 	ICE,
 	SNOW,
 	URBAN,
-	URBAN_LIT,
 	INDOORS,
-	INDOORS_DARK,
 	UNDERGROUND,
 	WATER;
-	
+
 	/**
-	 * @return Whether this terrain is naturally dark
+	 * @return Whether this terrain is naturally dark irrespective of the time-of-day
 	 */
 	public boolean isDark() {
 		switch(this) {
-		case INDOORS_DARK:
+		case INDOORS:
 		case UNDERGROUND:
 			return true;
-			
-		default:
-			return false;
-		}
-	}
-	
-	/**
-	 * @return Whether this terrain is naturally lit
-	 */
-	public boolean isLit() {
-		switch(this) {
-		case INDOORS:
-		case URBAN_LIT:
-			return true;
-			
+
 		default:
 			return false;
 		}

@@ -222,7 +222,7 @@ public class Equipment {
 	 * Updates weight.
 	 */
 	private void removeObject(WorldObject obj) {
-		weight -= obj.getWeight();
+		weight -= obj.weight();
 		assert weight >= 0;
 	}
 

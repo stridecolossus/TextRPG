@@ -33,7 +33,7 @@ public class PathFinderTest {
 	}
 
 	private static Location create(String name) {
-		return new Location(name, Area.ROOT, Terrain.DESERT, true, Collections.emptyList());
+		return new Location(name, Area.ROOT, Terrain.DESERT, Collections.emptySet(), Collections.emptyList());
 	}
 
 	private void run() {
@@ -50,7 +50,7 @@ public class PathFinderTest {
 	public void cannotTraverseLink() {
 		// Add a link that cannot be traversed
 		final Link closed = mock(Link.class);
-		when(closed.isTraversable(actor)).thenReturn(false);
+		when(closed.reason(actor)).thenReturn("closed");
 		start.add(new LinkWrapper(Direction.EAST, closed, end));
 
 		// Add a link that is not visible to the actor

@@ -2,8 +2,11 @@ package org.sarge.textrpg.world;
 
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.Actor;
+import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.common.Script;
 import org.sarge.textrpg.common.Size;
+import org.sarge.textrpg.common.Thing;
+import org.sarge.textrpg.util.Percentile;
 
 /**
  * Link with an associated script and size constraint.
@@ -33,12 +36,68 @@ public class ExtendedLink extends RouteLink {
 	}
 
 	@Override
-	public boolean isTraversable(Actor actor) {
-		return (size == Size.NONE) || actor.getSize().isLargerThan(size);
+	public String reason(Actor actor) {
+	    if((size != Size.NONE) && actor.getSize().isLargerThan(size)) {
+	        return "move.link.constraint";
+	    }
+	    else {
+	        return super.reason(actor);
+	    }
 	}
 
 	@Override
 	public Script getScript() {
 		return script;
 	}
+
+    /**
+     * Helper - Creates a link controller proxy.
+     * @param name      Name
+     * @param vis       Visibility
+     * @param quiet     Whether controller is quiet
+     * @param forget    Forget duration (ms)
+     * @return Link controller
+     */
+    protected static Thing createController(String name, Percentile vis, boolean quiet, long forget) {
+        Check.notEmpty(name);
+        Check.notNull(vis);
+        Check.zeroOrMore(forget);
+
+        return new Thing() {
+            @Override
+            public String getName() {
+                return name;
+            }
+
+            @Override
+            public Percentile getVisibility() {
+                return vis;
+            }
+
+            @Override
+            public boolean isQuiet() {
+                return quiet;
+            }
+
+            @Override
+            public long getForgetPeriod() {
+                return forget;
+            }
+
+            @Override
+            public int weight() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Size getSize() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Description describe() {
+                return new Description("description.dropped", "name", name); // TODO - description key
+            }
+        };
+    }
 }

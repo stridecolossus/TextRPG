@@ -17,6 +17,7 @@ import org.sarge.textrpg.util.ModelUtil;
 public class Creature extends Entity {
 	/**
 	 * AI notification handler.
+	 * TODO - factor out
 	 */
 	private final Notification.Handler handler = new Notification.Handler() {
 		@Override
@@ -40,13 +41,13 @@ public class Creature extends Entity {
 		public void handle(RevealNotification reveal) {
 			throw new UnsupportedOperationException();
 		}
-		
+
 		@Override
 		public String toString() {
 			return ToString.toString(this);
 		}
 	};
-	
+
 	/**
 	 * Constructor.
 	 * @param race			Race
@@ -55,7 +56,7 @@ public class Creature extends Entity {
 	public Creature(Race race, EntityManager manager) {
 		this(race, race.getAttributes().getAttributes(), manager);
 	}
-	
+
 	/**
 	 * Constructor.
 	 * @param race			Race
@@ -66,7 +67,7 @@ public class Creature extends Entity {
 		super(race, attrs, manager);
 		init();
 	}
-	
+
 	/**
 	 * Equips default equipment.
 	 * @throws RuntimeException if the equipment is not valid
@@ -75,17 +76,17 @@ public class Creature extends Entity {
 		final Equipment equipment = getEquipment();
 		race.getEquipment().getEquipment().map(ObjectDescriptor::create).forEach(ModelUtil.wrap(equipment::equip));
 	}
-	
+
 	@Override
 	protected String getDescriptionKey() {
 		return "creature";
 	}
-	
+
 	@Override
 	public Handler getNotificationHandler() {
 		return handler;
 	}
-	
+
 	/**
 	 * @return Gender of this entity
 	 */
@@ -93,7 +94,7 @@ public class Creature extends Entity {
 	public Gender getGender() {
 		return race.getAttributes().getDefaultGender();
 	}
-	
+
 	/**
 	 * @return Alignment of this entity
 	 */

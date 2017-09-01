@@ -13,6 +13,7 @@ import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.Value;
 
 /**
+ * Effect on an {@link Entity} caused by a spell, trap, weapon, potion, etc.
  * @author Sarge
  */
 public final class Effect {
@@ -20,14 +21,14 @@ public final class Effect {
 	 * Effect that does nothing.
 	 */
 	public static final Descriptor NONE = new Descriptor("none", Collections.emptyList());
-	
+
 	/**
 	 * Descriptor for an effect.
 	 */
 	public static final class Descriptor {
 		private final String name;
 		private final List<Effect> effects;
-		
+
 		/**
 		 * Constructor.
 		 * @param name			Effect name
@@ -38,7 +39,7 @@ public final class Effect {
 			this.name = name;
 			this.effects = new ArrayList<>(effects);
 		}
-		
+
 		/**
 		 * @return Effect name
 		 */
@@ -52,7 +53,7 @@ public final class Effect {
 		public Stream<Effect> getEffects() {
 			return effects.stream();
 		}
-		
+
 		/**
 		 * Applies this effect to the given entity.
 		 * @param targets	Target(s)
@@ -63,7 +64,7 @@ public final class Effect {
 				// Calculate effect magnitude and duration
 				final Optional<Integer> duration = effect.duration.map(t -> t.evaluate(actor));
 				final int size = effect.size.evaluate(actor);
-				
+
 				// Apply effect to targets
 				final EffectMethod method = effect.getMethod();
 				for(Entity e : targets) {
@@ -71,13 +72,13 @@ public final class Effect {
 				}
 			}
 		}
-		
+
 		@Override
 		public String toString() {
 			return name;
 		}
 	}
-	
+
 	private final EffectMethod effect;
 	private final Value size;
 	private final Optional<Value> duration;
@@ -106,21 +107,21 @@ public final class Effect {
 	public EffectMethod getMethod() {
 		return effect;
 	}
-	
+
 	/**
 	 * @return Effect magnitude
 	 */
 	public Value getSize() {
 		return size;
 	}
-	
+
 	/**
 	 * @return Duration for a transient effect
 	 */
 	public Optional<Value> getDuration() {
 		return duration;
 	}
-	
+
 	@Override
 	public String toString() {
 		return ToString.toString(this);

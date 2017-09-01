@@ -26,9 +26,9 @@ public class HiddenLink extends ExtendedLink {
 	public HiddenLink(Route route, Script script, Size size, String name, Percentile vis, long forget) {
 		super(route, script, size);
 		Check.notNull(vis);
-		this.controller = Thing.create(name, vis, false, forget);
+		this.controller = createController(name, vis, false, forget);
 	}
-	
+
 	@Override
 	public Optional<Thing> getController() {
 		return Optional.of(controller);
