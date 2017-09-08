@@ -1,23 +1,24 @@
 package org.sarge.textrpg.common;
 
+import static org.sarge.lib.util.Check.notNull;
+
 import java.util.Comparator;
 import java.util.function.Predicate;
 
 import org.sarge.lib.object.EqualsBuilder;
 import org.sarge.lib.object.ToString;
-import org.sarge.lib.util.Check;
-import org.sarge.lib.util.StringUtil;
 import org.sarge.textrpg.util.Percentile;
 
 /**
  * Descriptor for an emission from an object.
  * @author Sarge
+ * TODO - what is the name o the emission actually used for? only referenced in tests!) should it be a synthetic object (and therefore has a description)?
  */
 public final class Emission {
 	/**
 	 * Intensity comparator.
 	 */
-	public static final Comparator<Emission> INTENSITY_COMPARATOR = Comparator.comparing(Emission::getIntensity);
+	public static final Comparator<Emission> INTENSITY_COMPARATOR = Comparator.comparing(Emission::intensity);
 
 	/**
 	 * Light emission predicate.
@@ -30,22 +31,7 @@ public final class Emission {
 	public static enum Type {
 		LIGHT,
 		SOUND,
-		ODOUR,
 		SMOKE;
-
-		/**
-		 * @return Whether this type of emission has a name
-		 */
-		public boolean hasName() {
-			switch(this) {
-			case SOUND:
-			case ODOUR:
-				return true;
-
-			default:
-				return false;
-			}
-		}
 
 		/**
 		 * @return Emission predicate for this type of emission
@@ -55,53 +41,30 @@ public final class Emission {
 		}
 	}
 
-	/**
-	 * Convenience factory for a light emission.
-	 * @param intensity Light intensity
-	 * @return Light emission
-	 */
-	public static Emission light(Percentile intensity) {
-		return new Emission(null, Type.LIGHT, intensity);
-	}
-
-	private final String name;
 	private final Type type;
 	private final Percentile intensity;
 
-	/**
-	 * Constructor.
-	 * @param name			Emission name
-	 * @param type			Type of emission
-	 * @param intensity		Intensity of this emission
-	 */
-	public Emission(String name, Type type, Percentile intensity) {
-		Check.notNull(type);
-		Check.notNull(intensity);
-		if(StringUtil.isEmpty(name) == type.hasName()) throw new IllegalArgumentException(String.format("Emission name mismatch: type=%s name=%s", type, name));
-		this.name = name;
-		this.type = type;
-		this.intensity = intensity;
-	}
-
-	/**
-	 * @return Emission name or <tt>null</tt> if none
-	 * @see Type#hasName()
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Constructor.
+     * @param type          Type of emission
+     * @param intensity     Intensity of this emission
+     */
+    public Emission(Type type, Percentile intensity) {
+        this.type = notNull(type);
+        this.intensity = notNull(intensity);
+    }
 
 	/**
 	 * @return Type of emission
 	 */
-	public Type getType() {
+	public Type type() {
 		return type;
 	}
 
 	/**
 	 * @return Emission intensity
 	 */
-	public Percentile getIntensity() {
+	public Percentile intensity() {
 		return intensity;
 	}
 

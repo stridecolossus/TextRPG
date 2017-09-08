@@ -22,12 +22,12 @@ public abstract class Thing implements Hidden {
 	 */
 	public static final Parent LIMBO = new Parent() {
 		@Override
-		public Contents getContents() {
+		public Contents contents() {
 			return Contents.EMPTY;
 		}
 
 		@Override
-		public Parent getParent() {
+		public Parent parent() {
 			return null;
 		}
 	};
@@ -37,7 +37,7 @@ public abstract class Thing implements Hidden {
 	/**
 	 * @return Name of this thing
 	 */
-	public abstract String getName();
+	public abstract String name();
 
 	/**
 	 * @return Weight of this thing and any contents
@@ -47,12 +47,12 @@ public abstract class Thing implements Hidden {
 	/**
 	 * @return Size of this thing
 	 */
-	public abstract Size getSize();
+	public abstract Size size();
 
 	/**
 	 * @return Parent of this thing
 	 */
-	public Parent getParent() {
+	public Parent parent() {
 		return parent;
 	}
 
@@ -62,7 +62,7 @@ public abstract class Thing implements Hidden {
 	 */
 	public Stream<Parent> path() {
 		final Iterator<Parent> itr = new Iterator<Parent>() {
-			private Parent p = Thing.this.getParent();
+			private Parent p = Thing.this.parent();
 
 			@Override
 			public boolean hasNext() {
@@ -73,7 +73,7 @@ public abstract class Thing implements Hidden {
 			public Parent next() {
 				assert hasNext();
 				final Parent next = p;
-				p = p.getParent();
+				p = p.parent();
 				return next;
 			}
 		};
@@ -87,8 +87,8 @@ public abstract class Thing implements Hidden {
 	 */
 	public Parent root() {
 		Parent p = parent;
-		while(p.getParent() != null) {
-			p = p.getParent();
+		while(p.parent() != null) {
+			p = p.parent();
 		}
 		return p;
 	}
@@ -99,7 +99,7 @@ public abstract class Thing implements Hidden {
 	 * @throws ActionException if this thing cannot be added to the given parent
 	 */
 	public void setParent(Parent parent) throws ActionException {
-		final String reason = parent.getContents().getReason(this);
+		final String reason = parent.contents().reason(this);
 		if(reason != null) throw new ActionException(reason);
 		move(parent);
 		add();
@@ -112,18 +112,19 @@ public abstract class Thing implements Hidden {
 	public void setParentAncestor(Parent parent) {
 		// Check whether can add to next parent
 		Parent p = parent;
-		final String reason = p.getContents().getReason(this);
+		final String reason = p.contents().reason(this);
 
 		// Find ancestor
 		if(reason != null) {
 			// Walk to first valid parent
 			while(true) {
-				p = p.getParent();
+				p = p.parent();
 				if(p == null) throw new RuntimeException("Cannot find ancestor");
-				if(p.getContents().getReason(this) == null) break;
+				if(p.contents().reason(this) == null) break;
 			}
 
 			// Otherwise notify actor
+			// TODO - should this be P?
 			if(parent instanceof Actor) {
 				final Actor actor = (Actor) parent;
 				actor.alert(new Message(reason, this));
@@ -143,7 +144,7 @@ public abstract class Thing implements Hidden {
 	 * @param parent Parent
 	 */
 	protected void move(Parent parent) {
-		this.parent.getContents().remove(this);
+		this.parent.contents().remove(this);
 		this.parent = parent;
 	}
 
@@ -151,7 +152,7 @@ public abstract class Thing implements Hidden {
 	 * Adds this thing to its parent.
 	 */
 	private void add() {
-		parent.getContents().add(this);
+		parent.contents().add(this);
 	}
 
 	/**
@@ -164,7 +165,7 @@ public abstract class Thing implements Hidden {
 	 * @param type Emission type
 	 * @return Emission
 	 */
-	public Optional<Emission> getEmission(Emission.Type type) {
+	public Optional<Emission> emission(Emission.Type type) {
 		return Optional.empty();
 	}
 
@@ -215,6 +216,6 @@ public abstract class Thing implements Hidden {
 
 	@Override
 	public String toString() {
-		return getName();
+		return name();
 	}
 }

@@ -72,7 +72,7 @@ public class Contents {
 			c.contents.stream()
 				.filter(t -> t instanceof Parent)
 				.map(t -> (Parent) t)
-				.forEach(p -> stream(p.getContents(), stream, depth - 1));
+				.forEach(p -> stream(p.contents(), stream, depth - 1));
 		}
 	}
 
@@ -95,7 +95,7 @@ public class Contents {
 	 * @param obj Object to add
 	 * @return Reason code if cannot be added or <tt>null</tt>
 	 */
-	public String getReason(Thing obj) {
+	public String reason(Thing obj) {
 		return null;
 	}
 

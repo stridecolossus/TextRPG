@@ -24,7 +24,7 @@ public class Corpse extends WorldObject implements Parent {
 	 */
 	private final TrackedContents contents = new TrackedContents() {
 		@Override
-		public String getReason(Thing obj) {
+		public String reason(Thing obj) {
 			return "corpse.contents.immutable";
 		}
 	};
@@ -50,7 +50,7 @@ public class Corpse extends WorldObject implements Parent {
 	}
 
 	@Override
-	public Contents getContents() {
+	public Contents contents() {
 		return contents;
 	}
 
@@ -77,7 +77,7 @@ public class Corpse extends WorldObject implements Parent {
 	protected void butcher(Entity actor) throws ActionException {
 		// Check can be butchered
 		if(butchered) throw new IllegalStateException("Already butchered");
-		final LootFactory factory = race.getKillDescriptor().getButcherFactory().orElseThrow(() -> new ActionException("corpse.cannot.butcher"));
+		final LootFactory factory = race.killDescriptor().butcherFactory().orElseThrow(() -> new ActionException("corpse.cannot.butcher"));
 
 		// Butcher and add loot
 		final Collection<WorldObject> loot = factory.generate(actor).collect(toList());

@@ -50,8 +50,8 @@ public class FurnitureAction extends AbstractActiveAction {
 	 */
 	public ActionResponse execute(Entity actor, Furniture furniture) throws ActionException {
 		// Check can use this furniture
-		if(!furniture.getDescriptor().isValid(stance)) throw new ActionException("furniture.invalid.stance", "action.furniture." + stance);
-		if((actor.getStance() == stance) && (actor.getParent() == furniture)) throw new ActionException("furniture.already");
+		if(!furniture.descriptor().isValid(stance)) throw new ActionException("furniture.invalid.stance", "action.furniture." + stance);
+		if((actor.stance() == stance) && (actor.parent() == furniture)) throw new ActionException("furniture.already");
 
 		// Use furniture
 		actor.setParent(furniture);

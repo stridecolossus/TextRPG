@@ -25,10 +25,10 @@ public class RopeTest extends ActionTest {
 
 	@Test
 	public void constructor() {
-		assertEquals(Optional.empty(), rope.getAnchor());
+		assertEquals(Optional.empty(), rope.anchor());
 		assertEquals(false, anchor.isAttached());
-		assertEquals(2, rope.getLength());
-		assertEquals(null, anchor.getRope());
+		assertEquals(2, rope.length());
+		assertEquals(null, anchor.rope());
 	}
 
 	@Test
@@ -42,10 +42,10 @@ public class RopeTest extends ActionTest {
 	@Test
 	public void attach() throws ActionException {
 		rope.attach(actor, anchor);
-		assertEquals(Optional.of(anchor), rope.getAnchor());
-		assertEquals(true, rope.getAnchor().get().isAttached());
+		assertEquals(Optional.of(anchor), rope.anchor());
+		assertEquals(true, rope.anchor().get().isAttached());
 		assertEquals("{anchor}", rope.describe().get("anchor"));
-		assertEquals(rope, anchor.getRope());
+		assertEquals(rope, anchor.rope());
 	}
 
 	@Test
@@ -66,7 +66,7 @@ public class RopeTest extends ActionTest {
 
 	@Test
 	public void attachBroken() throws ActionException {
-		rope.wear();
+		rope.use();
 		expect("rope.attach.broken");
 		rope.attach(actor, anchor);
 	}
@@ -82,7 +82,7 @@ public class RopeTest extends ActionTest {
 	public void remove() throws ActionException {
 		rope.attach(actor, anchor);
 		rope.remove(actor);
-		assertEquals(Optional.empty(), rope.getAnchor());
+		assertEquals(Optional.empty(), rope.anchor());
 		assertEquals(false, anchor.isAttached());
 	}
 
@@ -105,9 +105,9 @@ public class RopeTest extends ActionTest {
 		rope.attach(actor, anchor);
 		rope.setParent(super.createLocation());
 		rope.pull(actor);
-		assertEquals(Optional.empty(), rope.getAnchor());
+		assertEquals(Optional.empty(), rope.anchor());
 		assertEquals(false, anchor.isAttached());
-		assertEquals(actor, rope.getParent());
+		assertEquals(actor, rope.parent());
 	}
 
 	@Test

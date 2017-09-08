@@ -57,7 +57,7 @@ public class SmokeAction extends AbstractAction {
 	 * Smoke specified pipe-weed.
 	 */
 	public ActionResponse execute(Entity actor, String weed) throws ActionException {
-		return smoke(actor, WEED.and(obj -> obj.getName().equals(weed)));
+		return smoke(actor, WEED.and(obj -> obj.name().equals(weed)));
 	}
 
 	/**

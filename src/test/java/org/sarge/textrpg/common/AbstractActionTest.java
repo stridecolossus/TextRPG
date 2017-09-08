@@ -65,13 +65,13 @@ public class AbstractActionTest extends ActionTest {
 
 	@Test
 	public void getSkill() throws ActionException {
-		when(actor.getSkillLevel(skill)).thenReturn(Optional.of(42));
+		when(actor.skillLevel(skill)).thenReturn(Optional.of(42));
 		assertEquals(42, action.getSkillLevel(actor, skill));
 	}
 
 	@Test
 	public void getSkillNotFound() throws ActionException {
-		when(actor.getSkillLevel(skill)).thenReturn(Optional.empty());
+		when(actor.skillLevel(skill)).thenReturn(Optional.empty());
 		expect("mock.requires.skill");
 		action.getSkillLevel(actor, skill);
 	}
@@ -92,7 +92,7 @@ public class AbstractActionTest extends ActionTest {
 	@Test
 	public void findBroken() throws ActionException {
 		final WorldObject obj = new DurableObject(new Descriptor(new ObjectDescriptor("durable"), 1));
-		obj.wear();
+		obj.use();
 		obj.setParent(actor);
 		expect("mock.broken.object");
 		action.find(actor, t -> true, true, "object");

@@ -61,7 +61,7 @@ public class DrinkAction extends AbstractAction {
 	 */
 	public ActionResponse drink(Entity actor) throws ActionException {
 		// Look for receptacle in location first
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		if(loc.isLightAvailable(clock.isDaylight())) {
 			if(loc.isProperty(Location.Property.WATER)) {
 				// Drink from global source
@@ -69,7 +69,7 @@ public class DrinkAction extends AbstractAction {
 			}
 			else {
 				// Find receptacle in location
-				final Optional<Receptacle> rec = ContentsHelper.select(loc.getContents().stream(), Receptacle.class).filter(WATER).findFirst();
+				final Optional<Receptacle> rec = ContentsHelper.select(loc.contents().stream(), Receptacle.class).filter(WATER).findFirst();
 				if(rec.isPresent()) {
 					return drink(rec.get(), actor, "drink.response.receptacle");
 				}
@@ -90,8 +90,8 @@ public class DrinkAction extends AbstractAction {
 	 * @throws ActionException if the receptacle cannot be drunk from or is empty
 	 */
 	public ActionResponse drink(Entity actor, Receptacle rec) throws ActionException {
-		if(!rec.getDescriptor().getLiquid().isDrinkable()) throw new ActionException("drink.not.drinkable");
-		if(rec.getLevel() == 0) throw new ActionException("drink.empty.receptacle");
+		if(!rec.descriptor().liquid().isDrinkable()) throw new ActionException("drink.not.drinkable");
+		if(rec.level() == 0) throw new ActionException("drink.empty.receptacle");
 		return drink(rec, actor, "drink.response.liquid");
 	}
 
@@ -104,10 +104,10 @@ public class DrinkAction extends AbstractAction {
 	 */
 	private static ActionResponse drink(Receptacle rec, Entity actor, String key) throws ActionException {
 		// Drink from receptacle
-		final Liquid liquid = rec.getDescriptor().getLiquid();
+		final Liquid liquid = rec.descriptor().liquid();
 		if(liquid == Liquid.WATER) {
 			// Check actor is thirsty
-			final int required = actor.getValues().get(EntityValue.THIRST);
+			final int required = actor.values().get(EntityValue.THIRST);
 			if(required < 1) throw new ActionException("drink.not.thirsty");
 
 			// Quench thirst
@@ -127,7 +127,7 @@ public class DrinkAction extends AbstractAction {
 
 		// Build response
 		final Description.Builder desc = new Description.Builder(key).wrap("name", "liquid." + liquid);
-		if(rec.getLevel() == 0) {
+		if(rec.level() == 0) {
 			desc.add(new Description("drink.empty", "name", rec));
 		}
 		return new ActionResponse(desc.build());

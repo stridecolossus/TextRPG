@@ -21,7 +21,7 @@ public class FillAction extends AbstractAction {
 	private static final Predicate<Thing> WATER = t -> {
 		if(t instanceof Receptacle) {
 			final Receptacle rec = (Receptacle) t;
-			return rec.getDescriptor().getLiquid() == Liquid.WATER;
+			return rec.descriptor().liquid() == Liquid.WATER;
 		}
 		else {
 			return false;
@@ -52,14 +52,14 @@ public class FillAction extends AbstractAction {
 	public ActionResponse fill(Entity actor, Receptacle rec) throws ActionException {
 		// Find source
 		final Receptacle src;
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		if(loc.isProperty(Location.Property.WATER)) {
 			// Fill from global source
 			src = Receptacle.WATER;
 		}
 		else {
 			// Otherwise look for a water source in the current location
-			src = (Receptacle) loc.getContents().stream().filter(WATER).findFirst().orElseThrow(() -> new ActionException("fill.requires.water"));
+			src = (Receptacle) loc.contents().stream().filter(WATER).findFirst().orElseThrow(() -> new ActionException("fill.requires.water"));
 		}
 
 		// Fill from source

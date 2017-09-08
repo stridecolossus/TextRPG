@@ -34,7 +34,7 @@ public class PortalLink extends ExtendedLink {
 	}
 
 	@Override
-	public Optional<Thing> getController() {
+	public Optional<Thing> controller() {
 		return Optional.of(portal);
 	}
 
@@ -42,7 +42,7 @@ public class PortalLink extends ExtendedLink {
 	 * @return Whether this link is open
 	 */
 	public boolean isOpen() {
-		return portal.getOpenableModel().map(Openable::isOpen).orElse(true);
+		return portal.openableModel().map(Openable::isOpen).orElse(true);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class PortalLink extends ExtendedLink {
 
 	@Override
 	public String describe(String dir) {
-		if(portal.getOpenableModel().isPresent()) {
+		if(portal.openableModel().isPresent()) {
 			if(isOpen()) {
 				return super.describe(StringUtil.wrap(dir, "(", ")"));
 			}
@@ -77,9 +77,9 @@ public class PortalLink extends ExtendedLink {
 		}
 		else {
 			final Description.Builder builder = new Description.Builder("exit.closed");
-			final Cardinality cardinality = portal.getDescriptor().getCharacteristics().getCardinality();
+			final Cardinality cardinality = portal.descriptor().getCharacteristics().getCardinality();
 			cardinality.add(builder);
-			builder.wrap("name", portal.getName());
+			builder.wrap("name", portal.name());
 			return builder;
 		}
 	}

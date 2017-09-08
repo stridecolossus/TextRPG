@@ -66,7 +66,7 @@ public class ControlTest extends ActionTest {
 		control.apply(Interaction.PUSH, actor);
 
 		// Check event registered
-		assertEquals(1, Control.QUEUE.stream().count());
+		assertEquals(1, Control.QUEUE.size());
 
 		// Update clock and check control is reset
 		Control.QUEUE.execute(42L);

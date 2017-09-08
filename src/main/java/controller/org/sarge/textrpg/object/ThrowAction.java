@@ -23,7 +23,7 @@ public class ThrowAction extends AbstractAction {
 	 */
 	public void throwObject(Entity actor, WorldObject obj) throws ActionException {
 		verifyCarried(actor, obj);
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		obj.setParentAncestor(loc);
 	}
 

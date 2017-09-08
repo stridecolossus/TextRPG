@@ -36,27 +36,27 @@ public class RaceTest {
 	@Test
 	public void constructor() {
 		// Race
-		assertEquals("race", race.getName());
+		assertEquals("race", race.name());
 		
 		// Attributes
-		assertNotNull(race.getAttributes());
-		assertEquals(Gender.FEMALE, race.getAttributes().getDefaultGender());
-		assertEquals(Alignment.EVIL, race.getAttributes().getDefaultAlignment());
-		assertEquals(Size.HUGE, race.getAttributes().getSize());
-		assertNotNull(race.getAttributes().getAttributes());
-		assertEquals(2, race.getAttributes().getAttributes().get(Attribute.AGILITY));
-		assertEquals(true, race.getAttributes().isMount());
+		assertNotNull(race.attributes());
+		assertEquals(Gender.FEMALE, race.attributes().gender());
+		assertEquals(Alignment.EVIL, race.attributes().alignment());
+		assertEquals(Size.HUGE, race.attributes().size());
+		assertNotNull(race.attributes().attributes());
+		assertEquals(2, race.attributes().attributes().get(Attribute.AGILITY));
+		assertEquals(true, race.attributes().isMount());
 		
 		// Gear and skills
-		assertNotNull(race.getEquipment());
-		assertNotNull(race.getEquipment().getSkills());
-		assertEquals(1, race.getEquipment().getSkills().getSkills().count());
-		assertEquals(Optional.of(3), race.getEquipment().getSkills().getLevel(skill));
+		assertNotNull(race.equipment());
+		assertNotNull(race.equipment().skills());
+		assertEquals(1, race.equipment().skills().getSkills().count());
+		assertEquals(Optional.of(3), race.equipment().skills().getLevel(skill));
 		
 		// Kill descriptor
-		assertNotNull(race.getKillDescriptor());
-		assertEquals(true, race.getKillDescriptor().isCorporeal());
-		assertNotNull(race.getKillDescriptor().getButcherFactory());
-		assertEquals(true, race.getKillDescriptor().getButcherFactory().isPresent());
+		assertNotNull(race.killDescriptor());
+		assertEquals(true, race.killDescriptor().isCorporeal());
+		assertNotNull(race.killDescriptor().butcherFactory());
+		assertEquals(true, race.killDescriptor().butcherFactory().isPresent());
 	}
 }

@@ -26,12 +26,12 @@ import org.sarge.textrpg.entity.*;
 import org.sarge.textrpg.entity.Race.Attributes;
 import org.sarge.textrpg.object.ObjectDescriptor;
 import org.sarge.textrpg.object.ScriptLoader;
-import org.sarge.textrpg.object.Shop;
 import org.sarge.textrpg.util.MutableIntegerMap;
 import org.sarge.textrpg.world.Exit;
 import org.sarge.textrpg.world.Location;
 import org.sarge.textrpg.world.Route;
 import org.sarge.textrpg.world.SelectFollower;
+import org.sarge.textrpg.world.Shop;
 import org.sarge.textrpg.world.Terrain;
 
 /**
@@ -107,11 +107,11 @@ public class EntityLoader {
 		final Race race = attrs.toValue("race", def, world.getRaces()::find);
 
 		// Load character attributes
-		final Attributes attributes = race.getAttributes();
+		final Attributes attributes = race.attributes();
 		final String name = attrs.toString("name", null);
-		final Gender gender = attrs.toValue("gender", attributes.getDefaultGender(), LoaderHelper.GENDER);
-		final Alignment align = attrs.toValue("align", attributes.getDefaultAlignment(), LoaderHelper.ALIGNMENT);
-		final MutableIntegerMap<Attribute> map = new MutableIntegerMap<>(Attribute.class, race.getAttributes().getAttributes());
+		final Gender gender = attrs.toValue("gender", attributes.gender(), LoaderHelper.GENDER);
+		final Alignment align = attrs.toValue("align", attributes.alignment(), LoaderHelper.ALIGNMENT);
+		final MutableIntegerMap<Attribute> map = new MutableIntegerMap<>(Attribute.class, race.attributes().attributes());
 		LoaderHelper.loadAttributes(node, map);
 
 		// TODO
@@ -145,7 +145,7 @@ public class EntityLoader {
 
 		// Start entity-manager
 		if(start) {
-			e.getEntityManager().start(e);
+			e.manager().start(e);
 		}
 	}
 

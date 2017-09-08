@@ -17,36 +17,36 @@ import org.sarge.textrpg.world.Route;
 public class ContainerLinkTest extends ActionTest {
 	private ContainerLink link;
 	private ObjectDescriptor descriptor;
-	
+
 	@Before
 	public void before() {
 		descriptor = new ObjectDescriptor("ladder");
 		link = new ContainerLink(Route.NONE, Script.NONE, Size.NONE, "name", descriptor);
 	}
-	
+
 	@Test
 	public void constructor() {
-		assertEquals(Route.NONE, link.getRoute());
-		assertEquals(Script.NONE, link.getScript());
-		assertNotNull(link.getController());
-		assertEquals(true, link.getController().isPresent());
-		assertEquals("name", link.getController().get().toString());
-		assertEquals(Percentile.ONE, link.getController().get().getVisibility());
-		assertEquals(true, link.getController().get().isQuiet());
-		assertEquals(0L, link.getController().get().getForgetPeriod());
+		assertEquals(Route.NONE, link.route());
+		assertEquals(Script.NONE, link.script());
+		assertNotNull(link.controller());
+		assertEquals(true, link.controller().isPresent());
+		assertEquals("name", link.controller().get().toString());
+		assertEquals(Percentile.ONE, link.controller().get().visibility());
+		assertEquals(true, link.controller().get().isQuiet());
+		assertEquals(0L, link.controller().get().forgetPeriod());
 		assertEquals(false, link.isTraversable(null));
 	}
-	
+
 	@Test
 	public void put() throws ActionException {
 		final WorldObject obj = descriptor.create();
 		link.put(obj);
 		assertEquals(true, link.isTraversable(null));
-		assertNotNull(link.getController());
-		assertEquals(true, link.getController().isPresent());
-		assertEquals(Optional.of(obj), link.getController());
+		assertNotNull(link.controller());
+		assertEquals(true, link.controller().isPresent());
+		assertEquals(Optional.of(obj), link.controller());
 	}
-	
+
 	@Test
 	public void putRemoved() throws ActionException {
 		final WorldObject obj = descriptor.create();
@@ -54,7 +54,7 @@ public class ContainerLinkTest extends ActionTest {
 		obj.setParent(loc);
 		assertEquals(false, link.isTraversable(null));
 	}
-	
+
 	@Test
 	public void putOccupied() throws ActionException {
 		final WorldObject obj = descriptor.create();
@@ -62,7 +62,7 @@ public class ContainerLinkTest extends ActionTest {
 		expect("object.link.occupied");
 		link.put(obj);
 	}
-	
+
 	@Test
 	public void putInvalidObject() throws ActionException {
 		final WorldObject obj = new ObjectDescriptor("invalid").create();

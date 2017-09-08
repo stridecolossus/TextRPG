@@ -27,6 +27,7 @@ public final class Area {
 
 	/**
 	 * Resources that can be gathered in this area.
+	 * TODO - no need to be an enum, replace with configured list of identifiers
 	 */
 	public enum Resource {
 		HERBS,
@@ -144,7 +145,7 @@ public final class Area {
 	}
 
 	/**
-	 * @return Slash-delimited path from this area to the {@link #ROOT}
+	 * @return Path from this area to the {@link #ROOT}
 	 */
 	public Stream<Area> path() {
 		final List<Area> path = new ArrayList<>();

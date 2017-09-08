@@ -54,7 +54,7 @@ public class TrackedContents extends Contents {
 		 */
 		static Limit size(Size max) {
 			Check.notNull(max);
-			return (obj, c) -> obj.getSize().isLargerThan(max);
+			return (obj, c) -> obj.size().isLargerThan(max);
 		}
 	}
 
@@ -86,9 +86,9 @@ public class TrackedContents extends Contents {
 	}
 
 	@Override
-	public String getReason(Thing obj) {
+	public String reason(Thing obj) {
 		final Optional<Limit> exceeded = limits.keySet().stream().filter(f -> f.exceeds(obj, this)).findFirst();
-		return exceeded.map(limits::get).map(reason -> "contents.add." + reason).orElseGet(() -> super.getReason(obj));
+		return exceeded.map(limits::get).map(reason -> "contents.add." + reason).orElseGet(() -> super.reason(obj));
 	}
 
 	@Override

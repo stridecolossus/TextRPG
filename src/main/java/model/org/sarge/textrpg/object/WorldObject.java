@@ -31,6 +31,11 @@ public class WorldObject extends Thing {
 	public static final String PREVIOUS = "object.previous";
 
 	/**
+	 * Default openable model.
+	 */
+	private static final Optional<Openable> EMPTY = Optional.empty();
+
+	/**
 	 * Object interactions.
 	 */
 	public static enum Interaction {
@@ -65,30 +70,25 @@ public class WorldObject extends Thing {
 	}
 
 	@Override
-	public String getName() {
+	public String name() {
 		return descriptor.getName();
 	}
 
 	@Override
-	public long getForgetPeriod() {
+	public long forgetPeriod() {
 		return descriptor.getProperties().getForgetPeriod();
 	}
 
 	/**
 	 * @return Descriptor for this object
 	 */
-	public ObjectDescriptor getDescriptor() {
+	public ObjectDescriptor descriptor() {
 		return descriptor;
 	}
 
 	@Override
-	public Percentile getVisibility() {
+	public Percentile visibility() {
 		return descriptor.getCharacteristics().getVisibility();
-	}
-
-	@Override
-	public boolean isQuiet() {
-		return descriptor.getCharacteristics().isQuiet();
 	}
 
 	@Override
@@ -97,9 +97,14 @@ public class WorldObject extends Thing {
 	}
 
 	@Override
-	public Size getSize() {
+	public Size size() {
 		return descriptor.getProperties().getSize();
 	}
+
+	@Override
+    public boolean isQuiet() {
+        return descriptor.getCharacteristics().isQuiet();
+    }
 
 	/**
 	 * @return Whether this is a fixture.
@@ -118,16 +123,15 @@ public class WorldObject extends Thing {
 	}
 
 	@Override
-	public Optional<Emission> getEmission(Emission.Type type) {
+	public Optional<Emission> emission(Emission.Type type) {
 		return descriptor.getCharacteristics().getEmission(type);
 	}
 
 	/**
 	 * @return Descriptor for this object if it can be opened (default is empty)
 	 */
-	public Optional<Openable> getOpenableModel() {
-		// TODO - constant
-		return Optional.empty();
+	public Optional<Openable> openableModel() {
+		return EMPTY;
 	}
 
 	/**
@@ -159,7 +163,7 @@ public class WorldObject extends Thing {
 	private final Description.Builder describe(String key) {
 		// Start description
 		final Description.Builder builder = new Description.Builder("description." + key);
-		builder.wrap("name", getName());
+		builder.wrap("name", name());
 
 		// Add cardinality
 		final Cardinality cardinality = descriptor.getCharacteristics().getCardinality();
@@ -197,43 +201,42 @@ public class WorldObject extends Thing {
 		if(isFixture()) throw FIXTURE;
 
 		// Check not already carried
-		final Parent owner = this.getOwner();
+		final Parent owner = this.owner();
 		if(owner == actor) throw new ActionException("take.already.carried");
 		if(owner != null) throw new ActionException("take.cannot.take");
 	}
 
 	/**
 	 * @return Whether this object is damaged (default is <tt>false</tt>)
-	 * @see #wear()
+	 * @see #use()
 	 */
 	public boolean isDamaged() {
 		return false;
-	}
-
-	/**
-	 * @return Whether this object is broken (default is <tt>false</tt>)
-	 */
-	public boolean isBroken() {
-		return false;
-	}
-
-	/**
-	 * Applies wear to this object (default does nothing).
-	 * @throws ActionException if this object is broken
-	 * TODO - public
-	 */
-	public void wear() throws ActionException {
-		// Does nowt
 	}
 
 	@Override
 	protected void damage(DamageType type, int amount) {
 		if(isFixture()) return;
 		final Material mat = descriptor.getCharacteristics().getMaterial();
-		if(mat.isDamagedBy(type) && (amount > mat.getStrength())) {
+		if(mat.isDamagedBy(type) && (amount > mat.strength())) {
 			destroy();
 		}
 	}
+
+    /**
+     * @return Whether this object is broken (default is <tt>false</tt>)
+     */
+    public boolean isBroken() {
+        return false;
+    }
+
+    /**
+     * Uses this object.
+     * @throws UnsupportedOperationException by default
+     */
+    public void use() {
+        throw new UnsupportedOperationException();
+    }
 
 	@Override
 	public boolean isSentient() {
@@ -244,7 +247,7 @@ public class WorldObject extends Thing {
 	 * Helper.
 	 * @return Owner of this object or <tt>null</tt> if none
 	 */
-	public final Parent getOwner() {
+	public final Parent owner() {
 		return super.path().filter(p -> p instanceof Actor).findFirst().orElse(null);
 	}
 
@@ -257,7 +260,7 @@ public class WorldObject extends Thing {
 		if(isDead()) return;
 
 		// Check for owner
-		final Actor owner = (Actor) getOwner();
+		final Actor owner = (Actor) owner();
 		if(owner == null) return;
 
 		// Send alert
@@ -272,7 +275,7 @@ public class WorldObject extends Thing {
 	}
 
 	@Override
-	protected void destroy() {
+	public void destroy() {
 		assert !isFixture();
 		super.destroy();
 	}

@@ -58,7 +58,7 @@ public class FleeAction extends AbstractAction {
 	@Override
 	public ActionResponse execute(Entity actor) throws ActionException {
 		// Enumerate available links
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		final List<Direction> available = loc.getExits().entrySet().stream()
 			.filter(entry -> entry.getValue().getLink().isTraversable(actor))
 			.filter(entry -> entry.getValue().perceivedBy(actor))
@@ -75,7 +75,7 @@ public class FleeAction extends AbstractAction {
 		final Direction dir = Randomiser.random(available);
 
 		// Clear stance
-		switch(actor.getStance()) {
+		switch(actor.stance()) {
 		case COMBAT:
 		case RESTING:
 		case SNEAKING:

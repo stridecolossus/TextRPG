@@ -75,7 +75,7 @@ public class MovementController {
 		if(mod < 1) throw new IllegalArgumentException("Movement cost modifier must be one-or-more");
 
 		// Check can traverse
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		final Exit exit = loc.getExits().get(dir);
 		final Location dest = exit.getDestination();
 		final Vehicle vehicle = ActionHelper.getVehicle(actor);
@@ -87,12 +87,12 @@ public class MovementController {
 
 		// Check stamina
 		final float cost = calculateMovementCost(actor, exit, vehicle, mod);
-		if(actor.getValues().get(EntityValue.STAMINA) < cost) throw new ActionException("move.insufficient.stamina");
+		if(actor.values().get(EntityValue.STAMINA) < cost) throw new ActionException("move.insufficient.stamina");
 
 		// Traverse link
 		if(player) {
 			// TODO - move to MoveAction
-			exit.getLink().getScript().execute(actor);
+			exit.getLink().script().execute(actor);
 		}
 		if(vehicle == null) {
 			actor.setParent(dest);
@@ -138,14 +138,14 @@ public class MovementController {
 		final Link link = exit.getLink();
 		final String reason = link.reason(actor);
 		if(reason != null) {
-			final Object arg = link.getController().orElse(null);
+			final Object arg = link.controller().orElse(null);
 			throw new ActionException(reason, arg);
 		}
 
 		// Check terrain
 		if(vehicle == null) {
 			// Check swimming if moving into a water location
-			final boolean here = actor.getLocation().getTerrain() == Terrain.WATER;
+			final boolean here = actor.location().getTerrain() == Terrain.WATER;
 			final boolean there = exit.getDestination().getTerrain() == Terrain.WATER;
 			if(!here && there && !actor.isSwimming()) {
 				throw new ActionException("move.not.swimming");
@@ -154,7 +154,7 @@ public class MovementController {
 		}
 		else {
 			// Otherwise check vehicle can enter this location
-			if(!vehicle.getDescriptor().isValid(link.getRoute())) throw new ActionException("vehicle.invalid.route", vehicle);
+			if(!vehicle.descriptor().isValid(link.route())) throw new ActionException("vehicle.invalid.route", vehicle);
 		}
 	}
 
@@ -165,11 +165,11 @@ public class MovementController {
 	 * @return Movement cost
 	 */
 	private float calculateMovementCost(Entity actor, Exit exit, Vehicle vehicle, float mod) {
-		final float vehicleMod = vehicle == null ? 1 : vehicle.getDescriptor().getMovementCostModifier();
+		final float vehicleMod = vehicle == null ? 1 : vehicle.descriptor().getMovementCostModifier();
 		final Link link = exit.getLink();
-		final Route route = link.getRoute();
-		final float cost = move.multiply(exit.getDestination().getTerrain(), route, actor.getStance());
-		final int reduce = actor.getValues().get(EntityValue.MOVE_COST);
+		final Route route = link.route();
+		final float cost = move.multiply(exit.getDestination().getTerrain(), route, actor.stance());
+		final int reduce = actor.values().get(EntityValue.MOVE_COST);
 		return Math.max(1, (cost * mod * vehicleMod) - reduce);
 	}
 
@@ -178,9 +178,9 @@ public class MovementController {
 	 */
 	private void addTracks(Entity actor, Location loc, Direction dir, Exit exit) {
 		// TODO - weather
-		final float vis = tracks.multiply(exit.getDestination().getTerrain(), exit.getLink().getRoute(), actor.getStance());
+		final float vis = tracks.multiply(exit.getDestination().getTerrain(), exit.getLink().route(), actor.stance());
 		if(vis > 0) {
-			final Tracks tracks = new Tracks(actor.getRace().getName(), loc, dir, new Percentile(vis), System.currentTimeMillis()); // TODO - ok? no context here, add a member?
+			final Tracks tracks = new Tracks(actor.race().name(), loc, dir, new Percentile(vis), System.currentTimeMillis()); // TODO - ok? no context here, add a member?
 			actor.add(tracks, lifetime);
 		}
 	}
@@ -205,7 +205,7 @@ public class MovementController {
 		// TODO - only if combat or cart
 		for(Emission.Type type : EMISSIONS) {
 			actor
-				.getEmission(type)
+				.emission(type)
 				.map(e -> new EnvironmentNotification(e, dir))
 				.ifPresent(n -> prev.broadcast(actor, n));
 		}
@@ -230,7 +230,7 @@ public class MovementController {
 	private static void create(Entity actor, Area.Ambient ambient, Area area) {
 		// Register event
 		final Runnable event = () -> {
-			if(actor.getLocation().getArea() == area) {
+			if(actor.location().getArea() == area) {
 				// Display if still in this area
 				actor.alert(new Message(ambient.getName()));
 
@@ -240,7 +240,7 @@ public class MovementController {
 				}
 			}
 		};
-		actor.getEventQueue().add(event, ambient.getPeriod());
+		actor.queue().add(event, ambient.getPeriod());
 	}
 
 	/**
@@ -249,13 +249,13 @@ public class MovementController {
 	private void moveGroup(Entity actor, Direction dir) {
 		// Move group
 		// TODO - this seems convoluted? just if..then check for whether actor is leader?
-		actor.getGroup()
-			.filter(g -> g.getLeader() == actor)
-			.map(Group::getMembers)
+		actor.group()
+			.filter(g -> g.leader() == actor)
+			.map(Group::members)
 			.ifPresent(members -> members.forEach(e -> move(e, dir)));
 
 		// Move followers
-		actor.getFollowers().forEach(e -> move(e, dir));
+		actor.followers().forEach(e -> move(e, dir));
 	}
 
 	/**
@@ -268,7 +268,7 @@ public class MovementController {
 			move(actor, dir, 1, actor instanceof Player);
 		}
 		catch(ActionException ex) {
-			actor.getNotificationHandler().handle(new Message(ex.getMessage()));
+			actor.handler().handle(new Message(ex.getMessage()));
 		}
 	}
 }

@@ -28,8 +28,8 @@ public class RopeLinkTest extends ActionTest {
 	
 	@Test
 	public void constructor() {
-		assertEquals(Route.ROPE, link.getRoute());
-		assertEquals(Optional.of(anchor), link.getController());
+		assertEquals(Route.ROPE, link.route());
+		assertEquals(Optional.of(anchor), link.controller());
 		assertEquals(false, link.isVisible(actor));
 		assertEquals(false, link.isTraversable(actor));
 	}
@@ -39,7 +39,7 @@ public class RopeLinkTest extends ActionTest {
 		rope.attach(actor, anchor);
 		assertEquals(true, link.isVisible(actor));
 		assertEquals(true, link.isTraversable(actor));
-		assertEquals(Optional.of(anchor), link.getController());
+		assertEquals(Optional.of(anchor), link.controller());
 		rope.remove(actor);
 		assertEquals(false, link.isTraversable(actor));
 	}

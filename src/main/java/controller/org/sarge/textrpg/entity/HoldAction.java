@@ -39,10 +39,10 @@ public class HoldAction extends AbstractAction {
 	 */
 	public ActionResponse execute(Entity actor, WorldObject obj) throws ActionException {
 		verifyCarried(actor, obj);
-		if(obj.getDescriptor() instanceof Weapon) {
+		if(obj.descriptor() instanceof Weapon) {
 			// Stop holding current object
 			final List<Description> responses = new ArrayList<>();
-			final Optional<WorldObject> held = actor.getEquipment().removeWielded();
+			final Optional<WorldObject> held = actor.equipment().removeWielded();
 			held.ifPresent(prev -> responses.add(new Description("remove.response", "name", prev)));
 			
 			// Delegate
@@ -52,7 +52,7 @@ public class HoldAction extends AbstractAction {
 		}
 		else {
 			// Hold object
-			actor.getEquipment().hold(obj);
+			actor.equipment().hold(obj);
 			return response(obj);
 		}
 	}
@@ -69,7 +69,7 @@ public class HoldAction extends AbstractAction {
 		// Hold light
 		verifyCarried(actor, light);
 		final List<Description> responses = new ArrayList<>();
-		actor.getEquipment().hold(light);
+		actor.equipment().hold(light);
 		responses.add(new Description(this.name + ".response", "name", light));
 
 		// Turn on light

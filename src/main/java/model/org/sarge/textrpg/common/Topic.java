@@ -4,7 +4,7 @@ import static org.sarge.lib.util.Check.notEmpty;
 import static org.sarge.lib.util.Check.notNull;
 
 import org.sarge.textrpg.entity.Trainer;
-import org.sarge.textrpg.object.Shop;
+import org.sarge.textrpg.world.Shop;
 
 /**
  * Conversation topic.

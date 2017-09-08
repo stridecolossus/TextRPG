@@ -42,16 +42,16 @@ public abstract class ActionTest {
 		// Create actor in this location
 		final EventQueue queue = new EventQueue();
 		actor = mock(Entity.class);
-		when(actor.getParent()).thenReturn(loc);
-		when(actor.getLocation()).thenReturn(loc);
-		when(actor.getStance()).thenReturn(Stance.DEFAULT);
-		when(actor.getGroup()).thenReturn(Optional.empty());
-		when(actor.getFollowers()).thenReturn(Stream.empty());
-		when(actor.getEventQueue()).thenReturn(queue);
+		when(actor.parent()).thenReturn(loc);
+		when(actor.location()).thenReturn(loc);
+		when(actor.stance()).thenReturn(Stance.DEFAULT);
+		when(actor.group()).thenReturn(Optional.empty());
+		when(actor.followers()).thenReturn(Stream.empty());
+		when(actor.queue()).thenReturn(queue);
 
 		// Create inventory
 		final Contents inv = new Contents();
-		when(actor.getContents()).thenReturn(inv);
+		when(actor.contents()).thenReturn(inv);
 	}
 
 	/**
@@ -76,7 +76,7 @@ public abstract class ActionTest {
 	public static Parent createParent() {
 		final Contents contents = new Contents();
 		final Parent parent = mock(Parent.class);
-		when(parent.getContents()).thenReturn(contents);
+		when(parent.contents()).thenReturn(contents);
 		return parent;
 	}
 }

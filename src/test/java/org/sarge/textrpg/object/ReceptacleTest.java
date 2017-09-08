@@ -24,16 +24,16 @@ public class ReceptacleTest extends ActionTest {
 
 	@Test
 	public void constructor() {
-		assertEquals(descriptor, rec.getDescriptor());
+		assertEquals(descriptor, rec.descriptor());
 		assertEquals("receptacle", descriptor.getDescriptionKey());
-		assertEquals(3, rec.getLevel());
+		assertEquals(3, rec.level());
 		assertEquals(2 + 3, rec.weight());
 		assertEquals(false, rec.isFixture());
 	}
 
 	@Test
 	public void constructorInfinite() {
-		assertEquals(Receptacle.INFINITE, inf.getLevel());
+		assertEquals(Receptacle.INFINITE, inf.level());
 	}
 
 	@Test
@@ -49,13 +49,13 @@ public class ReceptacleTest extends ActionTest {
 		// Consume some of the contents
 		int actual = rec.consume(2);
 		assertEquals(2, actual);
-		assertEquals(1, rec.getLevel());
+		assertEquals(1, rec.level());
 		assertEquals(2 + 1, rec.weight());
 
 		// Consume the remainder
 		actual = rec.consume(999);
 		assertEquals(1, actual);
-		assertEquals(0, rec.getLevel());
+		assertEquals(0, rec.level());
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class ReceptacleTest extends ActionTest {
 	@Test
 	public void consumeInfinite() throws ActionException {
 		assertEquals(999, inf.consume(999));
-		assertEquals(Receptacle.INFINITE, inf.getLevel());
+		assertEquals(Receptacle.INFINITE, inf.level());
 	}
 
 	@Test
@@ -76,8 +76,8 @@ public class ReceptacleTest extends ActionTest {
 		final Receptacle src = new Receptacle(descriptor);
 		rec.consume(2);
 		rec.fill(src);
-		assertEquals(3, rec.getLevel());
-		assertEquals(1, src.getLevel());
+		assertEquals(3, rec.level());
+		assertEquals(1, src.level());
 	}
 
 	@Test
@@ -121,14 +121,14 @@ public class ReceptacleTest extends ActionTest {
 	public void fillInfiniteSource() throws ActionException {
 		rec.consume(3);
 		rec.fill(inf);
-		assertEquals(3, rec.getLevel());
-		assertEquals(Receptacle.INFINITE, inf.getLevel());
+		assertEquals(3, rec.level());
+		assertEquals(Receptacle.INFINITE, inf.level());
 	}
 
 	@Test
 	public void empty() throws ActionException {
 		rec.empty();
-		assertEquals(0, rec.getLevel());
+		assertEquals(0, rec.level());
 	}
 
 	@Test
@@ -147,6 +147,6 @@ public class ReceptacleTest extends ActionTest {
 	@Test
 	public void destroy() {
 		rec.destroy();
-		assertEquals(0, rec.getLevel());
+		assertEquals(0, rec.level());
 	}
 }

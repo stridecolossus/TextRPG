@@ -35,7 +35,7 @@ public class SneakAction extends AbstractActiveAction {
 	 * @throws ActionException
 	 */
 	public ActionResponse sneak(Entity actor) throws ActionException {
-		if(actor.getStance() == Stance.SNEAKING) {
+		if(actor.stance() == Stance.SNEAKING) {
 			// Stop sneaking
 			actor.setStance(Stance.DEFAULT);
 			return new ActionResponse(new Description("sneak.stop"));

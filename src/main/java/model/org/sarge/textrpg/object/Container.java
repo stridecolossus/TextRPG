@@ -51,14 +51,14 @@ public class Container extends WorldObject implements Parent {
 		/**
 		 * @return Container placement
 		 */
-		public String getPlacement() {
+		public String placement() {
 			return placement;
 		}
 
 		/**
 		 * @return Deployment slot for containers that than carry equipment such as a key-ring or belt
 		 */
-		public Optional<DeploymentSlot> getContentsDeploymentSlot() {
+		public Optional<DeploymentSlot> contentsDeploymentSlot() {
 			return slot;
 		}
 
@@ -76,7 +76,7 @@ public class Container extends WorldObject implements Parent {
 	public static Limit categoryLimit(Set<String> cats) {
 		return (t, c) -> {
 			final WorldObject obj = (WorldObject) t;
-			return obj.getDescriptor().getCharacteristics().getCategories().noneMatch(cats::contains);
+			return obj.descriptor().getCharacteristics().getCategories().noneMatch(cats::contains);
 		};
 	}
 
@@ -85,21 +85,21 @@ public class Container extends WorldObject implements Parent {
 	 */
 	private class ContainerContents extends TrackedContents {
 		private ContainerContents() {
-			super(getDescriptor().limits);
+			super(descriptor().limits);
 		}
 
 		@Override
-		public String getReason(Thing t) {
+		public String reason(Thing t) {
 			// Check open
 			final boolean open = model.map(Openable::isOpen).orElse(true);
 			if(!open) return "container.add.closed";
 
 			// Check specialist equipment containers
-			final Descriptor descriptor = getDescriptor();
+			final Descriptor descriptor = descriptor();
 			if(descriptor.slot.isPresent()) {
 				final DeploymentSlot slot = descriptor.slot.get();
 				final WorldObject obj = (WorldObject) t;
-				final boolean valid = obj.getDescriptor().getEquipment().map(Equipment::getDeploymentSlot).map(slot::equals).orElse(false);
+				final boolean valid = obj.descriptor().getEquipment().map(Equipment::getDeploymentSlot).map(slot::equals).orElse(false);
 				if(!valid) {
 					return "container.add." + descriptor.slot.get().name();
 				}
@@ -133,8 +133,8 @@ public class Container extends WorldObject implements Parent {
 	}
 
 	@Override
-	public Descriptor getDescriptor() {
-		return (Descriptor) super.getDescriptor();
+	public Descriptor descriptor() {
+		return (Descriptor) super.descriptor();
 	}
 
 	@Override
@@ -143,7 +143,7 @@ public class Container extends WorldObject implements Parent {
 	}
 
 	@Override
-	public Optional<Openable> getOpenableModel() {
+	public Optional<Openable> openableModel() {
 		return model;
 	}
 
@@ -157,7 +157,7 @@ public class Container extends WorldObject implements Parent {
 	}
 
 	@Override
-	public TrackedContents getContents() {
+	public TrackedContents contents() {
 		return contents;
 	}
 
@@ -169,8 +169,8 @@ public class Container extends WorldObject implements Parent {
 	}
 
 	@Override
-	protected void destroy() {
-		move(this.getParent());
+	public void destroy() {
+		move(this.parent());
 		super.destroy();
 	}
 }

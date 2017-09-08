@@ -33,13 +33,13 @@ public class ObjectLink extends ExtendedLink {
 	public ObjectLink(Route route, Script script, Size size, WorldObject obj, String reason) {
 		super(route, script, size);
 		Check.notEmpty(reason);
-		if(!obj.getOpenableModel().isPresent()) throw new IllegalArgumentException("Object must be openable");
+		if(!obj.openableModel().isPresent()) throw new IllegalArgumentException("Object must be openable");
 		this.obj = obj;
 		this.reason = reason;
 	}
 
 	@Override
-	public Optional<Thing> getController() {
+	public Optional<Thing> controller() {
 		return Optional.of(obj);
 	}
 
@@ -57,7 +57,7 @@ public class ObjectLink extends ExtendedLink {
 	public Builder describe() {
 		final Builder builder = super.describe();
 		if(!isOpen()) {
-			builder.wrap("object", obj.getName());
+			builder.wrap("object", obj.name());
 		}
 		return builder;
 	}
@@ -66,6 +66,6 @@ public class ObjectLink extends ExtendedLink {
 	 * @return Whether this link is open
 	 */
 	public boolean isOpen() {
-		return obj.getOpenableModel().get().isOpen();
+		return obj.openableModel().get().isOpen();
 	}
 }

@@ -50,7 +50,7 @@ public class LeaveAction extends AbstractActiveAction {
 	 */
 	public ActionResponse leave(Entity actor) throws ActionException {
 		final Vehicle vehicle = ActionHelper.getVehicle(actor);
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		if(vehicle == null) {
 			// Find single direction to follow
 			final Stream<Direction> str = loc.getExits().entrySet().stream()
@@ -68,7 +68,7 @@ public class LeaveAction extends AbstractActiveAction {
 			if(!actor.isSwimming() && (loc.getTerrain() == Terrain.WATER)) throw new ActionException("move.not.swimming");
 
 			// Leave vehicle
-			actor.setParent(vehicle.getParent());
+			actor.setParent(vehicle.parent());
 			return response(vehicle);
 		}
 	}

@@ -10,10 +10,10 @@ public interface Hidden {
 	/**
 	 * @return Visibility of this object
 	 */
-	Percentile getVisibility();
+	Percentile visibility();
 	
 	/**
 	 * @return Duration after which this object is forgotten (ms)
 	 */
-	long getForgetPeriod();
+	long forgetPeriod();
 }

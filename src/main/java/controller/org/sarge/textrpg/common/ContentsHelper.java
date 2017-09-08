@@ -44,7 +44,7 @@ public final class ContentsHelper {
 	 * @return Matcher
 	 */
 	public static final Predicate<WorldObject> objectMatcher(ObjectDescriptor descriptor) {
-		return obj -> obj.getDescriptor() == descriptor;
+		return obj -> obj.descriptor() == descriptor;
 	}
 
 	/**
@@ -56,7 +56,7 @@ public final class ContentsHelper {
 		return obj -> {
 			if(obj instanceof Receptacle) {
 				final Receptacle rec = (Receptacle) obj;
-				return rec.getDescriptor().getLiquid() == liquid;
+				return rec.descriptor().liquid() == liquid;
 			}
 			else {
 				return false;
@@ -71,7 +71,7 @@ public final class ContentsHelper {
 	 */
 	public static final Predicate<WorldObject> categoryMatcher(String... cats) {
 		final Collection<String> set = Arrays.asList(cats);
-		return obj -> obj.getDescriptor().getCharacteristics().getCategories().anyMatch(set::contains);
+		return obj -> obj.descriptor().getCharacteristics().getCategories().anyMatch(set::contains);
 	}
 
 	/**

@@ -19,7 +19,7 @@ public class TopicsArgumentBuilderTest {
 		final CharacterEntity ch = mock(CharacterEntity.class);
 		final Topic topic = new Topic("topic", Script.NONE);
 		final Contents contents = new Contents();
-		when(ch.getTopics()).thenReturn(Stream.of(topic));
+		when(ch.topics()).thenReturn(Stream.of(topic));
 		contents.add(ch);
 		final ArgumentBuilder builder = new TopicsArgumentBuilder(contents);
 		assertArrayEquals(new Topic[]{topic}, builder.stream(null).toArray());

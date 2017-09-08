@@ -30,7 +30,7 @@ public class EventQueueTest {
 		final EventQueue.Entry entry = queue.add(event, 1L);
 		assertNotNull(entry);
 		assertEquals(false, entry.isCancelled());
-		assertEquals(1, queue.stream().count());
+		assertEquals(1, queue.size());
 		assertEquals(entry, queue.stream().iterator().next());
 	}
 
@@ -50,7 +50,7 @@ public class EventQueueTest {
 		final EventQueue.Entry entry = queue.add(event, 1L);
 		EventQueue.update(1L);
 		verify(event).run();
-		assertEquals(1, queue.stream().count());
+		assertEquals(1, queue.size());
 		assertEquals(other, queue.stream().iterator().next());
 		assertEquals(true, entry.isCancelled());
 	}
@@ -66,13 +66,13 @@ public class EventQueueTest {
 		queue.add(event, 1L, true);
 		EventQueue.update(1L);
 		verify(event).run();
-		assertEquals(1, queue.stream().count());
+		assertEquals(1, queue.size());
 	}
 
 	@Test
 	public void clear() {
 		queue.add(event, 1L);
 		queue.reset();
-		assertEquals(0, queue.stream().count());
+		assertEquals(0, queue.size());
 	}
 }

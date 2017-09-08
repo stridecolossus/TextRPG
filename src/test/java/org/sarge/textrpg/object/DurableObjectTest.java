@@ -19,10 +19,10 @@ public class DurableObjectTest extends ActionTest {
 	
 	@Test
 	public void constructor() {
-		assertEquals(0, obj.getWear());
+		assertEquals(0, obj.wear());
 		assertEquals(false, obj.isDamaged());
 		assertEquals(false, obj.isBroken());
-		assertEquals("durable", obj.getDescriptor().getDescriptionKey());
+		assertEquals("durable", obj.descriptor().getDescriptionKey());
 	}
 	
 	@Test
@@ -34,31 +34,31 @@ public class DurableObjectTest extends ActionTest {
 	
 	@Test
 	public void wear() throws ActionException {
-		obj.wear();
+		obj.use();
 		assertEquals(true, obj.isDamaged());
 		assertEquals(false, obj.isBroken());
-		assertEquals(1, obj.getWear());
+		assertEquals(1, obj.wear());
 		assertEquals("{wear.damaged}", obj.describe().get("wear"));
 
-		obj.wear();
-		assertEquals(2, obj.getWear());
+		obj.use();
+		assertEquals(2, obj.wear());
 		assertEquals(true, obj.isBroken());
 		assertEquals("{wear.broken}", obj.describe().get("wear"));
 	}
 	
 	@Test
 	public void consumeBroken() throws ActionException {
-		obj.wear();
-		obj.wear();
+		obj.use();
+		obj.use();
 		expect("durable.object.broken");
-		obj.wear();
+		obj.use();
 	}
 	
 	@Test
 	public void repair() throws ActionException {
-		obj.wear();
+		obj.use();
 		obj.repair();
-		assertEquals(0, obj.getWear());
+		assertEquals(0, obj.wear());
 	}
 	
 	@Test

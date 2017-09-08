@@ -35,7 +35,7 @@ public class PutAction extends AbstractAction {
 		// Build response
 		final Description desc = new Description.Builder("put.response")
 			.wrap("name", obj)
-			.wrap("place", "place." + c.getDescriptor().getPlacement())
+			.wrap("place", "place." + c.descriptor().placement())
 			.wrap("container", c)
 			.build();
 		return new ActionResponse(desc);
@@ -46,10 +46,10 @@ public class PutAction extends AbstractAction {
 	 */
 	public ActionResponse execute(Entity actor, WorldObject obj, Hidden hidden) throws ActionException {
 		// Find object link
-		final ContainerLink container = actor.getLocation().getExits().values().stream()
+		final ContainerLink container = actor.location().getExits().values().stream()
 			.map(Exit::getLink)
 			.filter(link -> link instanceof ContainerLink)
-			.filter(link -> link.getController().map(c -> c == hidden).orElse(false))
+			.filter(link -> link.controller().map(c -> c == hidden).orElse(false))
 			.map(link -> (ContainerLink) link)
 			.findFirst()
 			.orElseThrow(() -> new ActionException(ILLOGICAL));
@@ -63,7 +63,7 @@ public class PutAction extends AbstractAction {
 		// Build response
 		final Description desc = new Description.Builder("put.link.response")
 			.wrap("name", obj)
-			.wrap("link", container.getController().get())
+			.wrap("link", container.controller().get())
 			.build();
 		return new ActionResponse(desc);
 	}

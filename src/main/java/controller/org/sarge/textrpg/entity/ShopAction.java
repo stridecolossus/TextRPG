@@ -13,10 +13,10 @@ import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.common.Topic;
 import org.sarge.textrpg.object.ObjectDescriptor;
 import org.sarge.textrpg.object.ObjectFilter;
-import org.sarge.textrpg.object.RepairShop;
-import org.sarge.textrpg.object.Shop;
-import org.sarge.textrpg.object.Shop.StockEntry;
 import org.sarge.textrpg.object.WorldObject;
+import org.sarge.textrpg.world.RepairShop;
+import org.sarge.textrpg.world.Shop;
+import org.sarge.textrpg.world.Shop.StockEntry;
 
 /**
  * Action to interact with a {@link Shop}.
@@ -83,7 +83,7 @@ public class ShopAction extends AbstractActiveAction {
 			final List<StockEntry> results = stock.collect(toList());
 			if(results.isEmpty()) throw new ActionException("buy.unknown.object");
 			if(results.size() != 1) throw new ActionException("buy.ambiguous.object");
-			return buy(actor, results.iterator().next().getDescriptor(), shop);
+			return buy(actor, results.iterator().next().descriptor(), shop);
 
 		default:
 			return INVALID;
@@ -95,9 +95,9 @@ public class ShopAction extends AbstractActiveAction {
 	 */
 	private static Description describe(StockEntry entry) {
 		return new Description.Builder("list.entry")
-			.wrap("name", entry.getDescriptor().getName())
-			.add("index", entry.getIndex())
-			.add("count", entry.getCount())
+			.wrap("name", entry.descriptor().getName())
+			.add("index", entry.index())
+			.add("count", entry.count())
 			.build();
 	}
 
@@ -107,7 +107,7 @@ public class ShopAction extends AbstractActiveAction {
 	public ActionResponse buy(Entity actor, Integer index) throws ActionException {
 		final Shop shop = find(actor);
 		if(op != Operation.BUY) return INVALID;
-		final ObjectDescriptor descriptor = shop.getDescriptor(index).orElseThrow(() -> new ActionException("buy.invalid.index"));
+		final ObjectDescriptor descriptor = shop.descriptor(index).orElseThrow(() -> new ActionException("buy.invalid.index"));
 		return buy(actor, descriptor, shop);
 	}
 
@@ -118,7 +118,7 @@ public class ShopAction extends AbstractActiveAction {
 		// Check available funds
 		final Entity player = actor;
 		final int value = descriptor.getProperties().getValue();
-		if(player.getValues().get(EntityValue.CASH) < value) throw new ActionException("buy.insufficient.funds");
+		if(player.values().get(EntityValue.CASH) < value) throw new ActionException("buy.insufficient.funds");
 
 		// Buy from shop
 		shop.buy(descriptor);
@@ -153,7 +153,7 @@ public class ShopAction extends AbstractActiveAction {
 		case REPAIR:
 			// Consume repair cost
 			final int cost = getRepairShop(shop).calculateRepairCost(obj);
-			if(actor.getValues().get(EntityValue.CASH) < cost) throw new ActionException("repair.insufficient.funds");
+			if(actor.values().get(EntityValue.CASH) < cost) throw new ActionException("repair.insufficient.funds");
 			actor.modify(EntityValue.CASH, -cost);
 
 			// Notify expected duration
@@ -169,7 +169,7 @@ public class ShopAction extends AbstractActiveAction {
 	 * Finds a shop in the current location.
  	 */
 	private static Shop find(Entity actor) throws ActionException {
-		return ActionHelper.findTopic(actor.getLocation(), Shop.TOPIC_NAME).map(Topic::shop).orElseThrow(() -> new ActionException("shop.not.found"));
+		return ActionHelper.findTopic(actor.location(), Shop.TOPIC_NAME).map(Topic::shop).orElseThrow(() -> new ActionException("shop.not.found"));
 	}
 
 	/**
@@ -177,6 +177,6 @@ public class ShopAction extends AbstractActiveAction {
 	 * @throws ActionException if this shop does not repair
 	 */
 	private static RepairShop getRepairShop(Shop shop) throws ActionException {
-	    return shop.getRepairShop().orElseThrow(() -> new ActionException("shop.cannot.repair"));
+	    return shop.repairShop().orElseThrow(() -> new ActionException("shop.cannot.repair"));
 	}
 }

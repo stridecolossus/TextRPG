@@ -20,7 +20,7 @@ public class RouteLink extends Link {
 	}
 
 	@Override
-	public Route getRoute() {
+	public Route route() {
 		return route;
 	}
 

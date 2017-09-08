@@ -38,7 +38,7 @@ public class RemoveAction extends AbstractAction {
 
 	private static List<Description> remove(Entity actor, WorldObject obj) throws ActionException {
 		// Remove equipment
-		actor.getEquipment().remove(obj);
+		actor.equipment().remove(obj);
 
 		// Snuff lights
 		final List<Description> responses = new ArrayList<>();
@@ -50,7 +50,7 @@ public class RemoveAction extends AbstractAction {
 		}
 
 		// Remove passive effects
-		final ObjectDescriptor.Equipment equipment = obj.getDescriptor().getEquipment().get();
+		final ObjectDescriptor.Equipment equipment = obj.descriptor().getEquipment().get();
 		final Effect.Descriptor effect = equipment.getPassive();
 		// TODO - how to invert? also need to check all values are literals otherwise needs to use AppliedEffect?
 		// effect.apply(Collections.singletonList(e), actor, ctx.getEventQueue());
@@ -74,7 +74,7 @@ public class RemoveAction extends AbstractAction {
 	 * @throws ActionException
 	 */
 	public ActionResponse execute(Entity actor, ObjectFilter filter) throws ActionException {
-		final List<WorldObject> list = actor.getEquipment().stream().filter(obj -> filter.test(obj.getDescriptor())).collect(toList());
+		final List<WorldObject> list = actor.equipment().stream().filter(obj -> filter.test(obj.descriptor())).collect(toList());
 		if(list.isEmpty()) {
 			throw new ActionException("remove.empty.filter");
 		}

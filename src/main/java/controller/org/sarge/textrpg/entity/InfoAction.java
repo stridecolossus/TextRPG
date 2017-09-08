@@ -32,10 +32,10 @@ public class InfoAction extends AbstractAction {
 			@Override
 			public Description execute(Entity player) {
 				final Description.Builder desc = new Description.Builder("info.stats");
-				final IntegerMap<EntityValue> values = player.getValues();
+				final IntegerMap<EntityValue> values = player.values();
 				for(EntityValue key : KEYS) {
 					desc.add(key.name(), values.get(key));
-					key.getMaximumValue().ifPresent(k -> desc.add(k.name(), values.get(k)));
+					key.max().ifPresent(k -> desc.add(k.name(), values.get(k)));
 				}
 				if(values.get(EntityValue.HUNGER) > 0) {
 					desc.add(new Description("hungry"));
@@ -59,29 +59,29 @@ public class InfoAction extends AbstractAction {
 			public Description execute(Entity player) {
 				// Add character info
 				final Description.Builder info = new Description.Builder("character.info");
-				info.add("name", player.getName());
-				info.wrap("gender", "gender." + player.getGender());
-				info.wrap("race", player.getRace().getName());
-				info.wrap("alignment", player.getAlignment());
+				info.add("name", player.name());
+				info.wrap("gender", "gender." + player.gender());
+				info.wrap("race", player.race().name());
+				info.wrap("alignment", player.alignment());
 				
 				// Add attribute values
 				final Description.Builder attributesBuilder = new Description.Builder("character.info.attributes");
-				final IntegerMap<Attribute> attrs = player.getAttributes();
+				final IntegerMap<Attribute> attrs = player.attributes();
 				for(Attribute attr : Attribute.values()) {
 					attributesBuilder.add(attr.name(), attrs.get(attr));
 				}
 				info.add(attributesBuilder.build());
 				
 				// Add mount or vehicle
-				switch(player.getParent().getParentName()) {
+				switch(player.parent().parentName()) {
 				case Vehicle.NAME:
-					info.add(new Description("character.info.vehicle", "name", player.getParent()));
+					info.add(new Description("character.info.vehicle", "name", player.parent()));
 					break;
 					
 				case Furniture.NAME:
 					final Description desc = new Description.Builder("character.info.furniture")
-						.add("stance", "stance." + player.getStance())
-						.add("name", player.getParent())
+						.add("stance", "stance." + player.stance())
+						.add("name", player.parent())
 						.build();
 					info.add(desc);
 					break;
@@ -91,13 +91,13 @@ public class InfoAction extends AbstractAction {
 
 				// Add equipment weight
 				// TODO - banding
-				info.add(new Description.Builder("character.info.equipment").add("weight", player.getEquipment().getWeight()).build());
+				info.add(new Description.Builder("character.info.equipment").add("weight", player.equipment().getWeight()).build());
 				
 				// Add armour
-				info.add(new Description.Builder("character.info.armour").add("armour", player.getValues().get(EntityValue.ARMOUR)).build());
+				info.add(new Description.Builder("character.info.armour").add("armour", player.values().get(EntityValue.ARMOUR)).build());
 
 				// Add money
-				final int cash = player.getValues().get(EntityValue.CASH);
+				final int cash = player.values().get(EntityValue.CASH);
 				final Description.Builder money = new Description.Builder("character.info.money");
 				add("gold", cash / GOLD, money);
 				add("silver", (cash % GOLD) / SILVER, money);
@@ -106,8 +106,8 @@ public class InfoAction extends AbstractAction {
 				
 				// Add experience
 				final Description xp = new Description.Builder("character.info.xp")
-					.add("xp", player.getValues().get(EntityValue.EXPERIENCE))
-					.add("points", player.getValues().get(EntityValue.POINTS))
+					.add("xp", player.values().get(EntityValue.EXPERIENCE))
+					.add("points", player.values().get(EntityValue.POINTS))
 					.build();
 				info.add(xp);
 				
@@ -133,7 +133,7 @@ public class InfoAction extends AbstractAction {
 		INVENTORY {
 			@Override
 			protected Description execute(Entity player) {
-				final List<Description> inv = player.getContents().stream()
+				final List<Description> inv = player.contents().stream()
 					.map(t -> (WorldObject) t)
 					.map(WorldObject::describeShort)
 					.collect(toList());
@@ -147,7 +147,7 @@ public class InfoAction extends AbstractAction {
 		EQUIPMENT {
 			@Override
 			public Description execute(Entity player) {
-				return Description.create("info.equipment", player.getEquipment().describe());
+				return Description.create("info.equipment", player.equipment().describe());
 			}
 		},
 		
@@ -157,7 +157,7 @@ public class InfoAction extends AbstractAction {
 		SKILLS {
 			@Override
 			public Description execute(Entity player) {
-				return Description.create("info.skills", player.getSkills().describe());
+				return Description.create("info.skills", player.skills().describe());
 			}
 		};
 		

@@ -55,11 +55,11 @@ public class LocationTest {
 		assertEquals(Area.ROOT, loc.getArea());
 		assertEquals(Terrain.DESERT, loc.getTerrain());
 		assertArrayEquals(new String[]{"decoration"}, loc.getDecorations().toArray());
-		assertNotNull(loc.getContents());
+		assertNotNull(loc.contents());
 		assertNotNull(loc.getExits());
 		assertEquals(0, loc.getExits().size());
 		assertNotNull(Location.getSurfaces());
-		assertEquals("location", loc.getParentName());
+		assertEquals("location", loc.parentName());
 	}
 
 	@Test
@@ -89,8 +89,8 @@ public class LocationTest {
 		final Exit reverse = dest.getExits().get(Direction.UP);
 		assertNotNull(reverse);
 		assertEquals(loc, reverse.getDestination());
-		assertEquals(Route.ROAD, reverse.getLink().getRoute());
-		assertEquals(Optional.empty(), reverse.getLink().getController());
+		assertEquals(Route.ROAD, reverse.getLink().route());
+		assertEquals(Optional.empty(), reverse.getLink().controller());
 	}
 
 	@Test
@@ -100,8 +100,8 @@ public class LocationTest {
 		final Exit reverse = dest.getExits().get(Direction.UP);
 		assertNotNull(reverse);
 		assertEquals(loc, reverse.getDestination());
-		assertEquals(Route.NONE, reverse.getLink().getRoute());
-		assertEquals(Optional.empty(), reverse.getLink().getController());
+		assertEquals(Route.NONE, reverse.getLink().route());
+		assertEquals(Optional.empty(), reverse.getLink().controller());
 	}
 
 	@Test
@@ -154,8 +154,8 @@ public class LocationTest {
 	@Test
 	public void isArtificialLightAvailable() {
 		final Thing light = mock(Thing.class);
-		when(light.getEmission(Emission.Type.LIGHT)).thenReturn(Optional.of(Emission.light(Percentile.HALF)));
-		loc.getContents().add(light);
+		when(light.emission(Emission.Type.LIGHT)).thenReturn(Optional.of(new Emission(Emission.Type.LIGHT, Percentile.HALF)));
+		loc.contents().add(light);
 		assertEquals(true, loc.isArtificialLightAvailable());
 	}
 
@@ -172,7 +172,7 @@ public class LocationTest {
 		// Add a link with a visible controller object
 		final WorldObject controller = new WorldObject(new ObjectDescriptor("portal")) {
 			@Override
-			public Optional<Openable> getOpenableModel() {
+			public Optional<Openable> openableModel() {
 				return Optional.of(new Openable());
 			}
 		};

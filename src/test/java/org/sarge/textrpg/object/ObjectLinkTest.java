@@ -22,9 +22,9 @@ public class ObjectLinkTest extends ActionTest {
 	public void before() {
 		final Openable model = new Openable(Openable.FIXED);
 		obj = mock(WorldObject.class);
-		when(obj.getName()).thenReturn("object");
+		when(obj.name()).thenReturn("object");
 		when(actor.perceives(obj)).thenReturn(true);
-		when(obj.getOpenableModel()).thenReturn(Optional.of(model));
+		when(obj.openableModel()).thenReturn(Optional.of(model));
 		link = new ObjectLink(Route.NONE, Script.NONE, Size.NONE, obj, "reason");
 	}
 
@@ -33,14 +33,14 @@ public class ObjectLinkTest extends ActionTest {
 		assertEquals(false, link.isOpen());
 		assertEquals(false, link.isTraversable(actor));
 		assertEquals(true, link.isVisible(actor));
-		assertEquals(Optional.of(obj), link.getController());
+		assertEquals(Optional.of(obj), link.controller());
 		assertEquals("reason", link.reason(actor));
 		assertEquals("{object}", link.describe().build().get("object"));
 	}
 
 	@Test
 	public void open() {
-		obj.getOpenableModel().get().setOpen(true);
+		obj.openableModel().get().setOpen(true);
 		assertEquals(true, link.isOpen());
 		assertEquals(true, link.isTraversable(actor));
 		assertEquals(null, link.reason(actor));
@@ -49,7 +49,7 @@ public class ObjectLinkTest extends ActionTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void invalidObject() {
-		when(obj.getOpenableModel()).thenReturn(Optional.empty());
+		when(obj.openableModel()).thenReturn(Optional.empty());
 		new ObjectLink(Route.NONE, Script.NONE, Size.NONE, obj, "reason");
 	}
 }

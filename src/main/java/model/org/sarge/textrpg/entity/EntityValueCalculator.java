@@ -32,7 +32,7 @@ public class EntityValueCalculator {
 	 * @param mod		Modifier
 	 */
 	public void add(EntityValue value, Attribute attr, float mod) {
-		if(!value.getMaximumValue().isPresent()) throw new IllegalArgumentException("Can only initialise non-maximum values");
+		if(!value.max().isPresent()) throw new IllegalArgumentException("Can only initialise non-maximum values");
 		final Pair<EntityValue, Attribute> key = new Pair<>(value, attr);
 		modifiers.put(key, mod);
 	}
@@ -66,7 +66,7 @@ public class EntityValueCalculator {
 	 */
 	private void init(Entity e, Pair<EntityValue, Attribute> key) {
 		final float mod = modifiers.get(key);
-		final int num = e.getAttributes().get(key.getRight());
+		final int num = e.attributes().get(key.getRight());
 		e.modify(key.getLeft(), (int) (num * mod));
 	}
 
@@ -76,9 +76,9 @@ public class EntityValueCalculator {
 	 * @param value		Entity-value
 	 */
 	private static void init(Entity e, EntityValue value) {
-		final EntityValue max = value.getMaximumValue().orElseThrow(() -> new IllegalArgumentException("Cannot initialise " + value + " from maximum"));
-		final int num = e.getValues().get(value);
-		assert e.getValues().get(max) == 0;
+		final EntityValue max = value.max().orElseThrow(() -> new IllegalArgumentException("Cannot initialise " + value + " from maximum"));
+		final int num = e.values().get(value);
+		assert e.values().get(max) == 0;
 		e.modify(max, num);
 	}
 

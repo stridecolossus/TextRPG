@@ -17,7 +17,7 @@ import org.sarge.textrpg.object.ObjectDescriptor.Builder;
 import org.sarge.textrpg.util.Percentile;
 
 public class LightTest extends ActionTest {
-	private static final Emission LIGHT = Emission.light(Percentile.HALF);
+	private static final Emission LIGHT = new Emission(Emission.Type.LIGHT, Percentile.HALF);
 	private Light light;
 	private Receptacle oil;
 
@@ -36,11 +36,11 @@ public class LightTest extends ActionTest {
 
 	@Test
 	public void constructor() {
-		assertEquals(3, light.getLifetime());
+		assertEquals(3, light.lifetime());
 		assertEquals(false, light.isLit());
 		assertEquals(false, light.isCovered());
-		assertEquals(Optional.empty(), light.getEmission(Emission.Type.LIGHT));
-		assertEquals("light", light.getDescriptor().getDescriptionKey());
+		assertEquals(Optional.empty(), light.emission(Emission.Type.LIGHT));
+		assertEquals("light", light.descriptor().getDescriptionKey());
 	}
 
 	@Test
@@ -69,7 +69,7 @@ public class LightTest extends ActionTest {
 	public void light() throws ActionException {
 		light.execute(Operation.LIGHT);
 		assertEquals(true, light.isLit());
-		assertEquals(Optional.of(LIGHT), light.getEmission(Emission.Type.LIGHT));
+		assertEquals(Optional.of(LIGHT), light.emission(Emission.Type.LIGHT));
 		assertEquals("{light.lit}", light.describe().get("light.lit"));
 	}
 
@@ -85,7 +85,7 @@ public class LightTest extends ActionTest {
 		light.execute(Operation.LIGHT);
 		light.execute(Operation.SNUFF);
 		assertEquals(false, light.isLit());
-		assertEquals(Optional.empty(), light.getEmission(Emission.Type.LIGHT));
+		assertEquals(Optional.empty(), light.emission(Emission.Type.LIGHT));
 	}
 
 	@Test
@@ -119,11 +119,11 @@ public class LightTest extends ActionTest {
 	@Test
 	public void expiry() throws ActionException {
 		light.execute(Operation.LIGHT);
-		assertEquals(2, Light.QUEUE.stream().count());
+		assertEquals(2, Light.QUEUE.size());
         Light.QUEUE.execute(Light.QUEUE.time() + 3);
 		assertEquals(false, light.isLit());
-		assertEquals(0, light.getLifetime());
-		assertEquals(0, Light.QUEUE.stream().count());
+		assertEquals(0, light.lifetime());
+		assertEquals(0, Light.QUEUE.size());
 	}
 
 	@Test
@@ -132,14 +132,14 @@ public class LightTest extends ActionTest {
 		Light.QUEUE.execute(Light.QUEUE.time() + 2);
 		light.execute(Operation.SNUFF);
 		assertEquals(false, light.isLit());
-		assertEquals(3 - 2, light.getLifetime());
+		assertEquals(3 - 2, light.lifetime());
 	}
 
 	@Test
 	public void destroy() throws ActionException {
 		light.execute(Operation.LIGHT);
 		light.destroy();
-		assertEquals(0, light.getLifetime());
+		assertEquals(0, light.lifetime());
 		assertEquals(false, light.isLit());
 	}
 
@@ -148,12 +148,12 @@ public class LightTest extends ActionTest {
 		// Consume light and then re-fuel from an oil receptacle
 		light.empty();
 		light.fill(oil);
-		assertEquals(3, light.getLifetime());
+		assertEquals(3, light.lifetime());
 
 		// Repeat to consume remainder of receptacle contents
 		light.empty();
 		light.fill(oil);
-		assertEquals(1, light.getLifetime());
+		assertEquals(1, light.lifetime());
 	}
 
 	@Test

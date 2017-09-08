@@ -11,21 +11,21 @@ import org.sarge.textrpg.common.Emission;
 public class MaterialTest {
 	@Test
 	public void material() {
-		final Material mat = new Material("mat", Collections.singleton(Emission.Type.ODOUR), Collections.singleton(DamageType.COLD), 42);
-		assertEquals("mat", mat.getName());
-		assertEquals(true, mat.isTransparentTo(Emission.Type.ODOUR));
+		final Material mat = new Material("glass", Collections.singleton(Emission.Type.LIGHT), Collections.singleton(DamageType.COLD), 42);
+		assertEquals("glass", mat.name());
+		assertEquals(true, mat.isTransparentTo(Emission.Type.LIGHT));
 		assertEquals(true, mat.isDamagedBy(DamageType.COLD));
-		assertEquals(42, mat.getStrength());
+		assertEquals(42, mat.strength());
 	}
 
 	@Test
 	public void defaultMaterial() {
-		assertEquals("default", Material.DEFAULT.getName());
-		assertEquals(false, Material.DEFAULT.isTransparentTo(Emission.Type.ODOUR));
+		assertEquals("default", Material.DEFAULT.name());
+		assertEquals(false, Material.DEFAULT.isTransparentTo(Emission.Type.LIGHT));
 		assertEquals(false, Material.DEFAULT.isDamagedBy(DamageType.COLD));
-		assertEquals(0, Material.DEFAULT.getStrength());
+		assertEquals(0, Material.DEFAULT.strength());
 	}
-	
+
 	@SuppressWarnings("unused")
 	@Test(expected = IllegalArgumentException.class)
 	public void invalidMaterial() {

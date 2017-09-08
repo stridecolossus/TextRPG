@@ -8,18 +8,18 @@ public interface Parent {
 	/**
 	 * @return Contents
 	 */
-	Contents getContents();
+	Contents contents();
 	
 	/**
 	 * @return Parent of this object or <tt>null</tt> if none
 	 */
-	Parent getParent();
+	Parent parent();
 
 	/**
 	 * @return Parent identifier
 	 * @throws UnsupportedOperationException by default
 	 */
-	default String getParentName() {
+	default String parentName() {
 		throw new UnsupportedOperationException();
 	}
 }

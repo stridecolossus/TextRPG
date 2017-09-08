@@ -48,7 +48,7 @@ public final class ActionHelper {
 	 * @param obj		Object
 	 */
 	public static Description describe(Actor actor, WorldObject obj) {
-		if(obj.getOwner() == actor) {
+		if(obj.owner() == actor) {
 			return obj.describeShort();
 		}
 		else {
@@ -63,8 +63,8 @@ public final class ActionHelper {
 	 * @return Whether the given entity is a valid target
 	 */
 	public static boolean isValidTarget(Entity actor, Entity target) {
-		final Alignment a = actor.getAlignment();
-		final Alignment b = target.getAlignment();
+		final Alignment a = actor.alignment();
+		final Alignment b = target.alignment();
 		return (a != b) || (b == Alignment.NEUTRAL);
 	}
 
@@ -73,8 +73,8 @@ public final class ActionHelper {
 	 * @return Vehicle for the given actor or <tt>null</tt> if none
 	 */
 	public static Vehicle getVehicle(Actor actor) {
-		final Parent parent = actor.getParent();
-		if(parent.getParentName() == Vehicle.NAME) {
+		final Parent parent = actor.parent();
+		if(parent.parentName() == Vehicle.NAME) {
 			return (Vehicle) parent;
 		}
 		else {
@@ -99,8 +99,8 @@ public final class ActionHelper {
 	 */
 	private static Optional<Topic> loadTopic(Pair<Location, String> key) {
 	    final String name = key.getRight();
-        return ContentsHelper.select(key.getLeft().getContents().stream(), Entity.class)
-            .flatMap(Entity::getTopics)
+        return ContentsHelper.select(key.getLeft().contents().stream(), Entity.class)
+            .flatMap(Entity::topics)
             .filter(t -> t.name().equals(name))
             .findFirst();
 	}
@@ -112,22 +112,22 @@ public final class ActionHelper {
 	 */
 	public static void kill(Entity e) {
 		// Create corpse
-		final Race race = e.getRace();
+		final Race race = e.race();
 		if(race.isCorporeal()) {
 			// Create corpse descriptor
 			final int weight = 10; // TODO - table from ctx
-			final ObjectDescriptor descriptor = new ObjectDescriptor.Builder("corpse." + race.getName())
+			final ObjectDescriptor descriptor = new ObjectDescriptor.Builder("corpse." + race.name())
 				.weight(weight)
 				.category("corpse")
 				.build();
 
 			// Create corpse and add inventory
-			final Collection<Thing> inv = e.getContents().stream().collect(toList());
-			final WorldObject corpse = new Corpse(descriptor, e.getRace(), inv);
+			final Collection<Thing> inv = e.contents().stream().collect(toList());
+			final WorldObject corpse = new Corpse(descriptor, e.race(), inv);
 			// TODO - weight should be base-weight of race, calculated from table
 
 			// Add corpse to current location
-			final Location loc = e.getLocation();
+			final Location loc = e.location();
 			corpse.setParentAncestor(loc);
 		}
 
@@ -144,7 +144,7 @@ public final class ActionHelper {
 	 */
 	public static void registerOpenableEvent(Location loc, Location other, WorldObject obj, String key) {
 		// Create reset event
-		final Openable model = obj.getOpenableModel().get();
+		final Openable model = obj.openableModel().get();
 		final Runnable event = () -> {
 			model.reset();
 			final Notification notification = new Message(key, obj);
@@ -155,7 +155,7 @@ public final class ActionHelper {
 		};
 
 		// Register event
-		final long reset = obj.getDescriptor().getProperties().getResetPeriod();
+		final long reset = obj.descriptor().getProperties().getResetPeriod();
 		final EventQueue.Entry entry = QUEUE.add(event, reset);
 
 		// Note event

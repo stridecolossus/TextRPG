@@ -26,6 +26,6 @@ public class TopicsArgumentBuilder implements ArgumentBuilder {
 	
 	@Override
 	public Stream<?> stream(Actor actor) {
-		return ContentsHelper.select(contents.stream(), CharacterEntity.class).flatMap(CharacterEntity::getTopics);
+		return ContentsHelper.select(contents.stream(), CharacterEntity.class).flatMap(CharacterEntity::topics);
 	}
 }

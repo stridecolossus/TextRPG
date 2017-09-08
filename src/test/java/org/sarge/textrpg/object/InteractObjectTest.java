@@ -17,49 +17,49 @@ import org.sarge.textrpg.object.WorldObject.Interaction;
 
 public class InteractObjectTest extends ActionTest {
 	private InteractObject obj;
-	
+
 	@Before
 	public void before() {
 		final Descriptor descriptor = new Descriptor(new ObjectDescriptor.Builder("object").reset(1).build(), Collections.singleton(Interaction.MOVE), 1, true);
 		obj = descriptor.create();
 	}
-	
+
 	@After
 	public void after() {
 		Control.QUEUE.reset();
 	}
-	
+
 	@Test
 	public void constructor() {
-		assertNotNull(obj.getOpenableModel());
-		assertEquals(true, obj.getOpenableModel().isPresent());
-		assertEquals(false, obj.getOpenableModel().get().isOpen());
+		assertNotNull(obj.openableModel());
+		assertEquals(true, obj.openableModel().isPresent());
+		assertEquals(false, obj.openableModel().get().isOpen());
 	}
-	
+
 	@Test
 	public void interact() throws ActionException {
 		final Parent parent = ActionTest.createParent();
 		obj.interact(Interaction.MOVE, parent);
-		assertEquals(true, obj.getOpenableModel().get().isOpen());
-		assertEquals(Thing.LIMBO, obj.getParent());
+		assertEquals(true, obj.openableModel().get().isOpen());
+		assertEquals(Thing.LIMBO, obj.parent());
 	}
-	
+
 	@Test
 	public void reset() throws ActionException {
 		final Parent parent = super.createParent();
 		obj.interact(Interaction.MOVE, parent);
-		assertEquals(1, Control.QUEUE.stream().count());
+		assertEquals(1, Control.QUEUE.size());
 		Control.QUEUE.execute(System.currentTimeMillis());
-		assertEquals(false, obj.getOpenableModel().get().isOpen());
-		assertEquals(parent, obj.getParent());
+		assertEquals(false, obj.openableModel().get().isOpen());
+		assertEquals(parent, obj.parent());
 	}
-	
+
 	@Test
 	public void interactInvalidAction() throws ActionException {
 		expect("interact.invalid.action");
 		obj.interact(Interaction.PULL, null);
 	}
-	
+
 	@Test
 	public void interactAlreadyInteracted() throws ActionException {
 		obj.interact(Interaction.MOVE, super.createParent());

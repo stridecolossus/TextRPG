@@ -34,7 +34,7 @@ public class LookAction extends AbstractAction {
 	 * Describes the current location.
 	 */
 	public ActionResponse look(Entity actor) throws ActionException {
-		final Description desc = actor.getLocation().describe(clock.isDaylight(), actor);
+		final Description desc = actor.location().describe(clock.isDaylight(), actor);
 		return new ActionResponse(desc);
 	}
 	
@@ -57,10 +57,10 @@ public class LookAction extends AbstractAction {
 	 * List contents of a container.
 	 */
 	public ActionResponse look(Entity actor, Container c) throws ActionException {
-		if(!c.getOpenableModel().map(Openable::isOpen).orElse(true)) throw new ActionException("list.container.closed");
+		if(!c.openableModel().map(Openable::isOpen).orElse(true)) throw new ActionException("list.container.closed");
 		// TODO - check for transparent container
 		final Predicate<Thing> filter = ContentsHelper.filter(actor);
-		final List<Description> list = c.getContents().stream().filter(filter).map(t -> (WorldObject) t).map(WorldObject::describeShort).collect(toList());
+		final List<Description> list = c.contents().stream().filter(filter).map(t -> (WorldObject) t).map(WorldObject::describeShort).collect(toList());
 		return new ActionResponse(Description.create("list.contents.container", list));
 	}
 	
@@ -75,15 +75,15 @@ public class LookAction extends AbstractAction {
 	 * Look in a direction.
 	 */
 	public ActionResponse look(Entity actor, Direction dir) throws ActionException {
-		final Exit exit = actor.getLocation().getExits().get(dir);
+		final Exit exit = actor.location().getExits().get(dir);
 		if((exit == null) || !exit.perceivedBy(actor)) throw new ActionException("look.direction.invalid");
 		final Link link = exit.getLink();
 		final Description.Builder builder = link.describe();
 		builder.wrap("dir", dir);
 		builder.wrap("dest", exit.getDestination().getName());
-		final Size size = link.getSize();
+		final Size size = link.size();
 		if(size != Size.NONE) {
-			builder.wrap("size", "size." + link.getSize());
+			builder.wrap("size", "size." + link.size());
 		}
 		return new ActionResponse(builder.build());
 	}

@@ -125,7 +125,7 @@ public class PathFinder {
 				// Add new candidate node
 				final Node node = new Node(dest);
 				// TODO - heuristic? number of links traversed?
-				final float score = move.multiply(dest.getTerrain(), link.getRoute(), Stance.DEFAULT);
+				final float score = move.multiply(dest.getTerrain(), link.route(), Stance.DEFAULT);
 				node.update(next, exit.getKey(), score);
 				open.add(node);
 

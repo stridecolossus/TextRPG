@@ -22,15 +22,15 @@ public class DamageObjectAction extends AbstractActiveAction {
 	 */
 	public ActionResponse smash(Entity actor, WorldObject obj) throws ActionException {
 		// Check can damage this object
-		final Weapon weapon = (Weapon) actor.getWeapon().getDescriptor();
-		final DamageEffect damage = weapon.getDamage();
-		final DamageType type = damage.getDamageType();
-		if(!obj.getDescriptor().getCharacteristics().getMaterial().isDamagedBy(type)) {
+		final Weapon weapon = (Weapon) actor.weapon().descriptor();
+		final DamageEffect damage = weapon.damage();
+		final DamageType type = damage.damageType();
+		if(!obj.descriptor().getCharacteristics().getMaterial().isDamagedBy(type)) {
 			throw new ActionException("damage.object.invalid");
 		}
 
 		// Damage object
-		obj.damage(damage.getDamageType(), damage.getAmount().evaluate(actor));
+		obj.damage(damage.damageType(), damage.amount().evaluate(actor));
 
 		// Build response
 		return new ActionResponse("damage.object." + (obj.isDead() ? "smashed" : "ok"));

@@ -37,7 +37,7 @@ public class RopeAction extends AbstractAction {
 	 */
 	public ActionResponse remove(Entity actor, Rope rope) throws ActionException {
 		rope.remove(actor);
-        final Anchor anchor = rope.getAnchor().get();
+        final Anchor anchor = rope.anchor().get();
 		return response("rope.remove.response", rope, anchor);
 	}
 

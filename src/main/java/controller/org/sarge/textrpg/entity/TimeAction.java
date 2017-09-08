@@ -41,7 +41,7 @@ public class TimeAction extends AbstractAction {
 	public ActionResponse time(Entity actor) throws ActionException {
 		// Check outdoors
 		// TODO - weather? e.g. cannot tell time in bad storm
-		switch(actor.getLocation().getTerrain()) {
+		switch(actor.location().getTerrain()) {
 		case INDOORS:
 		case UNDERGROUND:
 			throw new ActionException("info.time.invalid");

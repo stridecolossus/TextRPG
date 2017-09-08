@@ -1,6 +1,6 @@
-package org.sarge.textrpg.object;
+package org.sarge.textrpg.world;
 
-import org.sarge.textrpg.object.AuctionHouse.Post;
+import org.sarge.textrpg.world.AuctionHouse.Post;
 
 /**
  * Repository for auction posts.

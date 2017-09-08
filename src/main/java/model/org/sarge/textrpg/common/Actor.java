@@ -23,12 +23,12 @@ public interface Actor extends Parent {
 	/**
 	 * @return Size of this actor
 	 */
-	Size getSize();
+	Size size();
 
 	/**
 	 * @return Event queue for this actor.
 	 */
-	EventQueue getEventQueue();
+	EventQueue queue();
 
 	/**
 	 * Alerts this actor.
@@ -41,17 +41,17 @@ public interface Actor extends Parent {
 	 */
 	Actor SYSTEM = new Actor() {
 		@Override
-		public Contents getContents() {
+		public Contents contents() {
 			return Contents.EMPTY;
 		}
 
 		@Override
-		public Parent getParent() {
+		public Parent parent() {
 			return null;
 		}
 
 		@Override
-		public EventQueue getEventQueue() {
+		public EventQueue queue() {
 			throw new UnsupportedOperationException();
 		}
 
@@ -61,7 +61,7 @@ public interface Actor extends Parent {
 		}
 
 		@Override
-		public Size getSize() {
+		public Size size() {
 			throw new UnsupportedOperationException();
 		}
 

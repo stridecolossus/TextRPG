@@ -27,13 +27,13 @@ public class ReadableTest {
 	
 	@Test
 	public void constructor() {
-		assertEquals("lang", readable.getDescriptor().language());
-		assertEquals(2, readable.getDescriptor().size());
+		assertEquals("lang", readable.descriptor().language());
+		assertEquals(2, readable.descriptor().size());
 	}
 	
 	@Test
 	public void getChapter() {
-		assertEquals("2", readable.getDescriptor().chapter(1).title());
-		assertEquals("two", readable.getDescriptor().chapter(1).text());
+		assertEquals("2", readable.descriptor().chapter(1).title());
+		assertEquals("two", readable.descriptor().chapter(1).text());
 	}
 }

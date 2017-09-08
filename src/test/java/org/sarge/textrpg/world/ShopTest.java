@@ -1,4 +1,4 @@
-package org.sarge.textrpg.object;
+package org.sarge.textrpg.world;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
@@ -14,9 +14,15 @@ import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionTest;
 import org.sarge.textrpg.common.Thing;
 import org.sarge.textrpg.common.Topic;
+import org.sarge.textrpg.object.DurableObject;
+import org.sarge.textrpg.object.ObjectDescriptor;
+import org.sarge.textrpg.object.ObjectFilter;
+import org.sarge.textrpg.object.WorldObject;
 import org.sarge.textrpg.object.DurableObject.Descriptor;
 import org.sarge.textrpg.object.ObjectDescriptor.Builder;
-import org.sarge.textrpg.object.Shop.StockEntry;
+import org.sarge.textrpg.world.RepairShop;
+import org.sarge.textrpg.world.Shop;
+import org.sarge.textrpg.world.Shop.StockEntry;
 
 public class ShopTest extends ActionTest {
 	private Shop shop;
@@ -41,9 +47,9 @@ public class ShopTest extends ActionTest {
 		assertNotNull(shop.list(ObjectFilter.ALL));
 		assertEquals(1, shop.list(ObjectFilter.ALL).count());
 		final StockEntry entry = shop.list(ObjectFilter.ALL).iterator().next();
-		assertEquals(descriptor, entry.getDescriptor());
-		assertEquals(1, entry.getIndex());
-		assertEquals(1, entry.getCount());
+		assertEquals(descriptor, entry.descriptor());
+		assertEquals(1, entry.index());
+		assertEquals(1, entry.count());
 	}
 
 	@Test
@@ -81,7 +87,7 @@ public class ShopTest extends ActionTest {
 	@Test
 	public void sellDamaged() throws ActionException {
 		final DurableObject obj = descriptor.create();
-		obj.wear();
+		obj.use();
 		expect("sell.damaged.object");
 		shop.sell(obj);
 	}
@@ -89,7 +95,7 @@ public class ShopTest extends ActionTest {
 	@Test
 	public void calculateRepairCost() throws ActionException {
 		final DurableObject obj = descriptor.create();
-		obj.wear();
+		obj.use();
 		assertEquals(3, repair.calculateRepairCost(obj));
 	}
 
@@ -97,25 +103,25 @@ public class ShopTest extends ActionTest {
 	public void repair() throws ActionException {
 		// Repair object and check removed from inventory
 		final DurableObject obj = descriptor.create();
-		obj.wear();
+		obj.use();
 		final long duration = shop.repair(actor, obj);
-		assertEquals(Thing.LIMBO, obj.getParent());
+		assertEquals(Thing.LIMBO, obj.parent());
 		assertEquals(0, repair.getRepaired(actor).count());
 		assertEquals(2 * 3, duration);
 
 		// Wait for repair event and check now ready
-		assertEquals(2, repair.getEventQueue().stream().count());
+		assertEquals(2, repair.getEventQueue().size());
 		repair.getEventQueue().execute(duration);
 		final List<WorldObject> results = repair.getRepaired(actor).collect(toList());
 		assertEquals(1, results.size());
 		assertEquals(obj, results.iterator().next());
-		assertEquals(1, repair.getEventQueue().stream().count());
+		assertEquals(1, repair.getEventQueue().size());
 	}
 
 	@Test
 	public void repairDiscarded() throws ActionException {
 		final DurableObject obj = descriptor.create();
-		obj.wear();
+		obj.use();
 		final long duration = shop.repair(actor, obj);
 		repair.getEventQueue().execute(duration + 6L);
 		assertEquals(0, repair.getRepaired(actor).count());

@@ -19,13 +19,13 @@ public enum Attribute {
 	/**
 	 * @return Short-name
 	 */
-	public String getMnemonic() {
+	public String mnemonic() {
 		return this.name().substring(0, 3).toLowerCase();
 	}
 
 	/**
 	 * @return Attribute converter
-	 * @see #getMnemonic()
+	 * @see #mnemonic()
 	 */
-	public static final Converter<Attribute> CONVERTER = ModelUtil.converter(Attribute.class, Attribute::getMnemonic);
+	public static final Converter<Attribute> CONVERTER = ModelUtil.converter(Attribute.class, Attribute::mnemonic);
 }

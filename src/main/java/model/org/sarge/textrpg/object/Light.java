@@ -183,17 +183,17 @@ public class Light extends WorldObject {
 	}
 
 	@Override
-	public Percentile getVisibility() {
+	public Percentile visibility() {
 		if(isLit() && !covered) {
 			return Percentile.ONE;
 		}
 		else {
-			return super.getVisibility();
+			return super.visibility();
 		}
 	}
 
 	@Override
-	public Optional<Emission> getEmission(Emission.Type type) {
+	public Optional<Emission> emission(Emission.Type type) {
 		switch(type) {
 		case LIGHT:
 		case SMOKE:
@@ -203,7 +203,7 @@ public class Light extends WorldObject {
 			break;
 		}
 
-		return super.getEmission(type);
+		return super.emission(type);
 	}
 
 	@Override
@@ -239,7 +239,7 @@ public class Light extends WorldObject {
 	/**
 	 * @return Remaining lifetime of this light
 	 */
-	public long getLifetime() {
+	public long lifetime() {
 		return lifetime;
 	}
 
@@ -282,14 +282,14 @@ public class Light extends WorldObject {
 	 */
 	protected void fill(Receptacle src) throws ActionException {
 		// Check this light can be filled
-		final Descriptor light = (Descriptor) getDescriptor();
+		final Descriptor light = (Descriptor) descriptor();
 		if(this.type != Type.LANTERN) throw new ActionException("fill.not.lantern");
 		if(this.lifetime == light.lifetime) throw new ActionException("light.fill.full");
 
 		// Check source can be used
-		final Receptacle.Descriptor rec = src.getDescriptor();
-		if(rec.getLiquid() != Liquid.OIL) throw new ActionException("light.fill.oil");
-		if(src.getLevel() == 0) throw new ActionException("light.fill.empty");
+		final Receptacle.Descriptor rec = src.descriptor();
+		if(rec.liquid() != Liquid.OIL) throw new ActionException("light.fill.oil");
+		if(src.level() == 0) throw new ActionException("light.fill.empty");
 
 		// Re-fuel light from receptacle
 		final int amount = src.consume((int) (light.lifetime - this.lifetime));
@@ -305,7 +305,7 @@ public class Light extends WorldObject {
 	}
 
 	@Override
-	protected void destroy() {
+	public void destroy() {
 		lit = false;
 		lifetime = 0;
 		expiry.cancel();

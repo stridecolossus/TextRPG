@@ -31,13 +31,13 @@ public class ExtendedLink extends RouteLink {
 	}
 
 	@Override
-	public Size getSize() {
+	public Size size() {
 		return size;
 	}
 
 	@Override
 	public String reason(Actor actor) {
-	    if((size != Size.NONE) && actor.getSize().isLargerThan(size)) {
+	    if((size != Size.NONE) && actor.size().isLargerThan(size)) {
 	        return "move.link.constraint";
 	    }
 	    else {
@@ -46,7 +46,7 @@ public class ExtendedLink extends RouteLink {
 	}
 
 	@Override
-	public Script getScript() {
+	public Script script() {
 		return script;
 	}
 
@@ -65,12 +65,12 @@ public class ExtendedLink extends RouteLink {
 
         return new Thing() {
             @Override
-            public String getName() {
+            public String name() {
                 return name;
             }
 
             @Override
-            public Percentile getVisibility() {
+            public Percentile visibility() {
                 return vis;
             }
 
@@ -80,7 +80,7 @@ public class ExtendedLink extends RouteLink {
             }
 
             @Override
-            public long getForgetPeriod() {
+            public long forgetPeriod() {
                 return forget;
             }
 
@@ -90,7 +90,7 @@ public class ExtendedLink extends RouteLink {
             }
 
             @Override
-            public Size getSize() {
+            public Size size() {
                 throw new UnsupportedOperationException();
             }
 

@@ -43,7 +43,7 @@ public class FollowTracksAction extends AbstractAction {
 	 * @throws ActionException
 	 */
 	public ActionResponse follow(Entity actor, String race) throws ActionException {
-		final int level = actor.getSkillLevel(track).orElseThrow(() -> new ActionException("track.requires.skill"));
+		final int level = actor.skillLevel(track).orElseThrow(() -> new ActionException("track.requires.skill"));
 		final Induction induction = new FollowInduction(actor, new TracksFollower(race, level), mover, mod, "follow.tracks.finished");
 		return new ActionResponse("follow.tracks.start", induction, period);
 	}

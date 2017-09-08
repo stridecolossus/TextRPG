@@ -91,15 +91,15 @@ public class CommandParser {
 		if(words.isEmpty()) throw new ActionException("parser.empty.command");
 
 		// Build argument sources
-		final Location loc = player.getLocation();
+		final Location loc = player.location();
 		final ArgumentBuilder[] builders = {
 			ArgumentBuilder.enumeration(Direction.class),
 			ArgumentBuilder.object(ObjectFilter.ALL),
 			ArgumentBuilder.object(WorldObject.PREVIOUS),
-			ArgumentBuilder.of(player.getContents()),
-			ArgumentBuilder.of(loc.getContents()),
+			ArgumentBuilder.of(player.contents()),
+			ArgumentBuilder.of(loc.contents()),
 			new PortalsArgumentBuilder(loc),
-			new TopicsArgumentBuilder(loc.getContents()),
+			new TopicsArgumentBuilder(loc.contents()),
 			arg -> ObjectFilter.FILTERS.stream(),
 			arg -> loc.getDecorations(),
 			arg -> Location.getSurfaces(),

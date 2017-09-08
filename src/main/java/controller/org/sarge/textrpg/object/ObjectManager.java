@@ -46,7 +46,7 @@ public class ObjectManager implements Contents.Listener {
 		this.reset = reset;
 
 		// Register listener
-		parent.getContents().add(this);
+		parent.contents().add(this);
 
 		// Init contents
 		for(int n = 0; n < count; ++n) {

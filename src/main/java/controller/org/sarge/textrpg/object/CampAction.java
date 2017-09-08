@@ -69,7 +69,7 @@ public class CampAction extends AbstractAction {
 	 */
 	public ActionResponse camp(Entity actor) throws ActionException {
 		// Check camp can be built in this location
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		switch(loc.getTerrain()) {
 		case URBAN:
 		case INDOORS:
@@ -97,7 +97,7 @@ public class CampAction extends AbstractAction {
 			wood.destroy();
 
 			// Apply wear to tinderbox
-			tinderbox.wear();
+			tinderbox.use();
 
 			// Generate notifications
 			// TODO

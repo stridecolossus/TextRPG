@@ -43,7 +43,7 @@ public class Receptacle extends WorldObject {
 		/**
 		 * @return Receptacle liquid
 		 */
-		public Liquid getLiquid() {
+		public Liquid liquid() {
 			return liquid;
 		}
 
@@ -82,14 +82,14 @@ public class Receptacle extends WorldObject {
 	}
 
 	@Override
-	public Descriptor getDescriptor() {
-		return (Descriptor) super.getDescriptor();
+	public Descriptor descriptor() {
+		return (Descriptor) super.descriptor();
 	}
 
 	/**
 	 * @return Liquid level in this receptacle
 	 */
-	public int getLevel() {
+	public int level() {
 		return level;
 	}
 
@@ -101,7 +101,7 @@ public class Receptacle extends WorldObject {
 	@Override
 	protected void describe(Description.Builder description) {
 		description.add("level", level);
-		description.add("liquid", getDescriptor().liquid);
+		description.add("liquid", descriptor().liquid);
 	}
 
 	/**
@@ -111,8 +111,8 @@ public class Receptacle extends WorldObject {
 	 */
 	protected void fill(Receptacle src) throws ActionException {
 		// Check this receptacle can be filled from the given source
-		final Descriptor rec = getDescriptor();
-		if(rec.liquid != src.getDescriptor().getLiquid()) throw new ActionException("fill.invalid.source");
+		final Descriptor rec = descriptor();
+		if(rec.liquid != src.descriptor().liquid()) throw new ActionException("fill.invalid.source");
 		if(rec.max == INFINITE) throw new ActionException("fill.infinite.receptacle");
 		if(src == this) throw new ActionException("fill.self");
 		if(this.level == rec.max) throw new ActionException("fill.already.full");
@@ -141,7 +141,7 @@ public class Receptacle extends WorldObject {
 	 */
 	protected int consume(int amount) throws ActionException {
 		if(this.level == 0) throw new ActionException("receptacle.consume.empty");
-		if(getDescriptor().potion && (amount != 1)) throw new IllegalArgumentException("Can only consume one unit of a potion");
+		if(descriptor().potion && (amount != 1)) throw new IllegalArgumentException("Can only consume one unit of a potion");
 		if(this.level == INFINITE) {
 			return amount;
 		}
@@ -167,11 +167,11 @@ public class Receptacle extends WorldObject {
 	 * Validates the level of this receptacle.
 	 */
 	private boolean validate() {
-		return (this.level >= 0) && (this.level <= getDescriptor().max);
+		return (this.level >= 0) && (this.level <= descriptor().max);
 	}
 
 	@Override
-	protected void destroy() {
+	public void destroy() {
 		this.level = 0;
 		super.destroy();
 	}

@@ -21,7 +21,7 @@ public class Group {
 	 * @throws ActionException if the given entity is already in a group
 	 */
 	public Group(Entity leader) throws ActionException {
-		if(leader.getGroup().isPresent()) throw new ActionException("group.cannot.create");
+		if(leader.group().isPresent()) throw new ActionException("group.cannot.create");
 		group.add(leader);
 		leader.setGroup(this);
 	}
@@ -41,14 +41,14 @@ public class Group {
 	/**
 	 * @return Members of this group
 	 */
-	public Stream<Entity> getMembers() {
+	public Stream<Entity> members() {
 		return group.stream();
 	}
 
 	/**
 	 * @return Leader of this group
 	 */
-	public Entity getLeader() {
+	public Entity leader() {
 		return group.get(0);
 	}
 
@@ -59,7 +59,7 @@ public class Group {
 	 */
 	protected void add(Entity e) throws ActionException {
 		if(group.contains(e)) throw new ActionException("group.add.member");
-		if(e.getGroup().isPresent()) throw new ActionException("group.already.grouped");
+		if(e.group().isPresent()) throw new ActionException("group.already.grouped");
 		group.add(e);
 		e.setGroup(this);
 	}
@@ -71,7 +71,7 @@ public class Group {
 	 */
 	protected void remove(Entity e) throws ActionException {
 		if(!group.contains(e)) throw new ActionException("group.not.member");
-		if(e == getLeader()) throw new ActionException("group.remove.leader");
+		if(e == leader()) throw new ActionException("group.remove.leader");
 		group.remove(e);
 		e.setGroup(null);
 	}
@@ -83,7 +83,7 @@ public class Group {
 	 */
 	protected void setLeader(Entity leader) throws ActionException {
 		if(!group.contains(leader)) throw new ActionException("group.invalid.leader");
-		if(leader == getLeader()) throw new ActionException("group.already.leader");
+		if(leader == leader()) throw new ActionException("group.already.leader");
 		group.remove(leader);
 		group.add(0, leader);
 	}

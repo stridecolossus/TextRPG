@@ -26,14 +26,14 @@ public class RepeatEntityManager implements EntityManager {
 
 	@Override
 	public void start(Entity entity) {
-		final EventQueue.Entry entry = entity.getEventQueue().add(() -> action.execute(entity), period, true);
-		entity.getEventHolder().set(entry);
+		final EventQueue.Entry entry = entity.queue().add(() -> action.execute(entity), period, true);
+		entity.actionEventHolder().set(entry);
 		// TODO
 	}
 	
 	@Override
 	public void stop(Entity entity) {
-		entity.getEventHolder().cancel();
+		entity.actionEventHolder().cancel();
 	}
 	
 	@Override

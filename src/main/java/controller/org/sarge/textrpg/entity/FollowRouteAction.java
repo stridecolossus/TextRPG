@@ -56,11 +56,11 @@ public class FollowRouteAction extends AbstractAction {
 	 */
 	public ActionResponse follow(Entity actor) throws ActionException {
 		// Check direction
-		final Exit exit = actor.getLocation().getExits().get(dir);
+		final Exit exit = actor.location().getExits().get(dir);
 		if(exit == null) throw new ActionException("follow.no.link");
 
 		// Check available route
-		final Route route = exit.getLink().getRoute();
+		final Route route = exit.getLink().route();
 		if(route == Route.NONE) throw new ActionException("follow.no.route");
 
 		// Start following route

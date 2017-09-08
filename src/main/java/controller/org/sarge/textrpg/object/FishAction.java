@@ -55,14 +55,14 @@ public class FishAction extends AbstractActiveAction {
 	@Override
 	public ActionResponse execute(Entity actor) throws ActionException {
 		// Check require skill
-		final int level = actor.getSkillLevel(skill).orElseThrow(() -> new ActionException("fish.requires.skill"));
+		final int level = actor.skillLevel(skill).orElseThrow(() -> new ActionException("fish.requires.skill"));
 
 		// Check location
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		if(!loc.isProperty(Location.Property.FISH)) throw new ActionException("fish.requires.water");
 
 		// Check for rod
-		final Optional<WorldObject> rod = actor.getEquipment().get(DeploymentSlot.MAIN_HAND);
+		final Optional<WorldObject> rod = actor.equipment().get(DeploymentSlot.MAIN_HAND);
 		if(!rod.map(ROD_MATCHER::test).orElse(false)) throw new ActionException("fish.requires.rod");
 		// TODO - auto-equip?
 
@@ -81,7 +81,7 @@ public class FishAction extends AbstractActiveAction {
 			if(caught) {
 				final List<WorldObject> fish = factory.get().generate(actor).collect(toList());
 				final List<Description> desc = fish.stream().map(WorldObject::describe).collect(toList());
-				actor.getNotificationHandler().handle(Description.create("fish.catch", desc).toNotification());
+				actor.handler().handle(Description.create("fish.catch", desc).toNotification());
 				fish.forEach(f -> f.setParentAncestor(actor));
 			}
 

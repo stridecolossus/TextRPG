@@ -31,7 +31,7 @@ public class ExamineAction extends AbstractAction {
 		if(!obj.isRevealed()) {
 			final WorldObject revealed = obj.reveal();
 			final Notification n = new RevealNotification("revealed.object", revealed);
-			actor.getNotificationHandler().handle(n);
+			actor.handler().handle(n);
 		}
 
 		// Delegate

@@ -41,7 +41,7 @@ public class TakeAction extends AbstractAction {
 
 		// Check not too heavy
 		final int weight = obj.weight();
-		if(weight > actor.getAttributes().get(Attribute.STRENGTH)) {		// TODO - modifier?
+		if(weight > actor.attributes().get(Attribute.STRENGTH)) {		// TODO - modifier?
 			throw new ActionException("take.too.heavy");
 		}
 
@@ -70,7 +70,7 @@ public class TakeAction extends AbstractAction {
 	 * @throws ActionException
 	 */
 	public ActionResponse take(Entity actor, WorldObject obj, Container container) throws ActionException {
-		if(!container.getOpenableModel().map(Openable::isOpen).orElse(true)) throw new ActionException("take.container.closed", container);
+		if(!container.openableModel().map(Openable::isOpen).orElse(true)) throw new ActionException("take.container.closed", container);
 		takeObject(actor, obj);
 		return response(obj);
 	}
@@ -85,8 +85,8 @@ public class TakeAction extends AbstractAction {
 	 */
 	public ActionResponse take(Entity actor, ObjectFilter filter) throws ActionException {
 		// Enumerate results
-		final List<WorldObject> results = ContentsHelper.select(actor.getLocation().getContents().stream(), WorldObject.class)
-			.filter(obj -> filter.test(obj.getDescriptor()))
+		final List<WorldObject> results = ContentsHelper.select(actor.location().contents().stream(), WorldObject.class)
+			.filter(obj -> filter.test(obj.descriptor()))
 			.collect(toList());
 
 		// Check for no results

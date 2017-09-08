@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.DamageType;
 import org.sarge.textrpg.object.ObjectDescriptor.Equipment;
+import org.sarge.textrpg.world.Shop;
 
 /**
  * Object descriptor filter.
@@ -39,9 +40,9 @@ public final class ObjectFilter implements Predicate<ObjectDescriptor> {
 	 */
 	protected static ObjectFilter create(DamageType type) {
 		final Predicate<ObjectDescriptor> predicate = desc -> {
-			if(desc instanceof Weapon) {
-				final Weapon weapon = (Weapon) desc;
-				return weapon.getDamage().getDamageType() == type;
+			if(desc instanceof Weapon.Descriptor) {
+				final Weapon.Descriptor weapon = (Weapon.Descriptor) desc;
+				return weapon.damage().damageType() == type;
 			}
 			else {
 				return false;
@@ -59,7 +60,7 @@ public final class ObjectFilter implements Predicate<ObjectDescriptor> {
 			ALL,
 			new ObjectFilter("filter.edible", desc -> desc instanceof Food.Descriptor),
 			new ObjectFilter("filter.container", desc -> desc instanceof Container.Descriptor),
-			new ObjectFilter("filter.weapon", desc -> desc instanceof Weapon)
+			new ObjectFilter("filter.weapon", desc -> desc instanceof Weapon.Descriptor)
 		));
 
 		// Add slot filters

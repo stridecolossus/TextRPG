@@ -14,32 +14,32 @@ import org.sarge.textrpg.object.Food.Type;
 
 public class FoodTest extends ActionTest {
 	private Food food;
-	
+
 	@Before
 	public void before() throws ActionException {
 		food = new Food(new Descriptor(new ObjectDescriptor("food"), Type.RAW, 1, 2));
 		food.setParent(actor);
 	}
-	
+
 	@After
 	public void after() {
 		Food.QUEUE.reset();
 	}
-	
+
 	@Test
 	public void constructor() {
-		assertEquals("raw.food", food.getName());
+		assertEquals("raw.food", food.name());
 		assertEquals(false, food.isEdible());
 		assertEquals(false, food.isDead());
-		assertEquals(1, Food.QUEUE.stream().count());
+		assertEquals(1, Food.QUEUE.size());
 	}
-	
+
 	@Test
 	public void consume() throws ActionException {
 		food.cook();
 		food.consume();
 		assertEquals(true, food.isDead());
-		assertEquals(2, Food.QUEUE.stream().count());
+		assertEquals(2, Food.QUEUE.size());
 	}
 
 	@Test
@@ -47,15 +47,15 @@ public class FoodTest extends ActionTest {
 		expect("consume.not.cooked");
 		food.consume();
 	}
-	
+
 	@Test
 	public void cook() throws ActionException {
 		food.verifyCook();
 		food.cook();
-		assertEquals("food", food.getName());
+		assertEquals("food", food.name());
 		assertEquals(true, food.isEdible());
 		assertEquals(false, food.isDead());
-		assertEquals(2, Food.QUEUE.stream().count());
+		assertEquals(2, Food.QUEUE.size());
 	}
 
 	@Test
@@ -64,19 +64,19 @@ public class FoodTest extends ActionTest {
 		expect("cook.cannot.cook");
 		food.verifyCook();
 	}
-	
+
 	@Test
 	public void cookAlreadyCooked() throws ActionException {
 		food.cook();
 		expect("cook.already.cooked");
 		food.verifyCook();
 	}
-	
+
 	@Test
 	public void decay() {
 		Food.QUEUE.execute(2);
 		assertEquals(true, food.isDead());
 		verify(actor).alert(new Message("food.decayed", food));
-		assertEquals(0, Food.QUEUE.stream().count());
+		assertEquals(0, Food.QUEUE.size());
 	}
 }

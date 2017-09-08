@@ -33,7 +33,7 @@ public class ClimbAction extends AbstractActiveAction {
 	 */
 	public ActionResponse climb(Entity actor, WorldObject obj) throws ActionException {
 		// Find the matching exit
-		final Direction dir = actor.getLocation().getExits().entrySet().stream()
+		final Direction dir = actor.location().getExits().entrySet().stream()
 			.filter(e -> matches(e.getValue(), obj))
 			.map(Map.Entry::getKey)
 			.findFirst()
@@ -45,6 +45,6 @@ public class ClimbAction extends AbstractActiveAction {
 	}
 
 	private static boolean matches(Exit exit, WorldObject obj) {
-		return exit.getLink().getController().map(c -> c == obj).orElse(false);
+		return exit.getLink().controller().map(c -> c == obj).orElse(false);
 	}
 }

@@ -52,7 +52,7 @@ public class RecoverArrowsAction extends AbstractAction {
 	 */
 	public ActionResponse recover(Entity actor) throws ActionException {
 		// Check terrain
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		switch(loc.getTerrain()) {
 		case WATER:
 			throw new ActionException("recover.invalid.terrain");
@@ -69,9 +69,9 @@ public class RecoverArrowsAction extends AbstractAction {
 		final Induction induction = () -> {
 			// Enumerate arrows found
 			// TODO - create stack
-			final List<WorldObject> results = loc.getContents().stream()
+			final List<WorldObject> results = loc.contents().stream()
 				.filter(t -> t instanceof WorldObject)
-				.filter(t -> t.getVisibility().intValue() > score)
+				.filter(t -> t.visibility().intValue() > score)
 				.map(t -> (WorldObject) t)
 				.filter(ARROW)
 				.collect(toList());

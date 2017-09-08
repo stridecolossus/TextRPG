@@ -32,18 +32,18 @@ public class EquipAction extends AbstractAction {
 	
 	protected static Description equipObject(Entity actor, WorldObject obj) throws ActionException {
 		// Check carried
-		if(obj.getOwner() != actor) throw new ActionException("equip.not.carried");
+		if(obj.owner() != actor) throw new ActionException("equip.not.carried");
 
 		// Check object can be equipped
 		// TODO - duplicated in equip()
-		final ObjectDescriptor.Equipment equipment = obj.getDescriptor().getEquipment().orElseThrow(() -> new ActionException("equipment.cannot.equip"));
+		final ObjectDescriptor.Equipment equipment = obj.descriptor().getEquipment().orElseThrow(() -> new ActionException("equipment.cannot.equip"));
 		// TODO - ???
 		//final ObjectDescriptor.Equipment equipment = obj.getDescriptor().getEquipment();
 		//if(equipment.getDeploymentSlot().map(slot -> slot == DeploymentSlot.MAIN_HAND).orElse(false)) throw new ActionException("equip.main.hand");
 		//if(!equipment.getCondition().evaluate(actor)) throw new ActionException("equip.cannot.equip");
 
 		// Equip
-		actor.getEquipment().equip(obj);
+		actor.equipment().equip(obj);
 
 		// Apply passive effects
 		final Effect.Descriptor passive = equipment.getPassive();

@@ -14,6 +14,7 @@ import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.object.Container;
 import org.sarge.textrpg.object.DeploymentSlot;
 import org.sarge.textrpg.object.ObjectDescriptor;
+import org.sarge.textrpg.object.Weapon;
 import org.sarge.textrpg.object.WorldObject;
 
 /**
@@ -34,6 +35,19 @@ public class Equipment {
 	 */
 	public Optional<WorldObject> get(DeploymentSlot slot) {
 		return Optional.ofNullable(equipment.get(slot));
+	}
+
+	/**
+	 * @return Equipped weapon
+	 */
+	public Optional<Weapon> weapon() {
+	    final WorldObject obj = equipment.get(DeploymentSlot.MAIN_HAND);
+	    if(obj instanceof Weapon) {
+	        return Optional.of((Weapon) obj);
+	    }
+	    else {
+	        return Optional.empty();
+	    }
 	}
 
 	/**
@@ -74,7 +88,7 @@ public class Equipment {
 			final Description.Builder builder = new Description.Builder(key)
 				.wrap("place", "equip.verb." + slot.getPlacement())		// TODO - duplicate prefix
 				.wrap("slot", "slot." + slot)
-				.wrap("name", obj.getName());
+				.wrap("name", obj.name());
 
 			// TODO - durable wear
 
@@ -92,7 +106,7 @@ public class Equipment {
 		// Find empty hand
 		final DeploymentSlot hand;
 		if(equipment.get(DeploymentSlot.MAIN_HAND) == null) {
-			final boolean main = obj.getDescriptor().getEquipment().map(ObjectDescriptor.Equipment::getDeploymentSlot).map(slot -> slot == DeploymentSlot.MAIN_HAND).isPresent();
+			final boolean main = obj.descriptor().getEquipment().map(ObjectDescriptor.Equipment::getDeploymentSlot).map(slot -> slot == DeploymentSlot.MAIN_HAND).isPresent();
 			if(main) {
 				// Delegate if actually equipped as weapon
 				equip(obj);
@@ -131,7 +145,7 @@ public class Equipment {
 	 * @throws IllegalArgumentException if the object cannot be equipped
 	 */
 	protected boolean equip(WorldObject obj) throws ActionException {
-		final ObjectDescriptor.Equipment desc = obj.getDescriptor().getEquipment().orElseThrow(() -> new ActionException("equipment.cannot.equip"));
+		final ObjectDescriptor.Equipment desc = obj.descriptor().getEquipment().orElseThrow(() -> new ActionException("equipment.cannot.equip"));
 		final DeploymentSlot slot = desc.getDeploymentSlot();
 		if(slot.isContainerSlot()) {
 			// Add object to container
@@ -156,7 +170,7 @@ public class Equipment {
 				else {
 					final WorldObject otherObject = equipment.get(other);
 					if(otherObject != null) {
-						if(otherObject.getDescriptor().getEquipment().get().isTwoHanded()) throw new ActionException("equipment.two.handed");
+						if(otherObject.descriptor().getEquipment().get().isTwoHanded()) throw new ActionException("equipment.two.handed");
 					}
 				}
 				break;
@@ -169,7 +183,7 @@ public class Equipment {
 			// Register equipment containers
 			if(obj instanceof Container) {
 				final Container c = (Container) obj;
-				final Optional<DeploymentSlot> contentSlot = c.getDescriptor().getContentsDeploymentSlot();
+				final Optional<DeploymentSlot> contentSlot = c.descriptor().contentsDeploymentSlot();
 				contentSlot.ifPresent(cs -> containers.put(cs, c));
 			}
 
@@ -181,7 +195,7 @@ public class Equipment {
 	 * Updates weight.
 	 */
 	private void add(WorldObject obj) {
-		weight += obj.getDescriptor().getProperties().getWeight();
+		weight += obj.descriptor().getProperties().getWeight();
 	}
 
 	/**
@@ -191,7 +205,7 @@ public class Equipment {
 	 * @throws IllegalArgumentException if the object cannot be equipped
 	 */
 	protected void remove(WorldObject obj) throws ActionException {
-		final ObjectDescriptor.Equipment desc = obj.getDescriptor().getEquipment().orElseThrow(() -> new ActionException("equipment.not.equipped"));
+		final ObjectDescriptor.Equipment desc = obj.descriptor().getEquipment().orElseThrow(() -> new ActionException("equipment.not.equipped"));
 		final DeploymentSlot slot = desc.getDeploymentSlot();
 		if(slot.isContainerSlot()) {
 			// Un-equip container contents
@@ -209,7 +223,7 @@ public class Equipment {
 			// Remove registered containers
 			if(obj instanceof Container) {
 				final Container c = (Container) obj;
-				final Optional<DeploymentSlot> contentSlot = c.getDescriptor().getContentsDeploymentSlot();
+				final Optional<DeploymentSlot> contentSlot = c.descriptor().contentsDeploymentSlot();
 				contentSlot.ifPresent(cs -> containers.remove(cs, c));
 			}
 

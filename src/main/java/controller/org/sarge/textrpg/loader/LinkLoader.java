@@ -151,7 +151,7 @@ public class LinkLoader {
 
 				// Register custom portals
 				if(node.optionalChild().isPresent()) {
-					LOG.log(Level.FINE, "Custom portal object: {0}", obj.getName());
+					LOG.log(Level.FINE, "Custom portal object: {0}", obj.name());
 					ctx.loader.world.getObjects().add(obj);
 				}
 
@@ -219,7 +219,7 @@ public class LinkLoader {
 			@Override
 			protected Link load(Element node, LinkContext ctx) {
 				final WorldObject obj = ctx.loader.objectLoader.loadDescriptor(node).create();
-				if(!obj.getOpenableModel().isPresent()) throw node.exception("Object must be openable");
+				if(!obj.openableModel().isPresent()) throw node.exception("Object must be openable");
 				final String reason = node.attributes().toString("reason", "move.link.closed");
 				return new ObjectLink(ctx.route, ctx.loader.loadScript(node, 1), ctx.size, obj, reason);
 			}

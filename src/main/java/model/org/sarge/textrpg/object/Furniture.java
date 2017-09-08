@@ -62,17 +62,17 @@ public class Furniture extends WorldObject implements Parent {
 	}
 
 	@Override
-	public String getParentName() {
+	public String parentName() {
 		return NAME;
 	}
 
 	@Override
-	public Descriptor getDescriptor() {
-		return (Descriptor) super.getDescriptor();
+	public Descriptor descriptor() {
+		return (Descriptor) super.descriptor();
 	}
 
 	@Override
-	public Contents getContents() {
+	public Contents contents() {
 		return contents;
 	}
 

@@ -1,4 +1,4 @@
-package org.sarge.textrpg.object;
+package org.sarge.textrpg.world;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -13,6 +13,9 @@ import org.sarge.lib.collection.StrictSet;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.Topic;
+import org.sarge.textrpg.object.ObjectDescriptor;
+import org.sarge.textrpg.object.ObjectFilter;
+import org.sarge.textrpg.object.WorldObject;
 
 /**
  * Shop model.
@@ -36,21 +39,21 @@ public class Shop {
 		/**
 		 * @return Descriptor
 		 */
-		public ObjectDescriptor getDescriptor() {
+		public ObjectDescriptor descriptor() {
 			return descriptor;
 		}
 
 		/**
 		 * @return Shop index
 		 */
-		public int getIndex() {
+		public int index() {
 			return idx;
 		}
 
 		/**
 		 * @return Number in stock
 		 */
-		public int getCount() {
+		public int count() {
 			return count;
 		}
 	}
@@ -62,7 +65,7 @@ public class Shop {
 		private final int initial;
 		private int current;
 
-		public StockLevel(int num) {
+		private StockLevel(int num) {
 			this.initial = num;
 			this.current = num;
 		}
@@ -114,7 +117,7 @@ public class Shop {
 	/**
 	 * @return Repair facility at this shop
 	 */
-	public Optional<RepairShop> getRepairShop() {
+	public Optional<RepairShop> repairShop() {
         return repair;
     }
 
@@ -157,7 +160,7 @@ public class Shop {
 	 * @param idx Index
 	 * @return Object descriptor
 	 */
-	public Optional<ObjectDescriptor> getDescriptor(int idx) {
+	public Optional<ObjectDescriptor> descriptor(int idx) {
 		return Optional.ofNullable(index.get(idx));
 	}
 
@@ -185,12 +188,11 @@ public class Shop {
 	public void sell(WorldObject obj) throws ActionException {
 		// Check shop accepts this object
 		checkOpen();
-		final ObjectDescriptor descriptor = obj.getDescriptor();
+		final ObjectDescriptor descriptor = obj.descriptor();
 		accepts(descriptor, "sell");
 
 		// Check not damaged
-		if(obj.isDamaged())
-			throw new ActionException("sell.damaged.object");
+		if(obj.isDamaged()) throw new ActionException("sell.damaged.object");
 
 		// Remove from inventory
 		obj.destroy();
@@ -220,7 +222,7 @@ public class Shop {
 	 */
 	public long repair(Actor actor, WorldObject obj) throws ActionException {
 		checkOpen();
-		accepts(obj.getDescriptor(), "repair");
+		accepts(obj.descriptor(), "repair");
 		if(!repair.isPresent()) new ActionException("repair.cannot.repair");
 		return repair.get().repair(actor, obj);
 	}

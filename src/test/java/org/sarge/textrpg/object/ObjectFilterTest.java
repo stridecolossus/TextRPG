@@ -33,7 +33,7 @@ public class ObjectFilterTest {
 	@Test
 	public void damageType() {
 		final DamageEffect damage = new DamageEffect(DamageType.COLD, Value.ONE, false);
-		final Weapon weapon = new Weapon(new ObjectDescriptor("weapon"), 1, 1, damage, Effect.NONE, null);
+		final Weapon.Descriptor weapon = new Weapon.Descriptor(new ObjectDescriptor("weapon"), 1, 1, damage, Effect.NONE, null);
 		final ObjectFilter filter = ObjectFilter.create(DamageType.COLD);
 		assertEquals(true, filter.test(weapon));
 		assertEquals("filter.cold", filter.toString());

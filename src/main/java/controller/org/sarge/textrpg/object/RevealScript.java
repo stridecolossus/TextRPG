@@ -25,7 +25,7 @@ public class RevealScript implements Script {
 	public RevealScript(Thing thing, String key) {
 		Check.notNull(thing);
 		Check.notEmpty(key);
-		if(!thing.getVisibility().isLessThan(Percentile.ONE)) throw new IllegalArgumentException("Not a hidden object");
+		if(!thing.visibility().isLessThan(Percentile.ONE)) throw new IllegalArgumentException("Not a hidden object");
 		this.thing = thing;
 		this.key = key;
 	}

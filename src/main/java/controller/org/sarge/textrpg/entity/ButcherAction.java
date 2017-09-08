@@ -8,6 +8,10 @@ import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.common.ContentsHelper;
 import org.sarge.textrpg.common.Description;
+import org.sarge.textrpg.entity.Corpse;
+import org.sarge.textrpg.entity.Entity;
+import org.sarge.textrpg.entity.Induction;
+import org.sarge.textrpg.entity.Skill;
 import org.sarge.textrpg.object.WorldObject;
 
 /**
@@ -65,7 +69,7 @@ public class ButcherAction extends AbstractActiveAction {
 		// Butcher corpse
 		final Induction induction = () -> {
 			corpse.butcher(actor);
-			knife.wear();
+			knife.use();
 			return new Description("butcher.success");
 		};
 		return new ActionResponse("butcher.start", induction, duration);

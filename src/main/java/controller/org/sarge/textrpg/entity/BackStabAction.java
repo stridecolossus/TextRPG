@@ -46,7 +46,7 @@ public class BackStabAction extends AbstractActiveAction {
 		if(!ActionHelper.isValidTarget(actor, target)) throw new ActionException("backstab.invalid.target");
 
 		// Check stance
-		if(actor.getStance() != Stance.SNEAKING) throw new ActionException("backstab.not.sneaking");
+		if(actor.stance() != Stance.SNEAKING) throw new ActionException("backstab.not.sneaking");
 
 		// Check equipped weapon
 		// TODO - backstab.no.weapon

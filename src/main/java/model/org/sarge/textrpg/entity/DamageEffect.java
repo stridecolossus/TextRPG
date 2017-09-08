@@ -13,7 +13,7 @@ public class DamageEffect implements EffectMethod {
 	private final DamageType type;
 	private final Value amount;
 	private final boolean wound;
-	
+
 	/**
 	 * Constructor.
 	 * @param type		Type of damage
@@ -28,11 +28,17 @@ public class DamageEffect implements EffectMethod {
 		this.wound = wound;
 	}
 
-	public DamageType getDamageType() {
+	/**
+	 * @return Damage-type
+	 */
+	public DamageType damageType() {
 		return type;
 	}
-	
-	public Value getAmount() {
+
+	/**
+	 * @return Amount of damage
+	 */
+	public Value amount() {
 		return amount;
 	}
 
@@ -40,7 +46,7 @@ public class DamageEffect implements EffectMethod {
 	public boolean isWound() {
 		return wound;
 	}
-	
+
 	@Override
 	public void apply(Entity e, int size) {
 		assert size > 0;

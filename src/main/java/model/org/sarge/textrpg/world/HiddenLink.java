@@ -30,7 +30,7 @@ public class HiddenLink extends ExtendedLink {
 	}
 
 	@Override
-	public Optional<Thing> getController() {
+	public Optional<Thing> controller() {
 		return Optional.of(controller);
 	}
 }

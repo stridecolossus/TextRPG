@@ -34,23 +34,23 @@ public class CharacterEntityTest extends ActionTest {
 	
 	@Test
 	public void constructor() {
-		assertEquals("name", character.getName());
-		assertEquals(Gender.FEMALE, character.getGender());
-		assertEquals(Alignment.EVIL, character.getAlignment());
-		assertEquals(Contents.EMPTY, character.getContents());
-		assertNotNull(character.getTopics());
-		assertEquals(1, character.getTopics().count());
-		assertEquals(topic, character.getTopics().iterator().next());
+		assertEquals("name", character.name());
+		assertEquals(Gender.FEMALE, character.gender());
+		assertEquals(Alignment.EVIL, character.alignment());
+		assertEquals(Contents.EMPTY, character.contents());
+		assertNotNull(character.topics());
+		assertEquals(1, character.topics().count());
+		assertEquals(topic, character.topics().iterator().next());
 		assertEquals(Optional.empty(), character.getMount());
-		assertNotNull(character.getFollowers());
+		assertNotNull(character.followers());
 	}
 	
 	@Test
 	public void follow() throws ActionException {
 		character.follow(other);
 		assertEquals(true, character.isFollowing(other));
-		assertEquals(1, other.getFollowers().count());
-		assertEquals(character, other.getFollowers().iterator().next());
+		assertEquals(1, other.followers().count());
+		assertEquals(character, other.followers().iterator().next());
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class CharacterEntityTest extends ActionTest {
 		character.follow(other);
 		character.follow(null);
 		assertEquals(false, character.isFollowing(other));
-		assertEquals(0, other.getFollowers().count());
+		assertEquals(0, other.followers().count());
 	}
 	
 	@Test
@@ -66,8 +66,8 @@ public class CharacterEntityTest extends ActionTest {
 		character.follow(other);
 		character.follow(other);
 		assertEquals(true, character.isFollowing(other));
-		assertEquals(1, other.getFollowers().count());
-		assertEquals(character, other.getFollowers().iterator().next());
+		assertEquals(1, other.followers().count());
+		assertEquals(character, other.followers().iterator().next());
 	}
 
 	@Test
@@ -86,28 +86,28 @@ public class CharacterEntityTest extends ActionTest {
 	@Test
 	public void setMount() throws ActionException {
 		final Entity mount = mock(Entity.class);
-		when(mount.getRace()).thenReturn(new Builder("mount").mount().build());
+		when(mount.race()).thenReturn(new Builder("mount").mount().build());
 		when(mount.isFollowing(character)).thenReturn(true);
 		character.setMount(mount);
 		assertEquals(Optional.of(mount), character.getMount());
-		assertEquals(Stance.MOUNTED, character.getStance());
+		assertEquals(Stance.MOUNTED, character.stance());
 	}
 
 	@Test
 	public void setMountDismount() throws ActionException {
 		final Entity mount = mock(Entity.class);
-		when(mount.getRace()).thenReturn(new Builder("mount").mount().build());
+		when(mount.race()).thenReturn(new Builder("mount").mount().build());
 		when(mount.isFollowing(character)).thenReturn(true);
 		character.setMount(mount);
 		character.setMount(null);
 		assertEquals(Optional.empty(), character.getMount());
-		assertEquals(Stance.DEFAULT, character.getStance());
+		assertEquals(Stance.DEFAULT, character.stance());
 	}
 
 	@Test
 	public void setMountNotFollowing() throws ActionException {
 		final Entity mount = mock(Entity.class);
-		when(mount.getRace()).thenReturn(new Builder("mount").mount().build());
+		when(mount.race()).thenReturn(new Builder("mount").mount().build());
 		expect("mount.not.leading");
 		character.setMount(mount);
 	}
@@ -115,7 +115,7 @@ public class CharacterEntityTest extends ActionTest {
 	@Test
 	public void setMountInvalidMount() throws ActionException {
 		final Entity mount = mock(Entity.class);
-		when(mount.getRace()).thenReturn(race);
+		when(mount.race()).thenReturn(race);
 		when(mount.isFollowing(character)).thenReturn(true);
 		expect("mount.invalid.mount");
 		character.setMount(mount);

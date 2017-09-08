@@ -1,4 +1,4 @@
-package org.sarge.textrpg.object;
+package org.sarge.textrpg.world;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -10,6 +10,8 @@ import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.Description;
 import org.sarge.textrpg.common.EventQueue;
+import org.sarge.textrpg.object.ObjectDescriptor;
+import org.sarge.textrpg.object.WorldObject;
 
 /**
  * Auction house model.
@@ -148,10 +150,10 @@ public class AuctionHouse {
 	public Post post(Actor actor, EventQueue queue, WorldObject obj, int min, long time) throws ActionException {
 		// Check can auction this object
 		if(obj.isDamaged()) throw new ActionException("post.damaged.object");
-		if(obj.getOwner() != actor) throw new ActionException("post.not.carried");
+		if(obj.owner() != actor) throw new ActionException("post.not.carried");
 
 		// Create new auction post
-		final Post post = new Post(actor, obj.descriptor, min, time);
+		final Post post = new Post(actor, obj.descriptor(), min, time);
 		posts.add(post);
 
 		// Register expiry event

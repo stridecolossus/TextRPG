@@ -193,7 +193,7 @@ public class LocationLoader {
 		default:
 			// Load fixture
 			final WorldObject obj = objectLoader.loadObject(node, false);
-			if(obj.getDescriptor() instanceof Portal.Descriptor) throw node.exception("Cannot create a portal directly");
+			if(obj.descriptor() instanceof Portal.Descriptor) throw node.exception("Cannot create a portal directly");
 			obj.setParentAncestor(loc);
 			break;
 		}

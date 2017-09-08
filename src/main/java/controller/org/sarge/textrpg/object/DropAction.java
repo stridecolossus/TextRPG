@@ -39,7 +39,7 @@ public class DropAction extends AbstractAction {
 		verifyCarried(actor, obj);
 		
 		// Drop to current location
-		final Location loc = actor.getLocation().getBase();
+		final Location loc = actor.location().getBase();
 		obj.setParentAncestor(loc);
 		
 		// Build response

@@ -49,17 +49,17 @@ public class CharacterEntity extends Creature {
 	}
 
 	@Override
-	public String getName() {
+	public String name() {
 		return name;
 	}
 	
 	@Override
-	public Gender getGender() {
+	public Gender gender() {
 		return gender;
 	}
 	
 	@Override
-	public Alignment getAlignment() {
+	public Alignment alignment() {
 		return align;
 	}
 	
@@ -77,12 +77,12 @@ public class CharacterEntity extends Creature {
 //	}
 	
 	@Override
-	public Stream<Topic> getTopics() {
+	public Stream<Topic> topics() {
 		return topics.stream();
 	}
 	
 	@Override
-	public Stream<Entity> getFollowers() {
+	public Stream<Entity> followers() {
 		return followers.stream();
 	}
 	
@@ -115,7 +115,7 @@ public class CharacterEntity extends Creature {
 	 */
 	private void followCharacter(CharacterEntity ch) throws ActionException {
 		// Check can follow this character
-		if((ch.getAlignment() != this.align) && (ch.getAlignment() != Alignment.NEUTRAL)) {
+		if((ch.alignment() != this.align) && (ch.alignment() != Alignment.NEUTRAL)) {
 			throw new ActionException("follow.entity.invalid");
 		}
 
@@ -148,7 +148,7 @@ public class CharacterEntity extends Creature {
 		}
 		else {
 			if(this.mount.isPresent()) throw new ActionException("mount.already.mounted");
-			if(!mount.getRace().getAttributes().isMount()) throw new ActionException("mount.invalid.mount");
+			if(!mount.race().attributes().isMount()) throw new ActionException("mount.invalid.mount");
 			if(!mount.isFollowing(this)) throw new ActionException("mount.not.leading");
 			setStance(Stance.MOUNTED);
 		}

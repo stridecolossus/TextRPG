@@ -69,7 +69,7 @@ public class DurableObject extends WorldObject {
 
 	@Override
 	protected void describe(Description.Builder builder) {
-		final Descriptor descriptor = (Descriptor) super.getDescriptor();
+		final Descriptor descriptor = (Descriptor) super.descriptor();
 		final float key = 100 * (descriptor.durability - wear) / (float) descriptor.durability;
 		builder.wrap("wear", "wear." + TABLE.get(key));
 	}
@@ -77,7 +77,7 @@ public class DurableObject extends WorldObject {
 	/**
 	 * @return Current wear
 	 */
-	protected int getWear() {
+	public int wear() {
 		return wear;
 	}
 
@@ -88,12 +88,15 @@ public class DurableObject extends WorldObject {
 
 	@Override
 	public boolean isBroken() {
-		final Descriptor descriptor = (Descriptor) super.getDescriptor();
+		final Descriptor descriptor = (Descriptor) super.descriptor();
 		return wear >= descriptor.durability;
 	}
 
-	@Override
-	public void wear() throws ActionException {
+	/**
+	 * Uses this durable object.
+	 * @throws ActionException if the object is broken
+	 */
+	public void use() throws ActionException {
 		if(isBroken()) throw new ActionException("durable.object.broken");
 		++wear;
 	}

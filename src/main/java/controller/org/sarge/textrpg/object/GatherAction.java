@@ -64,7 +64,7 @@ public class GatherAction extends AbstractActiveAction {
 	 */
 	public ActionResponse gather(Entity actor) throws ActionException {
 		// Check can gather in the current location
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		if(!isValidLocation(loc)) throw new ActionException("gather.invalid.location");
 
 		// Check required skill
@@ -74,7 +74,7 @@ public class GatherAction extends AbstractActiveAction {
 		if(tool.isPresent()) {
 			final Predicate<WorldObject> matcher = ContentsHelper.objectMatcher(tool.get());
 			final WorldObject obj = find(actor, matcher, false, tool.get().getName());
-			obj.wear();
+			obj.use();
 		}
 
 		// Gather resources and add to inventory

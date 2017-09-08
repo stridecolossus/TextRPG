@@ -49,7 +49,7 @@ public class ContentsTest {
 		final Thing thing = mock(Thing.class, withSettings().extraInterfaces(Parent.class));
 		final Contents c = new Contents();
 		final Parent p = (Parent) thing;
-		when(p.getContents()).thenReturn(c);
+		when(p.contents()).thenReturn(c);
 		if(t != null) {
 			c.add(t);
 		}
@@ -73,7 +73,7 @@ public class ContentsTest {
 	public void move() {
 		final Contents other = new Contents();
 		final Parent parent = mock(Parent.class);
-		when(parent.getContents()).thenReturn(other);
+		when(parent.contents()).thenReturn(other);
 		contents.add(obj);
 		contents.move(parent);
 		verify(obj).setParentAncestor(parent);

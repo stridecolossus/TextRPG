@@ -29,7 +29,7 @@ public class PortalsArgumentBuilder implements ArgumentBuilder {
 	public Stream<Object> stream(Actor actor) {
 		return loc.getExits().values().stream()
 			.map(Exit::getLink)
-			.map(Link::getController)
+			.map(Link::controller)
 			.filter(Optional::isPresent)
 			.map(Optional::get);
 	}

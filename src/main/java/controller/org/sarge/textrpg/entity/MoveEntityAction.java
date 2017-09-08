@@ -40,7 +40,7 @@ public class MoveEntityAction implements EntityManager.Action {
 		final Direction dir = follower.next(entity);
 		if(dir == null) {
 			if(!stop) {
-				LOG.log(Level.WARNING, String.format("Cannot move entity: entity=%s loc=%s", entity, entity.getLocation()));
+				LOG.log(Level.WARNING, String.format("Cannot move entity: entity=%s loc=%s", entity, entity.location()));
 			}
 			return true;
 		}

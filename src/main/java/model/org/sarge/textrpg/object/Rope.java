@@ -41,7 +41,7 @@ public class Rope extends DurableObject {
 		/**
 		 * @return Attached rope
 		 */
-		protected Rope getRope() {
+		protected Rope rope() {
 			return rope;
 		}
 	}
@@ -96,9 +96,9 @@ public class Rope extends DurableObject {
 	@Override
 	protected void describe(Description.Builder builder) {
 		super.describe(builder);
-		builder.add("length", getLength());
+		builder.add("length", length());
 		if(anchor != null) {
-		    builder.wrap("anchor", anchor.getName());
+		    builder.wrap("anchor", anchor.name());
 		}
 	}
 
@@ -111,8 +111,8 @@ public class Rope extends DurableObject {
 	/**
 	 * @return Length of this rope
 	 */
-	public int getLength() {
-		final Descriptor descriptor = (Descriptor) super.getDescriptor();
+	public int length() {
+		final Descriptor descriptor = (Descriptor) super.descriptor();
 		return descriptor.length;
 	}
 
@@ -120,14 +120,14 @@ public class Rope extends DurableObject {
 	 * @return Whether this is a magical rope
 	 */
 	public boolean isMagical() {
-		final Descriptor descriptor = (Descriptor) super.getDescriptor();
+		final Descriptor descriptor = (Descriptor) super.descriptor();
 		return descriptor.magical;
 	}
 
 	/**
 	 * @return Current anchor of this rope if any
 	 */
-	public Optional<Anchor> getAnchor() {
+	public Optional<Anchor> anchor() {
 		return Optional.ofNullable(anchor);
 	}
 
@@ -140,7 +140,7 @@ public class Rope extends DurableObject {
 		if(this.anchor != null) throw new ActionException("rope.already.attached");
 		if(anchor.isAttached()) throw new ActionException("rope.anchor.occupied");
 		if(isBroken()) throw new ActionException("rope.attach.broken");
-		this.setParentAncestor(actor.getParent());
+		this.setParentAncestor(actor.parent());
 		this.anchor = anchor;
 		anchor.rope = this;
 	}
@@ -152,7 +152,7 @@ public class Rope extends DurableObject {
 	 */
 	protected void remove(Actor actor) throws ActionException {
 		if(anchor == null) throw new ActionException("rope.not.attached");
-		if(anchor.rope.getParent() != actor.getParent()) throw new ActionException("rope.invalid.location");
+		if(anchor.rope.parent() != actor.parent()) throw new ActionException("rope.invalid.location");
 		this.setParent(actor);
 		anchor.rope = null;
 		anchor = null;
@@ -165,7 +165,7 @@ public class Rope extends DurableObject {
 	 */
 	protected void pull(Actor actor) throws ActionException {
 		if(anchor == null) throw new ActionException("rope.not.attached");
-		if(anchor.rope.getParent() == actor.getParent()) throw new ActionException("rope.invalid.location");
+		if(anchor.rope.parent() == actor.parent()) throw new ActionException("rope.invalid.location");
 		if(!isMagical()) throw new ActionException("interact.nothing");
 		this.setParent(actor);
 		anchor.rope = null;
@@ -173,7 +173,7 @@ public class Rope extends DurableObject {
 	}
 
 	@Override
-	protected void destroy() {
+	public void destroy() {
 		if(anchor != null) {
 			anchor.rope = null;
 			anchor = null;

@@ -16,7 +16,7 @@ import org.sarge.textrpg.world.Location;
 /**
  * Action to use a portal or other openable objects.
  * @author Sarge
- * @see WorldObject#getOpenableModel()
+ * @see WorldObject#openableModel()
  */
 public class PortalAction extends AbstractActiveAction {
 	private final Operation op;
@@ -49,7 +49,7 @@ public class PortalAction extends AbstractActiveAction {
 	 * @throws ActionException
 	 */
 	public ActionResponse execute(Entity actor, Portal portal) throws ActionException {
-		return apply(actor, portal, (Location) portal.getDestination());
+		return apply(actor, portal, (Location) portal.destination());
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class PortalAction extends AbstractActiveAction {
 	 * @throws ActionException
 	 */
 	public ActionResponse execute(Entity actor, WorldObject obj) throws ActionException {
-		obj.getOpenableModel().orElseThrow(() -> new ActionException("portal.not.openable", op));
+		obj.openableModel().orElseThrow(() -> new ActionException("portal.not.openable", op));
 		return apply(actor, obj, null);
 	}
 
@@ -88,10 +88,10 @@ public class PortalAction extends AbstractActiveAction {
 	 */
 	private ActionResponse apply(Entity actor, WorldObject obj, Location dest) throws ActionException {
 		// Check for required key
-		final Openable model = obj.getOpenableModel().get();
+		final Openable model = obj.openableModel().get();
 		if(op.isLocking() && model.isLockable()) {
-			final String key = model.getLock().getKey();
-			if(!actor.getContents().stream().anyMatch(t -> t.getName().equals(key))) {
+			final String key = model.lock().key();
+			if(!actor.contents().stream().anyMatch(t -> t.name().equals(key))) {
 				throw new ActionException("portal.requires.key");
 			}
 		}
@@ -100,10 +100,10 @@ public class PortalAction extends AbstractActiveAction {
 		model.apply(op);
 
 		// Register reset event
-		ActionHelper.registerOpenableEvent(actor.getLocation(), dest, obj, "portal.auto.close");
+		ActionHelper.registerOpenableEvent(actor.location(), dest, obj, "portal.auto.close");
 
 		// Build response
-		return build(op, obj.getName());
+		return build(op, obj.name());
 	}
 
 	private static ActionResponse build(Operation op, String name) {

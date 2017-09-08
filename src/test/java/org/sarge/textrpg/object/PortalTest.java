@@ -21,9 +21,9 @@ public class PortalTest {
 	
 	@Test
 	public void constructor() {
-		assertEquals(true, portal.getOpenableModel().isPresent());
+		assertEquals(true, portal.openableModel().isPresent());
 		assertEquals(true, portal.isFixture());
-		assertEquals(dest, portal.getDestination());
+		assertEquals(dest, portal.destination());
 	}
 	
 	@Test

@@ -41,16 +41,16 @@ public class MovementControllerTest extends ActionTest {
 		final Clock clock = mock(Clock.class);
 		final DataTableCalculator move = mock(DataTableCalculator.class);
 		final DataTableCalculator tracks = mock(DataTableCalculator.class);
-		when(move.multiply(Terrain.DESERT, Route.NONE, actor.getStance())).thenReturn(3f);
-		when(tracks.multiply(Terrain.DESERT, Route.NONE, actor.getStance())).thenReturn(0.5f);
+		when(move.multiply(Terrain.DESERT, Route.NONE, actor.stance())).thenReturn(3f);
+		when(tracks.multiply(Terrain.DESERT, Route.NONE, actor.stance())).thenReturn(0.5f);
 		controller = new MovementController(clock, move, tracks, 1);
 
 		// Create a link with a controller
 		final Thing obj = mock(Thing.class);
 		link = mock(Link.class);
-		when(link.getController()).thenReturn(Optional.of(obj));
-		when(link.getScript()).thenReturn(mock(Script.class));
-		when(link.getSize()).thenReturn(Size.MEDIUM);
+		when(link.controller()).thenReturn(Optional.of(obj));
+		when(link.script()).thenReturn(mock(Script.class));
+		when(link.size()).thenReturn(Size.MEDIUM);
 		when(actor.perceives(obj)).thenReturn(true);
 
 		// Link to location
@@ -61,17 +61,17 @@ public class MovementControllerTest extends ActionTest {
 		@SuppressWarnings("unchecked")
 		final IntegerMap<EntityValue> values = mock(IntegerMap.class);
 		when(values.get(EntityValue.STAMINA)).thenReturn(3);
-		when(actor.getValues()).thenReturn(values);
+		when(actor.values()).thenReturn(values);
 
 		// Give the actor a race (for tracks)
 		final Race race = new Race.Builder("race").build();
-		when(actor.getRace()).thenReturn(race);
-		when(actor.getSize()).thenReturn(Size.SMALL);
+		when(actor.race()).thenReturn(race);
+		when(actor.size()).thenReturn(Size.SMALL);
 
 		// Add an emission to the actor
-		final Emission emission = Emission.light(Percentile.ONE);
-		when(actor.getEmission(any(Emission.Type.class))).thenReturn(Optional.empty());
-		when(actor.getEmission(Emission.Type.LIGHT)).thenReturn(Optional.of(emission));
+		final Emission emission = new Emission(Emission.Type.LIGHT, Percentile.ONE);
+		when(actor.emission(any(Emission.Type.class))).thenReturn(Optional.empty());
+		when(actor.emission(Emission.Type.LIGHT)).thenReturn(Optional.of(emission));
 	}
 
 	@Test
@@ -85,7 +85,7 @@ public class MovementControllerTest extends ActionTest {
 		verify(actor).modify(EntityValue.STAMINA, -1);
 
 		// Check script
-		verify(link.getScript()).execute(actor);
+		verify(link.script()).execute(actor);
 
 		// Check movement notifications
 		// TODO
@@ -119,14 +119,14 @@ public class MovementControllerTest extends ActionTest {
 	@Test
 	public void moveSizeConstraint() throws ActionException {
 		when(link.reason(actor)).thenReturn("move.link.constraint");
-		when(actor.getSize()).thenReturn(Size.LARGE);
+		when(actor.size()).thenReturn(Size.LARGE);
 		expect("move.link.constraint");
 		controller.move(actor, Direction.EAST, 1, true);
 	}
 
 	@Test
 	public void moveInsufficientStamina() throws ActionException {
-		when(actor.getValues().get(EntityValue.STAMINA)).thenReturn(0);
+		when(actor.values().get(EntityValue.STAMINA)).thenReturn(0);
 		expect("move.insufficient.stamina");
 		controller.move(actor, Direction.EAST, 1, true);
 	}

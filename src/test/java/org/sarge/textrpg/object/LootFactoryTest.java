@@ -32,7 +32,7 @@ public class LootFactoryTest extends ActionTest {
 		
 		// Check generated object
 		final WorldObject obj = itr.next();
-		assertEquals(descriptor, obj.getDescriptor());
+		assertEquals(descriptor, obj.descriptor());
 		assertEquals(false, itr.hasNext());
 	}
 	

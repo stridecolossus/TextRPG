@@ -33,8 +33,8 @@ public class ListenAction extends AbstractAction {
 	}
 	
 	public void execute(Entity actor, WorldObject obj) throws ActionException {
-		final int score = actor.getAttributes().get(Attribute.PERCEPTION) * 10;
-		final String sound = obj.getEmission(Emission.Type.SOUND).map(Emission::toString).orElse("none");
+		final int score = actor.attributes().get(Attribute.PERCEPTION) * 10;
+		final String sound = obj.emission(Emission.Type.SOUND).map(Emission::toString).orElse("none");
 		System.out.println("listen "+sound); // TODO
 		// TODO - message is no sounds
 	}

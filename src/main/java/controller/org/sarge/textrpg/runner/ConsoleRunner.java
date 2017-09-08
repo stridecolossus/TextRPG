@@ -49,12 +49,12 @@ import org.sarge.textrpg.entity.Stance;
 import org.sarge.textrpg.loader.MainLoader;
 import org.sarge.textrpg.loader.World;
 import org.sarge.textrpg.object.Light;
-import org.sarge.textrpg.object.PostManager;
 import org.sarge.textrpg.object.WorldObject;
 import org.sarge.textrpg.util.Config;
 import org.sarge.textrpg.util.DataTable;
 import org.sarge.textrpg.util.DataTableCalculator;
 import org.sarge.textrpg.util.Percentile;
+import org.sarge.textrpg.world.PostManager;
 import org.sarge.textrpg.world.Route;
 import org.sarge.textrpg.world.Terrain;
 
@@ -180,7 +180,7 @@ public class ConsoleRunner {
 				// Display response
 				// TODO
 				if(response != null) {
-					response.getDescriptions().forEach(desc -> player.getNotificationHandler().handle(desc.toNotification()));
+					response.getDescriptions().forEach(desc -> player.handler().handle(desc.toNotification()));
 					response.getInduction().ifPresent(i -> {
 						final Induction intercept = new Induction() {
 							@Override
@@ -212,7 +212,7 @@ public class ConsoleRunner {
 			}
 			catch(final ActionException e) {
 				// TODO
-				player.getNotificationHandler().handle(Message.of(e));
+				player.handler().handle(Message.of(e));
 				//dev.write("ERROR " + e.getMessage());
 			}
 			catch(final Exception e) {
@@ -291,7 +291,7 @@ public class ConsoleRunner {
 
 		final Device dev = new Device(System.in, System.out);
 
-		final Player player = new Player("player", race, race.getAttributes().getAttributes(), Gender.MALE, Alignment.GOOD, dev);
+		final Player player = new Player("player", race, race.attributes().attributes(), Gender.MALE, Alignment.GOOD, dev);
 		calc.init(player);
 
 		// TODO
@@ -299,7 +299,7 @@ public class ConsoleRunner {
 			final TimeCycle.Period prev = cycle.getPeriod();
 			cycle.update(hour);
 			if(prev != cycle.getPeriod()) {
-				player.getNotificationHandler().handle(new Message("time." + cycle.getPeriod().getKey()));
+				player.handler().handle(new Message("time." + cycle.getPeriod().getKey()));
 			}
 		};
 		Clock.CLOCK.add(listener);

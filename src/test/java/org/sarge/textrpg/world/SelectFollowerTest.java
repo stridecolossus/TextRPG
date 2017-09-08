@@ -29,7 +29,7 @@ public class SelectFollowerTest {
 		follower = new SelectFollower(exit -> true, Policy.ONE);
 		loc = ActionTest.createLocation();
 		actor = mock(Entity.class);
-		when(actor.getLocation()).thenReturn(loc);
+		when(actor.location()).thenReturn(loc);
 
 		// Create destination
 		dest = mock(Location.class);
@@ -39,7 +39,7 @@ public class SelectFollowerTest {
 		// Create link with a controller
 		final Thing obj = mock(Thing.class);
 		link = mock(Link.class);
-		when(link.getController()).thenReturn(Optional.of(obj));
+		when(link.controller()).thenReturn(Optional.of(obj));
 		when(actor.perceives(obj)).thenReturn(true);
 
 		// Add link
@@ -55,7 +55,7 @@ public class SelectFollowerTest {
 	@Test
 	public void nextEmpty() {
 		final Location empty = ActionTest.createLocation();
-		when(actor.getLocation()).thenReturn(empty);
+		when(actor.location()).thenReturn(empty);
 		assertEquals(null, follower.next(actor));
 	}
 
@@ -67,7 +67,7 @@ public class SelectFollowerTest {
 
 	@Test
 	public void nextHidden() {
-		when(actor.perceives(link.getController().get())).thenReturn(false);
+		when(actor.perceives(link.controller().get())).thenReturn(false);
 		assertEquals(null, follower.next(actor));
 	}
 
@@ -76,7 +76,7 @@ public class SelectFollowerTest {
 		final Location self = ActionTest.createLocation();
 		final LinkWrapper wrapper = new LinkWrapper(Direction.EAST, link, self, Direction.WEST, ReversePolicy.ONE_WAY);
 		self.add(wrapper);
-		when(actor.getLocation()).thenReturn(self);
+		when(actor.location()).thenReturn(self);
 		follower.next(actor);
 		assertEquals(Direction.EAST, follower.next(actor));
 		follower.setAllowRetrace(false);
@@ -116,7 +116,7 @@ public class SelectFollowerTest {
 	@Test
 	public void routeFilter() {
 		final Predicate<Exit> filter = SelectFollower.route(Collections.singleton(Route.BRIDGE));
-		when(link.getRoute()).thenReturn(Route.BRIDGE);
+		when(link.route()).thenReturn(Route.BRIDGE);
 		follower = new SelectFollower(filter, Policy.ONE);
 		assertEquals(Direction.EAST, follower.next(actor));
 	}

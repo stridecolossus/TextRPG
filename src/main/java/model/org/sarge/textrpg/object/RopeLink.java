@@ -32,12 +32,12 @@ public class RopeLink extends Link {
 	}
 
 	@Override
-	public Route getRoute() {
+	public Route route() {
 		return Route.ROPE;
 	}
 
 	@Override
-	public Optional<Thing> getController() {
+	public Optional<Thing> controller() {
 		return Optional.of(anchor);
 	}
 
@@ -69,15 +69,15 @@ public class RopeLink extends Link {
 
 	@Override
 	public Description.Builder describe() {
-		final Rope rope = anchor.getRope();
+		final Rope rope = anchor.rope();
 		if(rope == null) {
 			return super.describe();
 		}
 		else {
 			final Description.Builder builder = new Description.Builder("exit.portal");
-			final Cardinality cardinality = rope.getDescriptor().getCharacteristics().getCardinality();
+			final Cardinality cardinality = rope.descriptor().getCharacteristics().getCardinality();
 			cardinality.add(builder);
-			builder.wrap("name", rope.getName());
+			builder.wrap("name", rope.name());
 			return builder;
 		}
 	}

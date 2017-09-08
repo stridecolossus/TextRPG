@@ -114,19 +114,19 @@ public final class Command {
 	 */
 	private void verify(Entity actor, boolean daylight) throws ActionException {
 		// Verify stance
-		final Stance stance = actor.getStance();
+		final Stance stance = actor.stance();
 		if((stance == Stance.COMBAT) && action.isCombatBlockedAction()) throw new ActionException("action.combat.blocked");
 		if(!action.isValidStance(stance)) throw new ActionException("action.invalid." + stance);
 
 		// Verify action can be performed in a parent
 		final boolean remote = isRemoteArgument(actor);
 		if(action.isParentBlockedAction()) {
-			final String name = actor.getParent().getParentName();
-			if(remote && !name.equals(Location.NAME)) throw new ActionException("action.invalid." + name, actor.getParent());
+			final String name = actor.parent().parentName();
+			if(remote && !name.equals(Location.NAME)) throw new ActionException("action.invalid." + name, actor.parent());
 		}
 
 		// Check for available light
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		boolean light = daylight;
 		if(action.isLightRequiredAction() && !light) {
 			light = loc.isLightAvailable(light);
@@ -151,7 +151,7 @@ public final class Command {
 		for(Object obj : args) {
 			if(obj instanceof Thing) {
 				final Thing thing = (Thing) obj;
-				if(thing.getParent() != actor) return true;
+				if(thing.parent() != actor) return true;
 			}
 		}
 		return false;

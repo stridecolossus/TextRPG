@@ -90,17 +90,17 @@ public class Food extends WorldObject {
 	}
 
 	@Override
-	public String getName() {
+	public String name() {
 		if(type == Type.RAW) {
-			return "raw." + super.getName();
+			return "raw." + super.name();
 		}
 		else {
-			return super.getName();
+			return super.name();
 		}
 	}
 
 	@Override
-	public Descriptor getDescriptor() {
+	public Descriptor descriptor() {
 		return (Descriptor) super.descriptor;
 	}
 
@@ -137,7 +137,7 @@ public class Food extends WorldObject {
 
 		// Re-register decay event
 		holder.cancel();
-		register(getDescriptor());
+		register(descriptor());
 		// TODO - longer lifetime for cooked?
 	}
 
@@ -163,7 +163,7 @@ public class Food extends WorldObject {
 	 */
 	private void decay() {
 		// Notify owner
-		final Actor owner = (Actor) getOwner();
+		final Actor owner = (Actor) owner();
 		if(owner != null) {
 			owner.alert(new Message("food.decayed", this));
 		}

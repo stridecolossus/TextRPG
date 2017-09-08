@@ -47,6 +47,6 @@ public class EffectTest extends ActionTest {
 	public void apply() {
 		final Entity entity = mock(Entity.class);
 		descriptor.apply(Collections.singletonList(entity), actor);
-		verify(entity).apply(method, 1, Optional.of(2), actor.getEventQueue());
+		verify(entity).apply(method, 1, Optional.of(2), actor.queue());
 	}
 }

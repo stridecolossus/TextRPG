@@ -16,7 +16,7 @@ public final class Material {
 	 * Default material.
 	 */
 	public static final Material DEFAULT = new Material("default", Collections.emptySet(), Collections.emptySet(), 0);
-	
+
 	private final String name;
 	private final Set<Emission.Type> transparent;
 	private final Set<DamageType> sustains;
@@ -41,13 +41,20 @@ public final class Material {
 		this.sustains = sustains;
 		this.str = str;
 	}
-	
+
 	/**
 	 * @return Name of this material
 	 */
-	public String getName() {
+	public String name() {
 		return name;
 	}
+
+    /**
+     * @return Strength of this material (if it can be damaged)
+     */
+    public int strength() {
+        return str;
+    }
 
 	/**
 	 * @param type Emission type
@@ -56,7 +63,7 @@ public final class Material {
 	public boolean isTransparentTo(Emission.Type type) {
 		return transparent.contains(type);
 	}
-	
+
 	/**
 	 * @param type Damage type
 	 * @return Whether this material is damaged by the given type of damage
@@ -64,14 +71,7 @@ public final class Material {
 	public boolean isDamagedBy(DamageType type) {
 		return sustains.contains(type);
 	}
-	
-	/**
-	 * @return Strength of this material (if it can be damaged)
-	 */
-	public int getStrength() {
-		return str;
-	}
-	
+
 	@Override
 	public String toString() {
 		return name;

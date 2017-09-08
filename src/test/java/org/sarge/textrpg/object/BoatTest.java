@@ -29,13 +29,13 @@ public class BoatTest extends ActionTest {
 	public void constructor() {
 		assertEquals(true, boat.isMoored());
 		assertEquals("boat.moored", boat.getFullDescriptionKey());
-		assertEquals("vehicle", boat.getParentName());
+		assertEquals("vehicle", boat.parentName());
 	}
 
 	@Test
 	public void setParentIntoWater() throws ActionException {
 		boat.setParent(water);
-		assertEquals(water, boat.getParent());
+		assertEquals(water, boat.parent());
 		assertEquals(false, boat.isMoored());
 	}
 
@@ -43,7 +43,7 @@ public class BoatTest extends ActionTest {
 	public void setParentMoored() throws ActionException {
 		boat.setParent(water);
 		boat.setParent(loc);
-		assertEquals(loc, boat.getParent());
+		assertEquals(loc, boat.parent());
 		assertEquals(true, boat.isMoored());
 	}
 }

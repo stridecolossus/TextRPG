@@ -1,5 +1,9 @@
 package org.sarge.textrpg.object;
 
+import static org.sarge.lib.util.Check.notEmpty;
+import static org.sarge.lib.util.Check.notNull;
+import static org.sarge.lib.util.Check.zeroOrMore;
+
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -18,6 +22,7 @@ import org.sarge.textrpg.util.Percentile;
  * Descriptor for a class of objects.
  * @author Sarge
  * TODO
+ * - make this properly immutable
  * - how to have tiers of objects?  e.g. lock-picks: basic, standard, good, excellent, legendary -> improved durability, additional effects, etc
  * - but all have to be mapped to same descriptor?  or do we use categories (seems nasty?)
  */
@@ -41,13 +46,21 @@ public class ObjectDescriptor implements Cloneable {
 	 * Physical properties of this object.
 	 */
 	public static final class Properties {
-		private int weight;
-		private int value;
-		private Size size = Size.NONE;
-		private long reset;
-		private long forget;
+		private final int weight;
+		private final int value;
+		private final Size size;
+		private final long reset;
+		private final long forget;
 
-		/**
+		public Properties(int weight, int value, Size size, long reset, long forget) {
+            this.weight = zeroOrMore(weight);
+            this.value = zeroOrMore(value);
+            this.size = notNull(size);
+            this.reset = (long) zeroOrMore(reset);
+            this.forget = (long) zeroOrMore(forget);
+        }
+
+        /**
 		 * @return Weight of this object or {@link ObjectDescriptor#IMMOVABLE} for a fixture
 		 */
 		public int getWeight() {
@@ -81,6 +94,63 @@ public class ObjectDescriptor implements Cloneable {
 		public long getForgetPeriod() {
 			return forget;
 		}
+
+		public static class Builder {
+	        private int weight;
+	        private int value;
+	        private Size size = Size.NONE;
+	        private long reset;
+	        private long forget;
+
+	        /**
+	         * Sets the weight of this object.
+	         * @param weight Object weight
+	         */
+	        public Builder weight(int weight) {
+	            this.weight = weight;
+	            return this;
+	        }
+
+	        /**
+	         * Sets the size of this object.
+	         * @param size Object size
+	         */
+	        public Builder size(Size size) {
+	            this.size = size;
+	            return this;
+	        }
+
+	        /**
+	         * Sets the value of this object.
+	         * @param value Object value
+	         */
+	        public Builder value(int value) {
+	            this.value = value;
+	            return this;
+	        }
+
+	        /**
+	         * Sets the reset period of this object.
+	         * @param reset Reset period (ms)
+	         */
+	        public Builder reset(long reset) {
+	            this.reset = reset;
+	            return this;
+	        }
+
+	        /**
+	         * Sets the forget period of this object.
+	         * @param forget Forget period (ms)
+	         */
+	        public Builder forget(long forget) {
+	            this.forget = forget;
+	            return this;
+	        }
+
+	        public Properties build() {
+	            return new Properties(weight, value, size, reset, forget);
+	        }
+		}
 	}
 
 	/**
@@ -96,7 +166,17 @@ public class ObjectDescriptor implements Cloneable {
 		private final Map<Emission.Type, Emission> emissions = new StrictMap<>();
 		private boolean quiet;
 
-		/**
+        public Characteristics(String desc, String col, Cardinality cardinality, Material mat, Percentile vis, boolean quiet) {
+            this.desc = notEmpty(desc);
+            this.col = notEmpty(col);
+            this.cardinality = notNull(cardinality);
+            this.mat = notNull(mat);
+            this.vis = notNull(vis);
+            this.quiet = quiet;
+        }
+
+
+        /**
 		 * @return Long description key suffix (default is {@link ObjectDescriptor#DEFAULT_DESCRIPTION})
 		 */
 		public String getFullDescriptionKey() {
@@ -152,6 +232,100 @@ public class ObjectDescriptor implements Cloneable {
 		public boolean isQuiet() {
 			return quiet;
 		}
+
+		public static class Builder {
+	        private String desc = DEFAULT_DESCRIPTION;
+	        private String col = COLOUR_NONE;
+	        private Cardinality cardinality = Cardinality.SINGLE;
+	        private Material mat = Material.DEFAULT;
+	        private final Set<String> cats = new StrictSet<>();
+	        private Percentile vis = Percentile.ONE;
+	        private final Map<Emission.Type, Emission> emissions = new StrictMap<>();
+	        private boolean quiet;
+
+            /**
+	         * Sets the long description key suffix for this object.
+	         * @param desc Long description suffix
+	         */
+	        public Builder description(String desc) {
+	            Check.notEmpty(desc);
+	            this.desc = desc;
+	            return this;
+	        }
+
+	        /**
+	         * Sets the colour of this object.
+	         * @param col Object colour
+	         * @see ObjectDescriptor#COLOUR_NONE
+	         */
+	        public Builder colour(String col) {
+	            Check.notEmpty(col);
+	            this.col = col;
+	            return this;
+	        }
+
+	        /**
+	         * Sets the cardinality of this object.
+	         * @param cardinality Cardinality
+	         */
+	        public Builder cardinality(Cardinality cardinality) {
+	            Check.notNull(cardinality);
+	            this.cardinality = cardinality;
+	            return this;
+	        }
+
+	        /**
+	         * Sets the material of this object.
+	         * @param mat Material descriptor
+	         * @see Material#DEFAULT
+	         */
+	        public Builder material(Material mat) {
+	            Check.notNull(mat);
+	            this.mat = mat;
+	            return this;
+	        }
+
+	        /**
+	         * Adds a category for this object.
+	         * @param cat Category
+	         */
+	        public Builder category(String cat) {
+	            Check.notEmpty(cat);
+	            this.cats.add(cat);
+	            return this;
+	        }
+
+	        /**
+	         * Sets the default visibility of this object.
+	         * @param vis Visibility
+	         */
+	        public Builder visibility(Percentile vis) {
+	            Check.notNull(vis);
+	            this.vis = vis;
+	            return this;
+	        }
+
+	        /**
+	         * Adds an emission emanating from this object.
+	         * @param emission Emission descriptor
+	         */
+	        public Builder emission(Emission emission) {
+	            this.emissions.put(emission.type(), emission);
+	            return this;
+	        }
+
+	        /**
+	         * Makes this a silent object.
+	         */
+	        public Builder quiet(boolean quiet) {
+	            this.quiet = quiet;
+	            return this;
+	        }
+
+	        public Characteristics build() {
+	            return new Characteristics(desc, col, cardinality, mat, vis, quiet);
+	        }
+	    }
 	}
 
 	/**
@@ -361,134 +535,8 @@ public class ObjectDescriptor implements Cloneable {
 			this.name = name;
 		}
 
-		/**
-		 * Sets the weight of this object.
-		 * @param weight Object weight
-		 */
-		public Builder weight(int weight) {
-			Check.zeroOrMore(weight);
-			props.weight = weight;
-			return this;
-		}
 
-		/**
-		 * Sets the size of this object.
-		 * @param size Object size
-		 */
-		public Builder size(Size size) {
-			Check.notNull(size);
-			props.size = size;
-			return this;
-		}
 
-		/**
-		 * Sets the value of this object.
-		 * @param value Object value
-		 */
-		public Builder value(int value) {
-			Check.zeroOrMore(value);
-			props.value = value;
-			return this;
-		}
-
-		/**
-		 * Sets the reset period of this object.
-		 * @param reset Reset period (ms)
-		 */
-		public Builder reset(long reset) {
-			Check.zeroOrMore(reset);
-			this.props.reset = reset;
-			return this;
-		}
-
-		/**
-		 * Sets the forget period of this object.
-		 * @param forget Forget period (ms)
-		 */
-		public Builder forget(long forget) {
-			Check.zeroOrMore(forget);
-			this.props.forget = forget;
-			return this;
-		}
-
-		/**
-		 * Sets the long description key suffix for this object.
-		 * @param desc Long description suffix
-		 */
-		public Builder description(String desc) {
-			Check.notEmpty(desc);
-			chars.desc = desc;
-			return this;
-		}
-
-		/**
-		 * Sets the colour of this object.
-		 * @param col Object colour
-		 * @see ObjectDescriptor#COLOUR_NONE
-		 */
-		public Builder colour(String col) {
-			Check.notEmpty(col);
-			chars.col = col;
-			return this;
-		}
-
-		/**
-		 * Sets the cardinality of this object.
-		 * @param cardinality Cardinality
-		 */
-		public Builder cardinality(Cardinality cardinality) {
-			Check.notNull(cardinality);
-			chars.cardinality = cardinality;
-			return this;
-		}
-
-		/**
-		 * Sets the material of this object.
-		 * @param mat Material descriptor
-		 * @see Material#DEFAULT
-		 */
-		public Builder material(Material mat) {
-			Check.notNull(mat);
-			chars.mat = mat;
-			return this;
-		}
-
-		/**
-		 * Adds a category for this object.
-		 * @param cat Category
-		 */
-		public Builder category(String cat) {
-			Check.notEmpty(cat);
-			chars.cats.add(cat);
-			return this;
-		}
-
-		/**
-		 * Sets the default visibility of this object.
-		 * @param vis Visibility
-		 */
-		public Builder visibility(Percentile vis) {
-			Check.notNull(vis);
-			chars.vis = vis;
-			return this;
-		}
-
-		/**
-		 * Adds an emission emanating from this object.
-		 * @param emission Emission descriptor
-		 */
-		public Builder emission(Emission emission) {
-			chars.emissions.put(emission.getType(), emission);
-			return this;
-		}
-
-		/**
-		 * Makes this a silent object.
-		 */
-		public Builder quiet() {
-			chars.quiet = true;
-			return this;
-		}
 
 		/**
 		 * Sets the equipment descriptor for this object.

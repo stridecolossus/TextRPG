@@ -72,13 +72,13 @@ public class CommandTest extends ActionTest {
 
 		// Create player
 		player = mock(Player.class);
-		when(player.getLocation()).thenReturn(loc);
-		when(player.getParent()).thenReturn(loc);
-		when(player.getStance()).thenReturn(Stance.DEFAULT);
+		when(player.location()).thenReturn(loc);
+		when(player.parent()).thenReturn(loc);
+		when(player.stance()).thenReturn(Stance.DEFAULT);
 
 		// Create argument
 		obj = mock(WorldObject.class);
-		when(obj.getParent()).thenReturn(player);
+		when(obj.parent()).thenReturn(player);
 
 		// Create command
 		final Method method = action.getClass().getDeclaredMethod("execute", new Class<?>[]{Entity.class, WorldObject.class});
@@ -108,14 +108,14 @@ public class CommandTest extends ActionTest {
 
 	@Test
 	public void executeCombatBlocked() throws ActionException {
-		when(player.getStance()).thenReturn(Stance.COMBAT);
+		when(player.stance()).thenReturn(Stance.COMBAT);
 		expect("action.combat.blocked");
 		cmd.execute(player, true);
 	}
 
 	@Test
 	public void executeInvalidStance() throws ActionException {
-		when(player.getStance()).thenReturn(Stance.SLEEPING);
+		when(player.stance()).thenReturn(Stance.SLEEPING);
 		expect("action.invalid.sleeping");
 		cmd.execute(player, true);
 	}
@@ -123,9 +123,9 @@ public class CommandTest extends ActionTest {
 	@Test
 	public void executeRemoteArgument() throws ActionException {
 		final Parent parent = mock(Parent.class);
-		when(parent.getParentName()).thenReturn("parent");
-		when(player.getParent()).thenReturn(parent);
-		when(obj.getParent()).thenReturn(mock(Parent.class));
+		when(parent.parentName()).thenReturn("parent");
+		when(player.parent()).thenReturn(parent);
+		when(obj.parent()).thenReturn(mock(Parent.class));
 		expect("action.invalid.parent");
 		cmd.execute(player, true);
 	}
@@ -134,14 +134,14 @@ public class CommandTest extends ActionTest {
 	public void executeRequiresLight() throws ActionException {
 		light = true;
 		loc = new Location("underground", Area.ROOT, Terrain.UNDERGROUND, Collections.emptySet(), Collections.emptyList());
-		when(player.getLocation()).thenReturn(loc);
+		when(player.location()).thenReturn(loc);
 		expect("action.requires.light");
 		cmd.execute(player, false);
 	}
 
 	@Test
 	public void executeArgumentDark() throws ActionException {
-		when(obj.getParent()).thenReturn(loc);
+		when(obj.parent()).thenReturn(loc);
 		obj.setParent(loc);
 		expect("action.unknown.argument");
 		cmd.execute(player, false);
@@ -149,7 +149,7 @@ public class CommandTest extends ActionTest {
 
 	@Test
 	public void executeSneaking() throws ActionException {
-		when(player.getStance()).thenReturn(Stance.SNEAKING);
+		when(player.stance()).thenReturn(Stance.SNEAKING);
 		cmd.execute(player, true);
 		verify(player).setStance(Stance.DEFAULT);
 	}

@@ -37,7 +37,7 @@ public class Openable {
 		/**
 		 * @return Openable state after applying this operation
 		 */
-		public State getState() {
+		public State state() {
 			return after;
 		}
 
@@ -80,11 +80,17 @@ public class Openable {
 			this.pick = null;
 		}
 
-		public String getKey() {
+		/**
+		 * @return Name of the key to this lock
+		 */
+		public String key() {
 			return key;
 		}
 
-		public Percentile getPickDifficulty() {
+		/**
+		 * @return Pick-lock difficulty
+		 */
+		public Percentile pickDifficulty() {
 			return pick;
 		}
 
@@ -129,7 +135,7 @@ public class Openable {
 	/**
 	 * @return Lock descriptor
 	 */
-	public Lock getLock() {
+	public Lock lock() {
 		return lock;
 	}
 
@@ -150,7 +156,7 @@ public class Openable {
 	/**
 	 * @return State of this openable
 	 */
-	public State getState() {
+	public State state() {
 		return state;
 	}
 

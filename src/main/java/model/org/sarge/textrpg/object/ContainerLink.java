@@ -42,7 +42,7 @@ public class ContainerLink extends ExtendedLink {
 	}
 
 	@Override
-	public Optional<Thing> getController() {
+	public Optional<Thing> controller() {
 		if(obj == null) {
 			return controller;
 		}
@@ -84,7 +84,7 @@ public class ContainerLink extends ExtendedLink {
 	 */
 	protected void put(WorldObject obj) throws ActionException {
 		update();
-		if(obj.getDescriptor() != descriptor) throw new ActionException("object.link.invalid");
+		if(obj.descriptor() != descriptor) throw new ActionException("object.link.invalid");
 		if(this.obj != null) throw new ActionException("object.link.occupied");
 		this.obj = obj;
 		obj.hide();
@@ -94,7 +94,7 @@ public class ContainerLink extends ExtendedLink {
 	 * Clears the object if it has been removed.
 	 */
 	private void update() {
-		if((obj != null) && (obj.getParent() != Thing.LIMBO)) {
+		if((obj != null) && (obj.parent() != Thing.LIMBO)) {
 			obj = null;
 		}
 	}

@@ -54,7 +54,7 @@ public class LightAction extends AbstractAction {
 		case LIGHT:
 			final WorldObject tinderbox = find(actor, TINDERBOX, false, "tinderbox");
 			light.execute(op);
-			tinderbox.wear();
+			tinderbox.use();
 			break;
 			
 		default:

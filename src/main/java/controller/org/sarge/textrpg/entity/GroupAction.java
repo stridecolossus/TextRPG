@@ -57,7 +57,7 @@ public class GroupAction extends AbstractAction {
 			@Override
 			protected void execute(Group group, Entity entity) throws ActionException {
 				// TODO
-				System.out.println(group.getMembers().collect(toList()));
+				System.out.println(group.members().collect(toList()));
 			}
 		};
 		
@@ -128,9 +128,9 @@ public class GroupAction extends AbstractAction {
 		if((entity != null) != op.hasArgument()) throw new ActionException("group.requires.argument");
 
 		// Check is leader
-		final Group group = actor.getGroup().orElseThrow(() -> new ActionException("group.not.grouped"));
+		final Group group = actor.group().orElseThrow(() -> new ActionException("group.not.grouped"));
 		if(op != Operation.GROUP) {
-			if(group.getLeader() != actor) throw new ActionException("group.not.leader");
+			if(group.leader() != actor) throw new ActionException("group.not.leader");
 		}
 		
 		// Delegate
@@ -149,10 +149,10 @@ public class GroupAction extends AbstractAction {
 				message = new Message(key);
 			}
 			else {
-				final Description desc = new Description.Builder(key).add("name", entity.getName()).build();
+				final Description desc = new Description.Builder(key).add("name", entity.name()).build();
 				message = desc.toNotification();
 			}
-			group.getMembers().forEach(e -> e.getNotificationHandler().handle(message));
+			group.members().forEach(e -> e.handler().handle(message));
 		}
 		
 		// Build response

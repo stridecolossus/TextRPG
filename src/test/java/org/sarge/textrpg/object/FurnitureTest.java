@@ -21,12 +21,12 @@ public class FurnitureTest {
 	@Test
 	public void constructor() {
 		assertEquals(true, furniture.isSentient());
-		assertNotNull(furniture.getContents());
-		assertEquals("furniture", furniture.getParentName());
+		assertNotNull(furniture.contents());
+		assertEquals("furniture", furniture.parentName());
 	}
 
 	@Test
 	public void isValid() {
-		assertEquals(true, furniture.getDescriptor().isValid(Stance.RESTING));
+		assertEquals(true, furniture.descriptor().isValid(Stance.RESTING));
 	}
 }

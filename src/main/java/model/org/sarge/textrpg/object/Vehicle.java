@@ -74,17 +74,17 @@ public class Vehicle extends WorldObject implements Parent {
 	}
 
 	@Override
-	public Descriptor getDescriptor() {
+	public Descriptor descriptor() {
 		return (Descriptor) super.descriptor;
 	}
 
 	@Override
-	public String getParentName() {
+	public String parentName() {
 		return NAME;
 	}
 
 	@Override
-	public Contents getContents() {
+	public Contents contents() {
 		return contents;
 	}
 }

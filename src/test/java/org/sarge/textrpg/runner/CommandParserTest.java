@@ -68,12 +68,12 @@ public class CommandParserTest {
 
 		// Create player
 		player = mock(Player.class);
-		when(player.getContents()).thenReturn(new Contents());
+		when(player.contents()).thenReturn(new Contents());
 
 		// Put in a location
 		final Location loc = mock(Location.class);
-		when(loc.getContents()).thenReturn(new Contents());
-		when(player.getLocation()).thenReturn(loc);
+		when(loc.contents()).thenReturn(new Contents());
+		when(player.location()).thenReturn(loc);
 
 		// Create argument
 		obj = new ObjectDescriptor("object").create();
@@ -99,7 +99,7 @@ public class CommandParserTest {
 	@Test
 	public void parseLocationArgument() throws Exception {
 		when(store.getStringArray("object")).thenReturn(new String[]{"object"});
-		obj.setParent(player.getLocation());
+		obj.setParent(player.location());
 		final Command cmd = parser.parse(player, "action object");
 		assertEquals(action, cmd.getAction());
 		verify(cmd, WorldObject.class, obj);
@@ -110,7 +110,7 @@ public class CommandParserTest {
 		final String decoration = "decoration";
 		when(store.getStringArray(decoration)).thenReturn(new String[]{decoration});
 		final Location loc = new Location("loc", Area.ROOT, Terrain.DESERT, Collections.emptySet(), Collections.singleton(decoration));
-		when(player.getLocation()).thenReturn(loc);
+		when(player.location()).thenReturn(loc);
 		final Command cmd = parser.parse(player, "action decoration");
 		verify(cmd, String.class, decoration);
 	}

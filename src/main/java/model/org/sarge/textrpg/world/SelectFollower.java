@@ -46,7 +46,7 @@ public class SelectFollower implements Follower {
 	 * @return Route filter
 	 */
 	public static Predicate<Exit> route(Set<Route> route) {
-		return exit -> route.contains(exit.getLink().getRoute());
+		return exit -> route.contains(exit.getLink().route());
 	}
 
 	private final Predicate<Exit> filter;
@@ -92,7 +92,7 @@ public class SelectFollower implements Follower {
 	@Override
 	public Direction next(Entity actor) {
 		// Enumerate available exits
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		final List<Direction> dirs = new ArrayList<>();
 		for(Direction dir : loc.getExits().keySet()) {
 			final Exit exit = loc.getExits().get(dir);
@@ -131,7 +131,7 @@ public class SelectFollower implements Follower {
 		// Skip invalid destinations
 		final Location dest = exit.getDestination();
 		if(!retrace && (dest == prev)) return false;
-		if(bound && (dest.getArea() != actor.getLocation().getArea())) return false;
+		if(bound && (dest.getArea() != actor.location().getArea())) return false;
 		
 		// Skip invalid links
 		final Link link = exit.getLink();

@@ -31,7 +31,7 @@ public class WorldObjectTest extends ActionTest {
 
 	@Before
 	public void before() {
-		light = new Emission(null, Emission.Type.LIGHT, Percentile.ONE);
+		light = new Emission(Emission.Type.LIGHT, Percentile.ONE);
 
 		descriptor = new Builder("object")
 			.weight(1)
@@ -49,14 +49,14 @@ public class WorldObjectTest extends ActionTest {
 
 	@Test
 	public void constructor() {
-		assertEquals("object", obj.getName());
-		assertEquals(descriptor, obj.getDescriptor());
+		assertEquals("object", obj.name());
+		assertEquals(descriptor, obj.descriptor());
 		assertEquals("object", descriptor.getDescriptionKey());
 		assertEquals(1, obj.weight());
 		assertEquals(2, obj.value());
-		assertEquals(Percentile.HALF, obj.getVisibility());
-		assertEquals(Optional.of(light), obj.getEmission(Emission.Type.LIGHT));
-		assertEquals(Optional.empty(), obj.getOpenableModel());
+		assertEquals(Percentile.HALF, obj.visibility());
+		assertEquals(Optional.of(light), obj.emission(Emission.Type.LIGHT));
+		assertEquals(Optional.empty(), obj.openableModel());
 		assertEquals(false, obj.isDamaged());
 		assertEquals(false, obj.isBroken());
 		assertEquals(false, obj.isSentient());
@@ -103,7 +103,7 @@ public class WorldObjectTest extends ActionTest {
 	@Test
 	public void takeNotAvailable() throws ActionException {
 		final Parent parent = mock(Actor.class);
-		when(parent.getContents()).thenReturn(new Contents());
+		when(parent.contents()).thenReturn(new Contents());
 		obj.setParent(parent);
 		expect("take.cannot.take");
 		obj.take(actor);
@@ -112,15 +112,15 @@ public class WorldObjectTest extends ActionTest {
 	@Test
 	public void isOwner() throws ActionException {
 		final Actor actor = mock(Actor.class);
-		when(actor.getContents()).thenReturn(new Contents());
+		when(actor.contents()).thenReturn(new Contents());
 		obj.setParent(actor);
-		assertEquals(actor, obj.getOwner());
+		assertEquals(actor, obj.owner());
 	}
 
 	@Test
 	public void alertOwner() throws ActionException {
 		final Actor actor = mock(Actor.class);
-		when(actor.getContents()).thenReturn(new Contents());
+		when(actor.contents()).thenReturn(new Contents());
 		obj.setParent(actor);
 		obj.alertOwner("alert");
 		verify(actor).alert(new Message("alert", obj));
@@ -130,7 +130,7 @@ public class WorldObjectTest extends ActionTest {
 	public void damage() throws ActionException {
 		// Add to parent (so not dead)
 		final Parent parent = mock(Parent.class);
-		when(parent.getContents()).thenReturn(new Contents());
+		when(parent.contents()).thenReturn(new Contents());
 		obj.setParent(parent);
 
 		// Check damage resistance

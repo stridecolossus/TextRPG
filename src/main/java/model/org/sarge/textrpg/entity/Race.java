@@ -1,17 +1,17 @@
 package org.sarge.textrpg.entity;
 
+import static org.sarge.lib.util.Check.notEmpty;
+import static org.sarge.lib.util.Check.notNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.sarge.lib.object.ToString;
-import org.sarge.lib.util.Check;
-import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.DamageType;
 import org.sarge.textrpg.common.Size;
 import org.sarge.textrpg.common.Value;
-import org.sarge.textrpg.object.DurableObject;
 import org.sarge.textrpg.object.LootFactory;
 import org.sarge.textrpg.object.ObjectDescriptor;
 import org.sarge.textrpg.object.Weapon;
@@ -31,70 +31,46 @@ public final class Race {
 		private Gender gender = Gender.NEUTER;
 		private Alignment align = Alignment.NEUTRAL;
 		private Size size = Size.MEDIUM;
-		private final MutableIntegerMap<Attribute> attrs = new MutableIntegerMap<Attribute>(Attribute.class);
-		
+		private final MutableIntegerMap<Attribute> attrs = new MutableIntegerMap<>(Attribute.class);
+
 		/**
 		 * @return Whether this is a mount
 		 */
 		public boolean isMount() {
 			return mount;
 		}
-		
+
 		/**
 		 * @return Default gender of this race
 		 */
-		public Gender getDefaultGender() {
+		public Gender gender() {
 			return gender;
 		}
-		
+
 		/**
 		 * @return Default alignment of this race
 		 */
-		public Alignment getDefaultAlignment() {
+		public Alignment alignment() {
 			return align;
 		}
-		
+
 		/**
 		 * @return Size of this race
 		 */
-		public Size getSize() {
+		public Size size() {
 			return size;
 		}
 
 		/**
 		 * @return Default attributes for this race
 		 */
-		public IntegerMap<Attribute> getAttributes() {
+		public IntegerMap<Attribute> attributes() {
 			return attrs;
 		}
-		
+
 		@Override
 		public String toString() {
 			return ToString.toString(this);
-		}
-	}
-
-	/**
-	 * Default racial weapon that cannot be damaged.
-	 */
-	private static class DefaultWeapon extends DurableObject {
-		public DefaultWeapon(Weapon weapon) {
-			super(weapon);
-		}
-		
-		@Override
-		public void wear() throws ActionException {
-			// Ignored
-		}
-		
-		@Override
-		protected void damage(DamageType type, int amount) {
-			throw new UnsupportedOperationException();
-		}
-		
-		@Override
-		protected void destroy() {
-			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -105,33 +81,33 @@ public final class Race {
 		/**
 		 * Default weapon.
 		 */
-		private static final Weapon DEFAULT_WEAPON = new Weapon(new ObjectDescriptor("default.weapon"), 1, 1, new DamageEffect(DamageType.SLASHING, Value.ONE, false), null, null);
+		private static final Weapon.Descriptor DEFAULT_WEAPON = new Weapon.Descriptor(new ObjectDescriptor("default.weapon"), 1, 1, new DamageEffect(DamageType.SLASHING, Value.ONE, false), null, null);
 
 		private SkillSet skills = new SkillSet();
-		private DurableObject weapon = new DefaultWeapon(DEFAULT_WEAPON);
+		private Weapon.Descriptor weapon = DEFAULT_WEAPON;
 		private Collection<ObjectDescriptor> equipment = new ArrayList<>();
-		
+
 		/**
-		 * @return Default weapon for this race, e.g. fists
+		 * @return Default weapon descriptor for this race, e.g. fists
 		 */
-		public DurableObject getWeapon() {
+		public Weapon.Descriptor weapon() {
 			return weapon;
 		}
-		
+
 		/**
 		 * @return Default equipment for this race
 		 */
-		public Stream<ObjectDescriptor> getEquipment() {
+		public Stream<ObjectDescriptor> equipment() {
 			return equipment.stream();
 		}
-				
+
 		/**
 		 * @return Default skills for this race
 		 */
-		public SkillSet getSkills() {
+		public SkillSet skills() {
 			return new SkillSet(skills);
 		}
-		
+
 		@Override
 		public String toString() {
 			return ToString.toString(this);
@@ -147,32 +123,32 @@ public final class Race {
 		// TODO
 		//private final int xp;
 		//private final List<Reward> rewards = new ArrayList<>();
-		
+
 		/**
 		 * @return Whether this is a corporeal race
 		 */
 		public boolean isCorporeal() {
 			return corporeal;
 		}
-		
+
 		/**
 		 * @return Loot-factory for butchering a corpse of this race
 		 */
-		public Optional<LootFactory> getButcherFactory() {
+		public Optional<LootFactory> butcherFactory() {
 			return butcher;
 		}
-		
+
 		@Override
 		public String toString() {
 			return ToString.toString(this);
 		}
 	}
-	
+
 	private final String name;
 	private final Attributes attrs;
 	private final RaceEquipment equipment;
 	private final KillDescriptor kill;
-	
+
 	/**
 	 * Constructor.
 	 * @param name			Name of this race
@@ -181,23 +157,19 @@ public final class Race {
 	 * @param kill			Kill descriptor
 	 */
 	public Race(String name, Attributes attrs, RaceEquipment equipment, KillDescriptor kill) {
-		Check.notEmpty(name);
-		Check.notNull(attrs);
-		Check.notNull(equipment);
-		Check.notNull(kill);
-		this.name = name;
-		this.attrs = attrs;
-		this.equipment = equipment;
-		this.kill = kill;
+		this.name = notEmpty(name);
+		this.attrs = notNull(attrs);
+		this.equipment = notNull(equipment);
+		this.kill = notNull(kill);
 	}
 
 	/**
 	 * @return Racial name
 	 */
-	public String getName() {
+	public String name() {
 		return name;
 	}
-	
+
 	/**
 	 * @return Whether this is a corporeal race
 	 */
@@ -208,37 +180,37 @@ public final class Race {
 	/**
 	 * @return Racial attributes
 	 */
-	public Attributes getAttributes() {
+	public Attributes attributes() {
 		return attrs;
 	}
 
 	/**
 	 * @return Default gear and skills
 	 */
-	public RaceEquipment getEquipment() {
+	public RaceEquipment equipment() {
 		return equipment;
 	}
-	
+
 	/**
 	 * @return Kill descriptor
 	 */
-	public KillDescriptor getKillDescriptor() {
+	public KillDescriptor killDescriptor() {
 		return kill;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;
 	}
-	
+
 	/**
 	 * Builder for a {@link Race}.
 	 */
 	public static class Builder {
 		private final String name;
-		private Attributes attrs = new Attributes();
-		private RaceEquipment equipment = new RaceEquipment();
-		private KillDescriptor kill = new KillDescriptor();
+		private Attributes attrs;
+		private RaceEquipment equipment;
+		private KillDescriptor kill;
 
 		/**
 		 * Constructor.
@@ -248,7 +220,7 @@ public final class Race {
 			this.name = name;
 			init();
 		}
-		
+
 		/**
 		 * Initialises this builder.
 		 */
@@ -257,7 +229,7 @@ public final class Race {
 			equipment = new RaceEquipment();
 			kill = new KillDescriptor();
 		}
-		
+
 		/**
 		 * Sets this race as a mount.
 		 */
@@ -279,7 +251,7 @@ public final class Race {
 		 * @param gender Gender
 		 */
 		public Builder gender(Gender gender) {
-			attrs.gender = gender;
+			attrs.gender = notNull(gender);
 			return this;
 		}
 
@@ -288,7 +260,7 @@ public final class Race {
 		 * @param align Alignment
 		 */
 		public Builder alignment(Alignment align) {
-			attrs.align = align;
+			attrs.align = notNull(align);
 			return this;
 		}
 
@@ -298,10 +270,10 @@ public final class Race {
 		 */
 		public Builder size(Size size) {
 			// TODO - is NONE valid?
-			attrs.size = size;
+			attrs.size = notNull(size);
 			return this;
 		}
-		
+
 		/**
 		 * Sets an entity attribute.
 		 * @param gender Gender
@@ -313,6 +285,7 @@ public final class Race {
 
 		/**
 		 * @return Mutable attributes map
+		 * TODO - this is nasty (should not expose whole mutable map)
 		 */
 		public MutableIntegerMap<Attribute> getAttributes() {
 			return attrs.attrs;
@@ -322,8 +295,8 @@ public final class Race {
 		 * Sets the default weapon of this race.
 		 * @param weapon Default weapon
 		 */
-		public Builder weapon(Weapon weapon) {
-			equipment.weapon = new DefaultWeapon(weapon);
+		public Builder weapon(Weapon.Descriptor weapon) {
+			equipment.weapon = notNull(weapon);
 			return this;
 		}
 
@@ -343,7 +316,7 @@ public final class Race {
 		 * @param level Level
 		 */
 		public Builder skills(SkillSet skills) {
-			equipment.skills = skills;
+			equipment.skills = notNull(skills);
 			return this;
 		}
 

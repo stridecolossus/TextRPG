@@ -1,4 +1,4 @@
-package org.sarge.textrpg.object;
+package org.sarge.textrpg.world;
 
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -7,6 +7,7 @@ import org.sarge.lib.object.ToString;
 import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.Description;
+import org.sarge.textrpg.object.ObjectDescriptor;
 
 /**
  * Post-box model.

@@ -34,7 +34,7 @@ public class FakeLink extends ExtendedLink {
 	}
 
 	@Override
-	public String getDestinationName(Location dest) {
+	public String destinationName(Location dest) {
 		return name;
 	}
 }

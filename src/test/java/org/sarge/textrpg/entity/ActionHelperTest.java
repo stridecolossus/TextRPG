@@ -27,16 +27,16 @@ public class ActionHelperTest extends ActionTest {
 		// Check can attack opposing alignment
 		final Entity actor = mock(Entity.class);
 		final Entity target = mock(Entity.class);
-		when(actor.getAlignment()).thenReturn(Alignment.GOOD);
-		when(target.getAlignment()).thenReturn(Alignment.EVIL);
+		when(actor.alignment()).thenReturn(Alignment.GOOD);
+		when(target.alignment()).thenReturn(Alignment.EVIL);
 		assertEquals(true, ActionHelper.isValidTarget(actor, target));
 
 		// Check can attack neutral target
-		when(target.getAlignment()).thenReturn(Alignment.EVIL);
+		when(target.alignment()).thenReturn(Alignment.EVIL);
 		assertEquals(true, ActionHelper.isValidTarget(actor, target));
 
 		// Check cannot attach same alignment
-		when(target.getAlignment()).thenReturn(Alignment.GOOD);
+		when(target.alignment()).thenReturn(Alignment.GOOD);
 		assertEquals(false, ActionHelper.isValidTarget(actor, target));
 	}
 
@@ -47,35 +47,35 @@ public class ActionHelperTest extends ActionTest {
 		obj.setParent(actor);
 
 		// Init entity
-		when(actor.getRace()).thenReturn(new Race.Builder("race").build());
-		when(actor.getLocation()).thenReturn(loc);
+		when(actor.race()).thenReturn(new Race.Builder("race").build());
+		when(actor.location()).thenReturn(loc);
 
 		// Kill
 		ActionHelper.kill(actor);
 
 		// Check corpse created and added to location
-		assertEquals(1, loc.getContents().stream().count());
-		final Thing t = loc.getContents().stream().iterator().next();
+		assertEquals(1, loc.contents().stream().count());
+		final Thing t = loc.contents().stream().iterator().next();
 		assertEquals(true, t instanceof Corpse);
 
 		// Check corpse contents
 		final Corpse corpse = (Corpse) t;
-		assertNotNull(corpse.getContents());
-		assertEquals(1, corpse.getContents().size());
-		assertEquals(obj, corpse.getContents().stream().iterator().next());
+		assertNotNull(corpse.contents());
+		assertEquals(1, corpse.contents().size());
+		assertEquals(obj, corpse.contents().stream().iterator().next());
 	}
 
 	@Test
 	public void registerOpenableEvent() throws ActionException {
 		final WorldObject portal = new Portal(new Portal.Descriptor(new ObjectDescriptor.Builder("door").reset(1).build(), Openable.UNLOCKABLE), loc);
-		portal.getOpenableModel().get().apply(Openable.Operation.OPEN);
+		portal.openableModel().get().apply(Openable.Operation.OPEN);
 		ActionHelper.registerOpenableEvent(loc, loc, portal, "key");
-		assertEquals(1, ActionHelper.QUEUE.stream().count());
+		assertEquals(1, ActionHelper.QUEUE.size());
 		ActionHelper.QUEUE.execute(1);
 		// TODO
 		//verify(loc, times(2)).broadcast(Actor.SYSTEM, new Message("key", portal));
-		assertEquals(false, portal.getOpenableModel().get().isOpen());
-		assertEquals(0, ActionHelper.QUEUE.stream().count());
+		assertEquals(false, portal.openableModel().get().isOpen());
+		assertEquals(0, ActionHelper.QUEUE.size());
 	}
 
 	@Test
@@ -88,12 +88,12 @@ public class ActionHelperTest extends ActionTest {
 		// Add a topic to this location
 		final Entity entity = mock(Entity.class);
 		final Topic topic = new Topic("name", Script.NONE);
-		when(entity.getTopics()).thenReturn(Stream.of(topic));
-		loc.getContents().add(entity);
+		when(entity.topics()).thenReturn(Stream.of(topic));
+		loc.contents().add(entity);
 
 		// Lookup topic
 		assertEquals(Optional.of(topic), ActionHelper.findTopic(loc, "name"));
-		verify(entity).getTopics();
+		verify(entity).topics();
 
 		// Lookup again and check was cached
 		assertEquals(Optional.of(topic), ActionHelper.findTopic(loc, "name"));

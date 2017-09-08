@@ -42,11 +42,11 @@ public final class Exit {
 	 * Helper.
 	 * @param actor Actor
 	 * @return Whether the given actor can perceive this exit
-	 * @see #getController()
+	 * @see #controller()
 	 * @see Actor#perceives(Hidden)
 	 */
 	public final boolean perceivedBy(Actor actor) {
-		return link.getController().map(actor::perceives).orElse(true);
+		return link.controller().map(actor::perceives).orElse(true);
 	}
 
 	@Override

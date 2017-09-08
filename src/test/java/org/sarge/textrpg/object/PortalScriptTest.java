@@ -23,6 +23,6 @@ public class PortalScriptTest extends ActionTest {
 	@Test
 	public void execute() {
 		script.execute(actor);
-		assertEquals(true, portal.getOpenableModel().get().isOpen());
+		assertEquals(true, portal.openableModel().get().isOpen());
 	}
 }

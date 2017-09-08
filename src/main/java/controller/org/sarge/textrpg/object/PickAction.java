@@ -47,7 +47,7 @@ public class PickAction extends AbstractActiveAction {
 	 * @throws ActionException
 	 */
 	public ActionResponse pick(Entity actor, WorldObject obj) throws ActionException {
-		final Openable model = obj.getOpenableModel().orElseThrow(() -> new ActionException("pick.not.openable"));
+		final Openable model = obj.openableModel().orElseThrow(() -> new ActionException("pick.not.openable"));
 		return pick(actor, obj, model, null);
 	}
 
@@ -58,7 +58,7 @@ public class PickAction extends AbstractActiveAction {
 	 * @throws ActionException
 	 */
 	public ActionResponse pick(Entity actor, Portal portal) throws ActionException {
-		return pick(actor, portal, portal.getOpenableModel().get(), (Location) portal.getDestination());
+		return pick(actor, portal, portal.openableModel().get(), (Location) portal.destination());
 	}
 
 	/**
@@ -73,7 +73,7 @@ public class PickAction extends AbstractActiveAction {
 	private ActionResponse pick(Entity actor, WorldObject obj, Openable model, Location dest) throws ActionException {
 		// Check can picked
 		if(model.isLockable()) throw new ActionException("pick.not.lockable");
-		if(model.getState() != State.LOCKED) throw new ActionException("pick.not.locked");
+		if(model.state() != State.LOCKED) throw new ActionException("pick.not.locked");
 
 		// Check actor has pick skill
 		final int score = getSkillLevel(actor, pick);
@@ -84,19 +84,19 @@ public class PickAction extends AbstractActiveAction {
 		// Start lock-pick
 		final Induction induction = () -> {
 			// Apply wear
-			lockpicks.wear();
+			lockpicks.use();
 
 			// Add experience
 			// TODO
 
 			// Check for impossible lock for this actor
-			if(score < model.getLock().getPickDifficulty().intValue()) {
+			if(score < model.lock().pickDifficulty().intValue()) {
 				throw new ActionException("pick.too.difficult");
 			}
 
 			// Pick lock
 			model.apply(Operation.UNLOCK);
-			ActionHelper.registerOpenableEvent(actor.getLocation(), dest, obj, "lock.auto.close");
+			ActionHelper.registerOpenableEvent(actor.location(), dest, obj, "lock.auto.close");
 
 			// Notify success
 			return new Description("pick.success");

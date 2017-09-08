@@ -16,12 +16,12 @@ public class ThingTest {
 	public void before() {
 		thing = new Thing() {
 			@Override
-			public Percentile getVisibility() {
+			public Percentile visibility() {
 				return null;
 			}
 			
 			@Override
-			public long getForgetPeriod() {
+			public long forgetPeriod() {
 				return 0;
 			}
 			
@@ -31,12 +31,12 @@ public class ThingTest {
 			}
 			
 			@Override
-			public Size getSize() {
+			public Size size() {
 				return null;
 			}
 			
 			@Override
-			public String getName() {
+			public String name() {
 				return "thing";
 			}
 			
@@ -49,7 +49,7 @@ public class ThingTest {
 	
 	@Test
 	public void constructor() {
-		assertEquals(Thing.LIMBO, thing.getParent());
+		assertEquals(Thing.LIMBO, thing.parent());
 		assertEquals(true, thing.isDead());
 		assertEquals(false, thing.isQuiet());
 	}
@@ -57,7 +57,7 @@ public class ThingTest {
 	private static Parent createParent() {
 		final Contents contents = new Contents();
 		final Parent parent = mock(Parent.class);
-		when(parent.getContents()).thenReturn(contents);
+		when(parent.contents()).thenReturn(contents);
 		return parent;
 	}
 	
@@ -66,15 +66,15 @@ public class ThingTest {
 		// Move to a parent
 		final Parent parent = createParent();
 		thing.setParent(parent);
-		assertEquals(parent, thing.getParent());
-		assertEquals(1, parent.getContents().stream().count());
-		assertEquals(thing, parent.getContents().stream().iterator().next());
+		assertEquals(parent, thing.parent());
+		assertEquals(1, parent.contents().stream().count());
+		assertEquals(thing, parent.contents().stream().iterator().next());
 		
 		// Move to a different parent
 		final Parent other = createParent();
 		thing.setParent(other);
-		assertEquals(other, thing.getParent());
-		assertEquals(0, parent.getContents().stream().count());
+		assertEquals(other, thing.parent());
+		assertEquals(0, parent.contents().stream().count());
 	}
 	
 	@Test
@@ -85,13 +85,13 @@ public class ThingTest {
 		// Create actor that cannot accept
 		final Contents contents = mock(Contents.class);
 		final Actor actor = mock(Actor.class);
-		when(actor.getContents()).thenReturn(contents);
-		when(contents.getReason(thing)).thenReturn("doh");
-		when(actor.getParent()).thenReturn(parent);
+		when(actor.contents()).thenReturn(contents);
+		when(contents.reason(thing)).thenReturn("doh");
+		when(actor.parent()).thenReturn(parent);
 		
 		// Set parent and check moved to root and actor is notified
 		thing.setParentAncestor(actor);
-		assertEquals(parent, thing.getParent());
+		assertEquals(parent, thing.parent());
 //		verify(actor).alert(new Message("doh", thing));
 	}
 
@@ -114,6 +114,6 @@ public class ThingTest {
 		final Parent parent = createParent();
 		thing.setParent(parent);
 		thing.destroy();
-		assertEquals(Thing.LIMBO, thing.getParent());
+		assertEquals(Thing.LIMBO, thing.parent());
 	}
 }

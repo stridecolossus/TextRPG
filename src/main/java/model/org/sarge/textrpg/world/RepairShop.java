@@ -1,4 +1,4 @@
-package org.sarge.textrpg.object;
+package org.sarge.textrpg.world;
 
 import static java.util.stream.Collectors.toList;
 
@@ -11,6 +11,8 @@ import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.EventQueue;
+import org.sarge.textrpg.object.DurableObject;
+import org.sarge.textrpg.object.WorldObject;
 
 /**
  * Shop model.
@@ -54,7 +56,7 @@ public class RepairShop {
 	public int calculateRepairCost(WorldObject obj) {
 		if(obj instanceof DurableObject) {
 			final DurableObject durable = (DurableObject) obj;
-			return durable.getWear() * mod;
+			return durable.wear() * mod;
 		}
 		else {
 			return 0;

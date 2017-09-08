@@ -83,12 +83,12 @@ public class RevealObject extends WorldObject {
 	}
 
 	@Override
-	public Percentile getVisibility() {
+	public Percentile visibility() {
 		final Descriptor descriptor = (Descriptor) super.descriptor;
 		if(revealed && descriptor.replaces)
 			return Percentile.ZERO;
 		else
-			return super.getVisibility();
+			return super.visibility();
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class RevealObject extends WorldObject {
 		if(!fixed) {
 			assert obj == null;
 			obj = descriptor.delegate.create();
-			obj.setParentAncestor(this.getParent());
+			obj.setParentAncestor(this.parent());
 		}
 
 		// Reveal
@@ -128,7 +128,7 @@ public class RevealObject extends WorldObject {
 				obj.hide();
 			}
 			else
-			if(obj.getParent() == this.getParent()) {
+			if(obj.parent() == this.parent()) {
 				// Destroy non-fixture if not taken
 				obj.destroy();
 				obj = null;

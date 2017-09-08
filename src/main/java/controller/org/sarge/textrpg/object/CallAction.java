@@ -33,8 +33,8 @@ public class CallAction extends AbstractAction {
 	 */
 	public ActionResponse call(Entity actor) throws ActionException {
 		// Find gate
-		final Gate gate = (Gate) actor.getLocation().getExits().values().stream()
-			.map(exit -> exit.getLink().getController())
+		final Gate gate = (Gate) actor.location().getExits().values().stream()
+			.map(exit -> exit.getLink().controller())
 			.filter(Optional::isPresent)
 			.map(Optional::get)
 			.filter(obj -> obj instanceof Gate)
@@ -42,12 +42,12 @@ public class CallAction extends AbstractAction {
 			.orElseThrow(() -> new ActionException("call.invalid.location"));
 
 		// Call
-		final boolean open = gate.getOpenableModel().get().isOpen();
+		final boolean open = gate.openableModel().get().isOpen();
 		gate.call();
 		// TODO - check friendly
 
 		// Register reset event
-		ActionHelper.registerOpenableEvent(actor.getLocation(), (Location) gate.getDestination(), gate, "gate.close");
+		ActionHelper.registerOpenableEvent(actor.location(), (Location) gate.destination(), gate, "gate.close");
 
 		// Build response
 		final Description desc = new Description.Builder("call.response")

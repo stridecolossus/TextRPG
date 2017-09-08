@@ -193,7 +193,7 @@ public class Location implements Parent {
 	}
 
 	@Override
-	public String getParentName() {
+	public String parentName() {
 		return NAME;
 	}
 
@@ -242,7 +242,7 @@ public class Location implements Parent {
 	}
 
 	@Override
-	public Contents getContents() {
+	public Contents contents() {
 		return contents;
 	}
 
@@ -269,7 +269,7 @@ public class Location implements Parent {
 	}
 
 	@Override
-	public final Parent getParent() {
+	public final Parent parent() {
 		return null;
 	}
 
@@ -292,14 +292,14 @@ public class Location implements Parent {
 			contents.stream()
 				.filter(ContentsHelper.filter(actor))			// Ignore self and check is perceived
 				.filter(Thing.NOT_QUIET)
-				.filter(t -> t != actor.getParent())			// Ignore furniture/vehicle
+				.filter(t -> t != actor.parent())			// Ignore furniture/vehicle
 				.map(Thing::describe)
 				.forEach(builder::add);
 
 			// List portal controllers
 			exits.values().stream()
 				.map(Exit::getLink)
-				.map(Link::getController)
+				.map(Link::controller)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.filter(Thing.NOT_QUIET)
@@ -353,7 +353,7 @@ public class Location implements Parent {
 	}
 
 	private static boolean isWaterDestination(Exit exit) {
-		return (exit.getLink().getRoute() != Route.RIVER) && (exit.getDestination().getTerrain() == Terrain.WATER);
+		return (exit.getLink().route() != Route.RIVER) && (exit.getDestination().getTerrain() == Terrain.WATER);
 	}
 
 	/**
@@ -376,7 +376,7 @@ public class Location implements Parent {
 	 * @return Whether this location contains an artificial light
 	 */
 	public final boolean isArtificialLightAvailable() {
-        return contents.stream().map(t -> t.getEmission(Emission.Type.LIGHT)).anyMatch(Optional::isPresent);
+        return contents.stream().map(t -> t.emission(Emission.Type.LIGHT)).anyMatch(Optional::isPresent);
         /*
 	    if(LIGHT_CACHE.contains(this)) {
 	        return true;

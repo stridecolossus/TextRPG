@@ -32,7 +32,7 @@ public class RevealObjectTest extends ActionTest {
 
 		// Add to contents
 		final Parent parent = mock(Parent.class);
-		when(parent.getContents()).thenReturn(new Contents());
+		when(parent.contents()).thenReturn(new Contents());
 		reveal.setParent(parent);
 
 		// Init reset queue
@@ -50,8 +50,8 @@ public class RevealObjectTest extends ActionTest {
 		final WorldObject obj = reveal.reveal();
 		assertEquals(true, reveal.isRevealed());
 		assertNotNull(obj);
-		assertEquals(reveal.getParent(), obj.getParent());
-		assertEquals(Percentile.ZERO, reveal.getVisibility());
+		assertEquals(reveal.parent(), obj.parent());
+		assertEquals(Percentile.ZERO, reveal.visibility());
 	}
 
 	@Test
@@ -60,7 +60,7 @@ public class RevealObjectTest extends ActionTest {
 		RevealObject.QUEUE.execute(42);
 		assertEquals(false, reveal.isRevealed());
 		assertEquals(true, obj.isDead());
-		assertEquals(Percentile.ONE, reveal.getVisibility());
+		assertEquals(Percentile.ONE, reveal.visibility());
 	}
 	
 	@Test(expected = IllegalStateException.class)

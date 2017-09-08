@@ -46,9 +46,9 @@ public class ListExitsAction extends AbstractAction {
 	 */
 	public ActionResponse listExits(Entity actor) throws ActionException {
 		// Build description for each available link
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		final boolean light = loc.isLightAvailable(clock.isDaylight());
-		final Map<Direction, Exit> links = actor.getLocation().getExits();
+		final Map<Direction, Exit> links = actor.location().getExits();
 		final List<Description> exits = new ArrayList<>();
 		for(Direction dir : Direction.values()) {
 			// Lookup link
@@ -61,7 +61,7 @@ public class ListExitsAction extends AbstractAction {
 
 			// Build description
 			final Description.Builder builder = link.describe();
-			final String name = link.getDestinationName(exit.getDestination());
+			final String name = link.destinationName(exit.getDestination());
 			builder.add("dir", Location.describe(dir.name().toLowerCase(), exit));
 			builder.wrap("dest", light ? name : "list.exits.unknown");
 			

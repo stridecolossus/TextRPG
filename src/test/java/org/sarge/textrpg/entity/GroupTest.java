@@ -20,7 +20,7 @@ public class GroupTest extends ActionTest {
 	
 	private static Entity createEntity() {
 		final Entity e = mock(Entity.class);
-		when(e.getGroup()).thenReturn(Optional.empty());
+		when(e.group()).thenReturn(Optional.empty());
 		return e;
 	}
 	
@@ -33,15 +33,15 @@ public class GroupTest extends ActionTest {
 	
 	@Test
 	public void constructor() {
-		assertEquals(leader, group.getLeader());
-		assertArrayEquals(new Entity[]{leader}, group.getMembers().toArray());
+		assertEquals(leader, group.leader());
+		assertArrayEquals(new Entity[]{leader}, group.members().toArray());
 		verify(leader).setGroup(group);
 	}
 	
 	@SuppressWarnings("unused")
 	@Test
 	public void constructorAlreadyGrouped() throws ActionException {
-		when(leader.getGroup()).thenReturn(Optional.of(group));
+		when(leader.group()).thenReturn(Optional.of(group));
 		expect("group.cannot.create");
 		new Group(leader);
 	}
@@ -49,7 +49,7 @@ public class GroupTest extends ActionTest {
 	@Test
 	public void add() throws ActionException {
 		group.add(member);
-		assertArrayEquals(new Entity[]{leader, member}, group.getMembers().toArray());
+		assertArrayEquals(new Entity[]{leader, member}, group.members().toArray());
 		verify(member).setGroup(group);
 	}
 	
@@ -62,7 +62,7 @@ public class GroupTest extends ActionTest {
 	
 	@Test
 	public void addAlreadyGrouped() throws ActionException {
-		when(member.getGroup()).thenReturn(Optional.of(mock(Group.class)));
+		when(member.group()).thenReturn(Optional.of(mock(Group.class)));
 		expect("group.already.grouped");
 		group.add(member);
 	}
@@ -73,7 +73,7 @@ public class GroupTest extends ActionTest {
 		group.remove(member);
 		verify(member).setGroup(group);
 		verify(member).setGroup(null);
-		assertArrayEquals(new Entity[]{leader}, group.getMembers().toArray());
+		assertArrayEquals(new Entity[]{leader}, group.members().toArray());
 	}
 	
 	@Test
@@ -92,7 +92,7 @@ public class GroupTest extends ActionTest {
 	public void setLeader() throws ActionException {
 		group.add(member);
 		group.setLeader(member);
-		assertEquals(member, group.getLeader());
+		assertEquals(member, group.leader());
 	}
 	
 	@Test
@@ -113,7 +113,7 @@ public class GroupTest extends ActionTest {
 		group.disband();
 		verify(leader).setGroup(null);
 		verify(member).setGroup(null);
-		assertEquals(0, group.getMembers().count());
+		assertEquals(0, group.members().count());
 	}
 	
 	@Test(expected = IllegalStateException.class)

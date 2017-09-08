@@ -79,14 +79,14 @@ public class InteractAction extends AbstractActiveAction {
 	public ActionResponse execute(Entity actor, InteractObject obj) throws ActionException {
 		// Check sufficient strength
 		final int str = obj.getRequiredStrength();
-		if(actor.getAttributes().get(Attribute.STRENGTH) < str) throw new ActionException("interact.insufficient.strength");
+		if(actor.attributes().get(Attribute.STRENGTH) < str) throw new ActionException("interact.insufficient.strength");
 
 		// Check required stamina
 		final int cost = str * mod;
-		if(actor.getValues().get(EntityValue.STAMINA) < cost) throw new ActionException("interact.insufficient.stamina");
+		if(actor.values().get(EntityValue.STAMINA) < cost) throw new ActionException("interact.insufficient.stamina");
 
 		// Interact
-		obj.interact(action, actor.getLocation());
+		obj.interact(action, actor.location());
 		actor.modify(EntityValue.STAMINA, -cost);
 
 		// Build response

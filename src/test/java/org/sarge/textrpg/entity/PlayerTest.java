@@ -24,7 +24,7 @@ public class PlayerTest {
 	private Player player;
 	private Notification received;
 	private Listener listener;
-	
+
 	@Before
 	public void before() {
 		final Race race = new Builder("race").build();
@@ -37,33 +37,33 @@ public class PlayerTest {
 		received = null;
 		listener = mock(Listener.class);
 	}
-	
+
 	@Test
 	public void constructor() {
-		assertEquals("name", player.getName());
-		assertEquals(Gender.FEMALE, player.getGender());
-		assertEquals(Alignment.EVIL, player.getAlignment());
+		assertEquals("name", player.name());
+		assertEquals(Gender.FEMALE, player.gender());
+		assertEquals(Alignment.EVIL, player.alignment());
 	}
-	
+
 	@Test
 	public void perceives() {
 		// Create a hidden object
 		final Hidden obj = mock(Hidden.class);
-		when(obj.getVisibility()).thenReturn(Percentile.HALF);
+		when(obj.visibility()).thenReturn(Percentile.HALF);
 		assertEquals(false, player.perceives(obj));
-		
+
 		// Register as known
 		final RevealNotification reveal = new RevealNotification("message", obj);
-		player.getNotificationHandler().handle(reveal);
+		player.handler().handle(reveal);
 		assertEquals(true, player.perceives(obj));
 		assertEquals(reveal, received);
-		assertEquals(1, player.getEventQueue().stream().count());
-		
+		assertEquals(1, player.queue().size());
+
 		// Forget it
 		player.forget(obj);
 		assertEquals(false, player.perceives(obj));
 	}
-	
+
 	@Test
 	public void listenerLocationVisited() throws ActionException {
 		final Location loc = ActionTest.createLocation();
@@ -71,12 +71,12 @@ public class PlayerTest {
 		player.setParent(loc);
 		verify(listener).update(loc);
 	}
-	
+
 	@Test
 	public void listenerObjectCollected() throws ActionException {
 		final Thing obj = mock(Thing.class);
 		player.add(obj, listener);
-		player.getContents().add(obj);
+		player.contents().add(obj);
 		verify(listener).update(obj);
 	}
 

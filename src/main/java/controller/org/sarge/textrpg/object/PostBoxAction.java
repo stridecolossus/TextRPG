@@ -8,7 +8,8 @@ import org.sarge.textrpg.common.ActionException;
 import org.sarge.textrpg.common.ActionResponse;
 import org.sarge.textrpg.entity.Entity;
 import org.sarge.textrpg.entity.Player;
-import org.sarge.textrpg.object.PostManager.Letter;
+import org.sarge.textrpg.world.PostManager;
+import org.sarge.textrpg.world.PostManager.Letter;
 
 /**
  * Action to read and post letters at a post-box.
@@ -159,10 +160,10 @@ public class PostBoxAction extends AbstractAction {
 	 */
 	private static void checkPostBox(Entity actor) throws ActionException {
 		// TODO - this is ugly, must be a nicer way? maybe move categories to Thing?
-		final boolean valid = actor.getLocation().getContents().stream()
+		final boolean valid = actor.location().contents().stream()
 			.filter(t -> t instanceof WorldObject)
 			.map(t -> (WorldObject) t)
-			.anyMatch(obj -> obj.getDescriptor().getCharacteristics().getCategories().anyMatch(cat -> cat.equals("post.box")));
+			.anyMatch(obj -> obj.descriptor().getCharacteristics().getCategories().anyMatch(cat -> cat.equals("post.box")));
 		if(!valid) throw new ActionException("post.no.postbox");
 	}
 }

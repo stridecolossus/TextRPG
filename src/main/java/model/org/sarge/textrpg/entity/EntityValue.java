@@ -44,14 +44,14 @@ public enum EntityValue {
 	/**
 	 * @return Maximum of this value
 	 */
-	public Optional<EntityValue> getMaximumValue() {
+	public Optional<EntityValue> max() {
 		return max;
 	}
 	
 	/**
 	 * @return Short-name
 	 */
-	public String getShortName() {
+	public String shortName() {
 		switch(this) {
 		case HEALTH:		return "hit";
 		case POWER:			return "pow";
@@ -64,7 +64,7 @@ public enum EntityValue {
 	
 	/**
 	 * @return Converter
-	 * @see #getShortName()
+	 * @see #shortName()
 	 */
-	public static final Converter<EntityValue> CONVERTER = ModelUtil.converter(EntityValue.class, EntityValue::getShortName);
+	public static final Converter<EntityValue> CONVERTER = ModelUtil.converter(EntityValue.class, EntityValue::shortName);
 }

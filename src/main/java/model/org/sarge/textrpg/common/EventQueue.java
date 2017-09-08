@@ -51,13 +51,6 @@ public class EventQueue {
 		}
 
 		/**
-		 * @return Scheduled execution time
-		 */
-		public long getTime() {
-			return when;
-		}
-
-		/**
 		 * @return Whether this event has been cancelled.
 		 */
 		public boolean isCancelled() {
@@ -110,8 +103,15 @@ public class EventQueue {
 	 * Note that the stream is <b>not</b> ordered.
 	 * @return Event queue
 	 */
-	public Stream<EventQueue.Entry> stream() {
+	Stream<EventQueue.Entry> stream() {
 		return queue.stream();
+	}
+
+	/**
+	 * @return Size of this queue
+	 */
+	public int size() {
+	    return queue.size();
 	}
 
 	/**
@@ -120,9 +120,9 @@ public class EventQueue {
 	 * @param time			Scheduled time
 	 * @param repeating		Whether this is a repeating event
 	 */
-	public Entry add(Runnable event, long time, boolean repeating) {
+	public synchronized Entry add(Runnable event, long time, boolean repeating) {
 		final Entry entry = new Entry(event, time, repeating);
-		queue.add(entry);
+	    queue.add(entry);
 		return entry;
 	}
 
@@ -168,7 +168,7 @@ public class EventQueue {
 	/**
 	 * Resets this queue.
 	 */
-	public void reset() {
+	public synchronized void reset() {
 		queue.clear();
 	}
 

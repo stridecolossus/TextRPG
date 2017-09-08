@@ -23,13 +23,13 @@ public class VehicleTest extends ActionTest {
 
 	@Test
 	public void constructor() {
-		assertEquals("vehicle", vehicle.getParentName());
-		assertNotNull(vehicle.getContents());
+		assertEquals("vehicle", vehicle.parentName());
+		assertNotNull(vehicle.contents());
 	}
 
 	@Test
 	public void verify() throws ActionException {
-		assertEquals(true, vehicle.getDescriptor().isValid(Route.LANE));
-		assertEquals(false, vehicle.getDescriptor().isValid(Route.PATH));
+		assertEquals(true, vehicle.descriptor().isValid(Route.LANE));
+		assertEquals(false, vehicle.descriptor().isValid(Route.PATH));
 	}
 }

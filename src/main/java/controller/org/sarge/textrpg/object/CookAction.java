@@ -64,7 +64,7 @@ public class CookAction extends AbstractAction {
 		find(actor, utensil, false, "utensil");
 		
 		// Check cooking fire available
-		ContentsHelper.select(actor.getLocation().getContents().stream(), WorldObject.class)
+		ContentsHelper.select(actor.location().contents().stream(), WorldObject.class)
 			.filter(fire)
 			.findFirst()
 			.orElseThrow(() -> new ActionException("cook.requires.fire"));
@@ -72,7 +72,7 @@ public class CookAction extends AbstractAction {
 		// Start cooking
 		final Induction induction = () -> {
 			food.cook();
-			return new Description("cook.finished", "name", food.getName());
+			return new Description("cook.finished", "name", food.name());
 		};
 		return new ActionResponse("cook.start", induction, super.calculateDuration(duration, level));
 	}

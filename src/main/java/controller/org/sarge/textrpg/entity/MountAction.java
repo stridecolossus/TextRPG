@@ -97,7 +97,7 @@ public class MountAction extends AbstractAction {
 		 * Helper - Finds exactly <b>one</b> mount following the given entity.
 		 */
 		protected Entity findMount(Entity actor) throws ActionException {
-			final Stream<Entity> mounts = actor.getFollowers().filter(e -> e.getRace().getAttributes().isMount());
+			final Stream<Entity> mounts = actor.followers().filter(e -> e.race().attributes().isMount());
 			return StreamUtil.findOnly(mounts).orElseThrow(() -> new ActionException("mount.no.mounts", this));
 		}
 	}
@@ -155,7 +155,7 @@ public class MountAction extends AbstractAction {
 	 */
 	public ActionResponse execute(Entity actor, Entity entity) throws ActionException {
 		// Check can ride and argument is a mount
-		if((entity != null) && !entity.getRace().getAttributes().isMount()) throw new ActionException("mount.not.mount", op);
+		if((entity != null) && !entity.race().attributes().isMount()) throw new ActionException("mount.not.mount", op);
 		getSkillLevel(actor, riding);
 
 		// Perform action

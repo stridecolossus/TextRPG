@@ -41,7 +41,7 @@ public class EmptyAction extends AbstractAction {
 	 * @throws ActionException
 	 */
 	public ActionResponse empty(Entity actor, Container container) throws ActionException {
-		empty(container, container.getParent());
+		empty(container, container.parent());
 		return response(container);
 	}
 		
@@ -62,7 +62,7 @@ public class EmptyAction extends AbstractAction {
 	 * Moves contents to the given parent.
 	 */
 	private static void empty(Container container, Parent parent) throws ActionException {
-		if(container.getContents().size() == 0) throw new ActionException("container.empty.empty");
+		if(container.contents().size() == 0) throw new ActionException("container.empty.empty");
 		container.empty(parent);
 	}
 }

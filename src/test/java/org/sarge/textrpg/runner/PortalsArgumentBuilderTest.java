@@ -31,7 +31,7 @@ public class PortalsArgumentBuilderTest {
 
 	private void create(boolean perceives, Thing obj, Direction dir, Location loc) {
 		final Link link = mock(Link.class);
-		when(link.getController()).thenReturn(Optional.ofNullable(obj));
+		when(link.controller()).thenReturn(Optional.ofNullable(obj));
 		when(actor.perceives(obj)).thenReturn(perceives);
 		loc.add(new LinkWrapper(dir, link, loc, dir, ReversePolicy.ONE_WAY));
 	}

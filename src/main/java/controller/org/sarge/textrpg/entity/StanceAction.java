@@ -59,12 +59,12 @@ public class StanceAction extends AbstractAction {
 	 */
 	@Override
 	public ActionResponse execute(Entity actor) throws ActionException {
-		switch(actor.getParent().getParentName()) {
+		switch(actor.parent().parentName()) {
 		case Vehicle.NAME:
 			if(stance == Stance.DEFAULT) {
 				// Leave vehicle
-				final Parent parent = actor.getParent();
-				actor.setParent(actor.getLocation());
+				final Parent parent = actor.parent();
+				actor.setParent(actor.location());
 				actor.setStance(Stance.DEFAULT);
 				return new ActionResponse(new Description("action.leave", "name", parent));
 			}
@@ -76,20 +76,20 @@ public class StanceAction extends AbstractAction {
 			if(stance == Stance.DEFAULT) {
 				// Stop using furniture
 				actor.setStance(Stance.DEFAULT);
-				actor.setParent(actor.getLocation());
+				actor.setParent(actor.location());
 				return new ActionResponse("response.default");
 			}
 			else {
 				// Otherwise change stance within the furniture
-				final Furniture furniture = (Furniture) actor.getParent();
-				if(furniture.getDescriptor().isValid(stance)) throw new ActionException("furniture.invalid.stance", stance);
+				final Furniture furniture = (Furniture) actor.parent();
+				if(furniture.descriptor().isValid(stance)) throw new ActionException("furniture.invalid.stance", stance);
 				actor.setStance(stance);
 				return new ActionResponse("response.furniture." + stance);
 			}
 			
 		default:
 			// Change stance
-			final Stance current = actor.getStance();
+			final Stance current = actor.stance();
 			if(stance == current) throw new ActionException("stance.already", "stance." + stance);
 			if(!stance.isValidTransition(current)) throw new ActionException("stance.invalid");
 			actor.setStance(stance);

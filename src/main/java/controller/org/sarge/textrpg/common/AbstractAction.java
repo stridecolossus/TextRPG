@@ -97,7 +97,7 @@ public abstract class AbstractAction {
 	/**
 	 * Over-ride to allow this action to be performed when the actor is in something.
 	 * @return Whether this action is blocked when the actor is in something, default is <tt>true</tt>
-	 * @see Entity#getParent()
+	 * @see Entity#parent()
 	 */
 	public boolean isParentBlockedAction() {
 		return true;
@@ -110,7 +110,7 @@ public abstract class AbstractAction {
 	 * @throws ActionException if the object is not carried
 	 */
 	protected static void verifyCarried(Actor actor, WorldObject obj) throws ActionException {
-		if(obj.getOwner() != actor) throw new ActionException("action.not.carried");
+		if(obj.owner() != actor) throw new ActionException("action.not.carried");
 	}
 
 	/**
@@ -155,10 +155,10 @@ public abstract class AbstractAction {
 	 * @param skill Skill descriptor
 	 * @return Skill level
 	 * @throws ActionException if the actor does not possess the given skill
-	 * @see Entity#getSkillLevel(Skill)
+	 * @see Entity#skillLevel(Skill)
 	 */
 	protected final int getSkillLevel(Entity actor, Skill skill) throws ActionException {
-		return actor.getSkillLevel(skill).orElseThrow(() -> new ActionException(name + ".requires.skill"));
+		return actor.skillLevel(skill).orElseThrow(() -> new ActionException(name + ".requires.skill"));
 	}
 
 	/**
@@ -169,7 +169,7 @@ public abstract class AbstractAction {
 	 * @return Matched object if found
 	 */
 	protected final Optional<WorldObject> find(Actor actor, Predicate<WorldObject> matcher, boolean recurse) {
-		return actor.getContents().stream(recurse ? Integer.MAX_VALUE : 0)
+		return actor.contents().stream(recurse ? Integer.MAX_VALUE : 0)
 			.filter(t -> t instanceof WorldObject)
 			.map(t -> (WorldObject) t)
 			.filter(matcher)
@@ -184,7 +184,7 @@ public abstract class AbstractAction {
 	 * @param name		Object name
 	 * @return Matched object if found
 	 * @throws ActionException if the actor does not possess the given object or it is broken
-	 * @see Entity#getContents()
+	 * @see Entity#contents()
 	 */
 	protected final WorldObject find(Actor actor, Predicate<WorldObject> matcher, boolean recurse, String name) throws ActionException {
 		final WorldObject obj = find(actor, matcher, recurse).orElseThrow(() -> new ActionException(this.name + ".requires." + name));

@@ -77,14 +77,14 @@ public class Portal extends WorldObject {
 	}
 
 	@Override
-	public Optional<Openable> getOpenableModel() {
+	public Optional<Openable> openableModel() {
 		return model;
 	}
 
 	/**
 	 * @return Destination
 	 */
-	public Parent getDestination() {
+	public Parent destination() {
 		return dest;
 	}
 
@@ -105,10 +105,5 @@ public class Portal extends WorldObject {
 	protected void damage(DamageType type, int amount) {
 		// Ignored
 		// TODO - or can portals be destroyed? i.e. reset restores them?
-	}
-
-	@Override
-	protected void destroy() {
-		throw new RuntimeException("Cannot destroy a portal");
 	}
 }

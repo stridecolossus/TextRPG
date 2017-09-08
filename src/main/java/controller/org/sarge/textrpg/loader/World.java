@@ -15,10 +15,10 @@ import org.sarge.textrpg.world.Location;
 public class World {
 	private final Registry<Skill> skills = new Registry<>(Skill::getName);
 	private final Registry<ObjectDescriptor> descriptors = new Registry<>(ObjectDescriptor::getName);
-	private final Registry<Race> races = new Registry<>(Race::getName);
-	private final Registry<WorldObject> objects = new Registry<>(WorldObject::getName);
+	private final Registry<Race> races = new Registry<>(Race::name);
+	private final Registry<WorldObject> objects = new Registry<>(WorldObject::name);
 	private final Registry<Location> locations = new Registry<>(Location::getName);
-	private final Registry<CharacterEntity> chars = new Registry<>(CharacterEntity::getName);
+	private final Registry<CharacterEntity> chars = new Registry<>(CharacterEntity::name);
 	
 	/**
 	 * @return Skill definitions

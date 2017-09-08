@@ -156,7 +156,7 @@ public class Player extends CharacterEntity {
 	}
 
 	@Override
-	public Contents getContents() {
+	public Contents contents() {
 		return inv;
 	}
 
@@ -181,12 +181,12 @@ public class Player extends CharacterEntity {
 	}
 
 	@Override
-	public EventHolder getEventHolder() {
+	public EventHolder actionEventHolder() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public Handler getNotificationHandler() {
+	public Handler handler() {
 		return handler;
 	}
 
@@ -206,7 +206,7 @@ public class Player extends CharacterEntity {
 	 */
 	public void add(Hidden hidden) {
 		known.add(hidden);
-		getEventQueue().add(() -> forget(hidden), hidden.getForgetPeriod());
+		queue().add(() -> forget(hidden), hidden.forgetPeriod());
 	}
 
 	/**

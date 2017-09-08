@@ -35,7 +35,7 @@ public class MoveableLocationTest {
 	public void constructor() {
 		assertEquals("loc", loc.getName());
 		assertEquals(one, loc.getLocation());
-		assertEquals(1, MoveableLocation.QUEUE.stream().count());
+		assertEquals(1, MoveableLocation.QUEUE.size());
 	}
 
 	@Test(expected = UnsupportedOperationException.class)

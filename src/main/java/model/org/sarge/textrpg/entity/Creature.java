@@ -54,7 +54,7 @@ public class Creature extends Entity {
 	 * @param manager		Entity manager
 	 */
 	public Creature(Race race, EntityManager manager) {
-		this(race, race.getAttributes().getAttributes(), manager);
+		this(race, race.attributes().attributes(), manager);
 	}
 
 	/**
@@ -73,8 +73,8 @@ public class Creature extends Entity {
 	 * @throws RuntimeException if the equipment is not valid
 	 */
 	private void init() {
-		final Equipment equipment = getEquipment();
-		race.getEquipment().getEquipment().map(ObjectDescriptor::create).forEach(ModelUtil.wrap(equipment::equip));
+		final Equipment equipment = equipment();
+		race.equipment().equipment().map(ObjectDescriptor::create).forEach(ModelUtil.wrap(equipment::equip));
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class Creature extends Entity {
 	}
 
 	@Override
-	public Handler getNotificationHandler() {
+	public Handler handler() {
 		return handler;
 	}
 
@@ -91,15 +91,15 @@ public class Creature extends Entity {
 	 * @return Gender of this entity
 	 */
 	@Override
-	public Gender getGender() {
-		return race.getAttributes().getDefaultGender();
+	public Gender gender() {
+		return race.attributes().gender();
 	}
 
 	/**
 	 * @return Alignment of this entity
 	 */
 	@Override
-	public Alignment getAlignment() {
-		return race.getAttributes().getDefaultAlignment();
+	public Alignment alignment() {
+		return race.attributes().alignment();
 	}
 }

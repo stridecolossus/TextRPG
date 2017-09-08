@@ -26,18 +26,18 @@ public class LinkTest {
 	@Before
 	public void before() {
 		actor = mock(Actor.class);
-		when(actor.getSize()).thenReturn(Size.MEDIUM);
+		when(actor.size()).thenReturn(Size.MEDIUM);
 	}
 
 	@Test
 	public void simpleLink() {
 		final Link link = Link.DEFAULT;
-		assertEquals(Route.NONE, link.getRoute());
-		assertEquals(Script.NONE, link.getScript());
-		assertNotNull(link.getController());
+		assertEquals(Route.NONE, link.route());
+		assertEquals(Script.NONE, link.script());
+		assertNotNull(link.controller());
 		assertEquals(true, link.isVisible(actor));
 		assertEquals(true, link.isTraversable(actor));
-		assertEquals(Optional.empty(), link.getController());
+		assertEquals(Optional.empty(), link.controller());
 		assertEquals("dir", link.describe("dir"));
 		assertNotNull(link.describe());
 	}
@@ -45,12 +45,12 @@ public class LinkTest {
 	@Test
 	public void routeLink() {
 		final Link link = new RouteLink(Route.BRIDGE);
-		assertEquals(Route.BRIDGE, link.getRoute());
-		assertEquals(Script.NONE, link.getScript());
-		assertNotNull(link.getController());
+		assertEquals(Route.BRIDGE, link.route());
+		assertEquals(Script.NONE, link.script());
+		assertNotNull(link.controller());
 		assertEquals(true, link.isVisible(actor));
 		assertEquals(true, link.isTraversable(actor));
-		assertEquals(Optional.empty(), link.getController());
+		assertEquals(Optional.empty(), link.controller());
 		assertEquals("(dir(", link.describe("dir"));
 		assertNotNull(link.describe());
 	}
@@ -58,14 +58,14 @@ public class LinkTest {
 	@Test
 	public void hiddenLink() {
 		final Link link = new HiddenLink(Route.ROAD, Script.NONE, Size.NONE, "name", Percentile.HALF, 42);
-		assertEquals(Route.ROAD, link.getRoute());
-		assertEquals(Script.NONE, link.getScript());
-		assertNotNull(link.getController());
+		assertEquals(Route.ROAD, link.route());
+		assertEquals(Script.NONE, link.script());
+		assertNotNull(link.controller());
 		assertEquals(false, link.isVisible(actor));
 		assertEquals(true, link.isTraversable(actor));
-		assertNotNull(link.getController());
-		assertEquals(true, link.getController().isPresent());
-		assertEquals(Percentile.HALF, link.getController().get().getVisibility());
+		assertNotNull(link.controller());
+		assertEquals(true, link.controller().isPresent());
+		assertEquals(Percentile.HALF, link.controller().get().visibility());
 		assertEquals("=dir=", link.describe("dir"));
 		assertNotNull(link.describe());
 	}
@@ -73,7 +73,7 @@ public class LinkTest {
 	@Test
 	public void revealedLink() {
 		final Link link = new HiddenLink(Route.ROAD, Script.NONE, Size.NONE, "name", Percentile.HALF, 42);
-		when(actor.perceives(link.getController().get())).thenReturn(true);
+		when(actor.perceives(link.controller().get())).thenReturn(true);
 		assertEquals(true, link.isVisible(actor));
 	}
 
@@ -85,12 +85,12 @@ public class LinkTest {
 
 		// Create link and check controlled by the object
 		final Link link = new PortalLink(Route.NONE, Script.NONE, Size.NONE, portal);
-		assertEquals(Route.NONE, link.getRoute());
-		assertEquals(Script.NONE, link.getScript());
-		assertNotNull(link.getController());
+		assertEquals(Route.NONE, link.route());
+		assertEquals(Script.NONE, link.script());
+		assertNotNull(link.controller());
 		assertEquals(false, link.isVisible(actor));
 		assertEquals(false, link.isTraversable(actor));
-		assertEquals(Optional.of(portal), link.getController());
+		assertEquals(Optional.of(portal), link.controller());
 		assertEquals("[dir]", link.describe("dir"));
 
 		// Check full description
@@ -99,7 +99,7 @@ public class LinkTest {
 		assertEquals("{door}", desc.get("name"));
 
 		// Open the portal and check can now be traversed
-		portal.getOpenableModel().get().setOpen(true);
+		portal.openableModel().get().setOpen(true);
 		assertEquals(true, link.isTraversable(actor));
 		assertEquals("(dir)", link.describe("dir"));
 		assertEquals("exit.entry", link.describe().build().getKey());
@@ -110,19 +110,19 @@ public class LinkTest {
 	public void extendedLink() {
 		final Script script = mock(Script.class);
 		final Link link = new ExtendedLink(Route.NONE, script, Size.MEDIUM);
-		assertEquals(Route.NONE, link.getRoute());
-		assertEquals(script, link.getScript());
+		assertEquals(Route.NONE, link.route());
+		assertEquals(script, link.script());
 		assertEquals(true, link.isVisible(actor));
-		assertNotNull(link.getController());
-		assertEquals(Optional.empty(), link.getController());
+		assertNotNull(link.controller());
+		assertEquals(Optional.empty(), link.controller());
 		assertEquals("dir", link.describe("dir"));
 		assertNotNull(link.describe());
 
 		final Actor actor = mock(Actor.class);
-		when(actor.getSize()).thenReturn(Size.SMALL);
+		when(actor.size()).thenReturn(Size.SMALL);
 		assertEquals(true, link.isTraversable(actor));
 
-		when(actor.getSize()).thenReturn(Size.LARGE);
+		when(actor.size()).thenReturn(Size.LARGE);
 		assertEquals(false, link.isTraversable(actor));
 	}
 }

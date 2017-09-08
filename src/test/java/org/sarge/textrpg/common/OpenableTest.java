@@ -22,12 +22,12 @@ public class OpenableTest extends ActionTest {
 	
 	@Test
 	public void constructor() {
-		assertEquals(State.LOCKED, model.getState());
+		assertEquals(State.LOCKED, model.state());
 		assertEquals(false, model.isOpen());
 		assertEquals(true, model.isLockable());
-		assertEquals(lock, model.getLock());
-		assertEquals("key", model.getLock().getKey());
-		assertEquals(Percentile.ONE, model.getLock().getPickDifficulty());
+		assertEquals(lock, model.lock());
+		assertEquals("key", model.lock().key());
+		assertEquals(Percentile.ONE, model.lock().pickDifficulty());
 		assertNotNull(model.getResetEventHolder());
 	}
 	
@@ -35,19 +35,19 @@ public class OpenableTest extends ActionTest {
 	public void apply() throws ActionException {
 		// Unlock
 		model.apply(Operation.UNLOCK);
-		assertEquals(State.CLOSED, model.getState());
+		assertEquals(State.CLOSED, model.state());
 		
 		// Open
 		model.apply(Operation.OPEN);
-		assertEquals(State.OPEN, model.getState());
+		assertEquals(State.OPEN, model.state());
 		
 		// Close
 		model.apply(Operation.CLOSE);
-		assertEquals(State.CLOSED, model.getState());
+		assertEquals(State.CLOSED, model.state());
 		
 		// Re-lock
 		model.apply(Operation.LOCK);
-		assertEquals(State.LOCKED, model.getState());
+		assertEquals(State.LOCKED, model.state());
 	}
 
 	@Test
@@ -66,8 +66,8 @@ public class OpenableTest extends ActionTest {
 	public void notLockable() throws ActionException {
 		// Create and verify an un-lockable model
 		model = new Openable();
-		assertEquals(State.CLOSED, model.getState());
-		assertEquals(Openable.UNLOCKABLE, model.getLock());
+		assertEquals(State.CLOSED, model.state());
+		assertEquals(Openable.UNLOCKABLE, model.lock());
 		assertEquals(false, model.isLockable());
 		assertEquals(false, model.isOpen());
 		
@@ -79,7 +79,7 @@ public class OpenableTest extends ActionTest {
 	@Test
 	public void fixed() throws ActionException {
 		model = new Openable(Openable.FIXED);
-		assertEquals(State.CLOSED, model.getState());
+		assertEquals(State.CLOSED, model.state());
 		assertEquals(false, model.isLockable());
 		assertEquals(false, model.isOpen());
 		expect("openable.fixed");

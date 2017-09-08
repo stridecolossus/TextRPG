@@ -124,9 +124,4 @@ public class Control extends WorldObject {
 	protected void damage(DamageType type, int amount) {
 		// Ignored
 	}
-
-	@Override
-	protected void destroy() {
-		throw new RuntimeException("Cannot destroy a control");
-	}
 }

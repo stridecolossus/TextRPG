@@ -10,7 +10,19 @@ import org.sarge.textrpg.common.Size;
 import org.sarge.textrpg.common.Thing;
 
 /**
- * Link between locations.
+ * Descriptor for a link between two locations.
+ * <p>
+ * A link specifies whether a given actor can move to a destination location depending on whether they perceive the link, the size of the actor, and the <i>controller</i> of the link (such as a portal).
+ * <p>
+ * Specialized link implementations should over-ride one or more of the following:
+ * <ul>
+ * <li>{@link #reason(Actor)} contains the logic to determine whether the link can be traversed</li>
+ * <li>{@link #controller()} returns the controller for the link which determines whether the link is visible and/or open</li>
+ * <li>{@link #size()} specifies the maximum size of an actor that can fit through this link</li>
+ * <li>{@link #route()} is the route-type of the link</li>
+ * <li>{@link #describe()} describes the link</li>
+ * <li>additionally {@link #destinationName(Location)} can override the name of the destination</li>
+ * </ul>
  * @author Sarge
  */
 public class Link {
@@ -31,26 +43,23 @@ public class Link {
 	}
 
 	/**
-	 * Over-ride for a custom route.
 	 * @return Route-type of this link (default is {@link Route#NONE})
 	 */
-	public Route getRoute() {
+	public Route route() {
 		return Route.NONE;
 	}
 
 	/**
-	 * Over-ride to customise the behaviour of this link.
 	 * @return Controller for this link (default is none)
 	 */
-	public Optional<Thing> getController() {
+	public Optional<Thing> controller() {
 		return DEFAULT_CONTROLLER;
 	}
 
 	/**
- 	 * Over-ride to customise the size constraint of this link.
 	 * @return Size constraint of this link (default is {@link Size#NONE})
 	 */
-	public Size getSize() {
+	public Size size() {
 		return Size.NONE;
 	}
 
@@ -61,17 +70,13 @@ public class Link {
 	 * @return Whether to display the exit
 	 */
 	public boolean isVisible(Actor actor) {
-		final Optional<Thing> controller = getController();
-		if(controller.isPresent()) {
-			return controller.filter(Thing.NOT_QUIET).filter(actor::perceives).isPresent();
-		}
-		else {
-			return true;
-		}
+	    return controller()
+	        .filter(Thing.NOT_QUIET)
+	        .map(actor::perceives)
+	        .orElse(true);
 	}
 
 	/**
-	 * Over-ride to customise whether this link can be traversed.
 	 * @param actor Actor
 	 * @return Whether this link can be traversed by the given actor (default is <tt>true</tt>)
 	 * @see #reason()
@@ -91,7 +96,7 @@ public class Link {
 	/**
 	 * @return Script to execute when traversing this script (default is {@link Script#NONE})
 	 */
-	public Script getScript() {
+	public Script script() {
 		return Script.NONE;
 	}
 
@@ -105,17 +110,15 @@ public class Link {
 	}
 
 	/**
-	 * Over-ride to change the name of the destination.
 	 * @param dest Destination
-	 * @return Destination name (default is the actual name)
+	 * @return Destination name (default is the name of the destination location)
 	 * @see Location#getName()
 	 */
-	public String getDestinationName(Location dest) {
+	public String destinationName(Location dest) {
 		return dest.getName();
 	}
 
 	/**
-	 * Over-ride to customise the description of this link.
 	 * @return Long description of this link
 	 */
 	public Description.Builder describe() {

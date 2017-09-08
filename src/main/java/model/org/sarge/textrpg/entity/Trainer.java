@@ -42,7 +42,7 @@ public class Trainer {
 		if(!skills.contains(skill)) throw new ActionException("train.cannot.teach");
 		
 		// Check actor can learn the next level
-		final int level = actor.getSkills().getLevel(skill).orElse(0);
+		final int level = actor.skills().getLevel(skill).orElse(0);
 		if(level >= skill.getMaximum()) throw new ActionException("train.maximum.level");
 		
 		// Check requirements
@@ -57,7 +57,7 @@ public class Trainer {
 //		}
 		
 		// Increment skill level
-		actor.getSkills().increment(skill, 1);
+		actor.skills().increment(skill, 1);
 		
 //		// Consume XP
 //		actor.modify(EntityValue.AVAILABLE_EXPERIENCE, -cost);

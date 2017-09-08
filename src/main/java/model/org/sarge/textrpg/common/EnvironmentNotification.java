@@ -34,8 +34,8 @@ public class EnvironmentNotification extends AbstractNotification {
 	@Override
 	public Description describe() {
 		return new Description.Builder("environment.notification")
-			.add("type", emission.getType())
-			.add("intensity", emission.getIntensity())
+			.add("type", emission.type())
+			.add("intensity", emission.intensity())
 			.add("dir", dir)
 			.build();
 	}

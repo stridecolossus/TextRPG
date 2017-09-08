@@ -42,10 +42,10 @@ public class CorpseTest extends ActionTest {
 	
 	@Test
 	public void constructor() {
-		assertEquals("corpse", corpse.getName());
+		assertEquals("corpse", corpse.name());
 		assertEquals(3, corpse.weight());
-		assertNotNull(corpse.getContents());
-		assertEquals(1, corpse.getContents().size());
+		assertNotNull(corpse.contents());
+		assertEquals(1, corpse.contents().size());
 		assertEquals(false, corpse.isButchered());
 	}
 	
@@ -54,7 +54,7 @@ public class CorpseTest extends ActionTest {
 		corpse.butcher(actor);
 		assertEquals(true, corpse.isButchered());
 		verify(butcher).generate(actor);
-		assertEquals(2, corpse.getContents().size());
+		assertEquals(2, corpse.contents().size());
 		assertEquals(3 + 2, corpse.weight());
 	}
 

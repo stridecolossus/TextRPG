@@ -23,11 +23,11 @@ public class EntityValueCalculatorTest {
 		final MutableIntegerMap<Attribute> attrs = new MutableIntegerMap<>(Attribute.class);
 		attrs.set(Attribute.ENDURANCE, 2);
 		attrs.set(Attribute.STRENGTH, 3);
-		when(e.getAttributes()).thenReturn(attrs);
+		when(e.attributes()).thenReturn(attrs);
 
 		// Init empty values
 		final MutableIntegerMap<EntityValue> values = new MutableIntegerMap<>(EntityValue.class);
-		when(e.getValues()).thenReturn(values);
+		when(e.values()).thenReturn(values);
 
 		// Add some modifier
 		calc.add(EntityValue.HEALTH, Attribute.ENDURANCE, 4);

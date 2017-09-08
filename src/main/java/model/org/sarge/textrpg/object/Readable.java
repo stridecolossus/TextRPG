@@ -111,13 +111,13 @@ public class Readable extends WorldObject {
 	}
 	
 	@Override
-	public Descriptor getDescriptor() {
-		return (Descriptor) super.getDescriptor();
+	public Descriptor descriptor() {
+		return (Descriptor) super.descriptor();
 	}
 	
 	@Override
 	protected void describe(Description.Builder description) {
-		final Descriptor descriptor = getDescriptor();
+		final Descriptor descriptor = descriptor();
 		description.add("lang", descriptor.lang);
 		description.add("chapters", descriptor.chapters.size());
 	}

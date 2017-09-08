@@ -55,7 +55,7 @@ public class MoveAction extends AbstractAction {
 	 */
 	public ActionResponse move(Entity actor) throws ActionException {
 		// Check can move
-		final String name = actor.getParent().getParentName();
+		final String name = actor.parent().parentName();
 		switch(name) {
 		case Location.NAME:
 		case Vehicle.NAME:
@@ -66,7 +66,7 @@ public class MoveAction extends AbstractAction {
 		}
 
 		// Check valid link
-		final Location loc = actor.getLocation();
+		final Location loc = actor.location();
 		final Exit exit = loc.getExits().get(dir);
 		if((exit == null) || !exit.perceivedBy(actor)) throw new ActionException("move.invalid.direction");
 

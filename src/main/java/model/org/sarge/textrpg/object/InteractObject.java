@@ -64,7 +64,7 @@ public class InteractObject extends WorldObject {
 	}
 
 	@Override
-	public Optional<Openable> getOpenableModel() {
+	public Optional<Openable> openableModel() {
 		return Optional.of(model);
 	}
 

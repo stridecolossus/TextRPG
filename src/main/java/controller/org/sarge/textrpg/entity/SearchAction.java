@@ -25,7 +25,7 @@ import org.sarge.textrpg.world.Location;
  * @author Sarge
  */
 public class SearchAction extends AbstractActiveAction {
-	private static Comparator<Thing> COMPARATOR = Comparator.comparing(Thing::getVisibility);
+	private static Comparator<Thing> COMPARATOR = Comparator.comparing(Thing::visibility);
 
 	private final int mod;
 	private final long time;
@@ -62,7 +62,7 @@ public class SearchAction extends AbstractActiveAction {
 		@Override
 		public void run() {
 			final Notification n = new RevealNotification("search.found.hidden", obj);
-			actor.getNotificationHandler().handle(n);
+			actor.handler().handle(n);
 		}
 	}
 
@@ -73,17 +73,17 @@ public class SearchAction extends AbstractActiveAction {
 	 */
 	public ActionResponse search(Entity actor) throws ActionException {
 		// Calculate search score
-		final Location loc = actor.getLocation();
-		final int per = actor.getAttributes().get(Attribute.PERCEPTION) * mod;
+		final Location loc = actor.location();
+		final int per = actor.attributes().get(Attribute.PERCEPTION) * mod;
 		final Percentile score = new Percentile(per).invert();
 
 		// Enumerate hidden objects that can be found by this actor
-		final EventQueue queue = actor.getEventQueue();
-		final List<DiscoverEvent> events = loc.getContents().stream()
-			.filter(t -> t.getVisibility().isLessThan(Percentile.ONE))
+		final EventQueue queue = actor.queue();
+		final List<DiscoverEvent> events = loc.contents().stream()
+			.filter(t -> t.visibility().isLessThan(Percentile.ONE))
 			.filter(t -> (t instanceof WorldObject) || (t instanceof Entity))
 			.filter(StreamUtil.not(actor::perceives))
-			.filter(t -> score.isLessThan(t.getVisibility()))
+			.filter(t -> score.isLessThan(t.visibility()))
 			.sorted(COMPARATOR)
 			.map(t -> new DiscoverEvent(t, actor))
 			.collect(toList());
@@ -92,7 +92,7 @@ public class SearchAction extends AbstractActiveAction {
 		final List<EventQueue.Entry> entries = new ArrayList<>();
 		long longest = 0;
 		for(final DiscoverEvent e : events) {
-			final int diff = e.obj.getVisibility().intValue() - per;
+			final int diff = e.obj.visibility().intValue() - per;
 			final long duration = diff * time;
 			final EventQueue.Entry entry = queue.add(e, duration);
 			entries.add(entry);

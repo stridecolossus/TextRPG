@@ -19,31 +19,31 @@ public class GateTest {
 
 	@Test
 	public void constructor() {
-		assertNotNull(gate.getOpenableModel());
-		assertEquals(true, gate.getOpenableModel().isPresent());
-		assertEquals(false, gate.getOpenableModel().get().isOpen());
+		assertNotNull(gate.openableModel());
+		assertEquals(true, gate.openableModel().isPresent());
+		assertEquals(false, gate.openableModel().get().isOpen());
 		assertEquals(true, gate.isFixture());
 	}
 
 	@Test
 	public void reset() {
 		gate.reset(true);
-		assertEquals(true, gate.getOpenableModel().get().isOpen());
+		assertEquals(true, gate.openableModel().get().isOpen());
 
 		gate.reset(false);
-		assertEquals(false, gate.getOpenableModel().get().isOpen());
+		assertEquals(false, gate.openableModel().get().isOpen());
 	}
 
 	@Test
 	public void call() {
 		gate.call();
-		assertEquals(true, gate.getOpenableModel().get().isOpen());
+		assertEquals(true, gate.openableModel().get().isOpen());
 	}
 
 	@Test
 	public void callClose() {
 		gate.call();
 		gate.call();
-		assertEquals(false, gate.getOpenableModel().get().isOpen());
+		assertEquals(false, gate.openableModel().get().isOpen());
 	}
 }

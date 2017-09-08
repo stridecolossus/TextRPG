@@ -68,7 +68,7 @@ public final class Effect {
 				// Apply effect to targets
 				final EffectMethod method = effect.getMethod();
 				for(Entity e : targets) {
-					e.apply(method, size, duration, actor.getEventQueue());
+					e.apply(method, size, duration, actor.queue());
 				}
 			}
 		}

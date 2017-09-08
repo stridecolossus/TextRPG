@@ -26,8 +26,7 @@ import org.sarge.textrpg.common.Notification;
 import org.sarge.textrpg.common.Size;
 import org.sarge.textrpg.common.Thing;
 import org.sarge.textrpg.common.Topic;
-import org.sarge.textrpg.object.DeploymentSlot;
-import org.sarge.textrpg.object.WorldObject;
+import org.sarge.textrpg.object.Weapon;
 import org.sarge.textrpg.util.IntegerMap;
 import org.sarge.textrpg.util.MutableIntegerMap;
 import org.sarge.textrpg.util.Percentile;
@@ -73,66 +72,66 @@ public abstract class Entity extends Thing implements Actor {
 		Check.notNull(manager);
 		this.race = race;
 		this.attrs = new MutableIntegerMap<>(Attribute.class, attrs);
-		this.skills = new SkillSet(race.getEquipment().getSkills());
+		this.skills = new SkillSet(race.equipment().skills());
 		this.manager = manager;
 	}
 
 	@Override
-	public String getName() {
-		return race.getName();
+	public String name() {
+		return race.name();
 	}
 
 	/**
 	 * @return Event queue for this entity
 	 */
 	@Override
-	public EventQueue getEventQueue() {
+	public EventQueue queue() {
 		return queue;
 	}
 
 	/**
 	 * @return Event holder for the current AI action
 	 */
-	public EventHolder getEventHolder() {
+	public EventHolder actionEventHolder() {
 		return holder;
 	}
 
 	/**
 	 * @return Entity manager
 	 */
-	public EntityManager getEntityManager() {
+	public EntityManager manager() {
 		return manager;
 	}
 
 	/**
 	 * @return Notification handler
 	 */
-	public abstract Notification.Handler getNotificationHandler();
+	public abstract Notification.Handler handler();
 
 	/**
 	 * @return Race of this entity
 	 */
-	public Race getRace() {
+	public Race race() {
 		return race;
 	}
 
 	@Override
-	public Size getSize() {
-		return race.getAttributes().getSize();
+	public Size size() {
+		return race.attributes().size();
 	}
 
 	/**
 	 * @return Gender of this entity
 	 */
-	public abstract Gender getGender();
+	public abstract Gender gender();
 
 	/**
 	 * @return Alignment of this entity
 	 */
-	public abstract Alignment getAlignment();
+	public abstract Alignment alignment();
 
 	@Override
-	public Percentile getVisibility() {
+	public Percentile visibility() {
 		if(vis == null) {
 			// TODO - built-in hidden?
 			return Percentile.ONE;
@@ -148,7 +147,7 @@ public abstract class Entity extends Thing implements Actor {
 	}
 
 	@Override
-	public long getForgetPeriod() {
+	public long forgetPeriod() {
 		return FORGET_DURATION;
 	}
 
@@ -161,14 +160,14 @@ public abstract class Entity extends Thing implements Actor {
 	}
 
 	@Override
-	public Optional<Emission> getEmission(Emission.Type type) {
-		return equipment.stream().map(obj -> obj.getEmission(type)).findFirst().filter(Optional::isPresent).map(Optional::get);
+	public Optional<Emission> emission(Emission.Type type) {
+		return equipment.stream().map(obj -> obj.emission(type)).findFirst().filter(Optional::isPresent).map(Optional::get);
 	}
 
 	@Override
 	public final int weight() {
 		// TODO
-		return 42/*weight*/ + getContents().getWeight();
+		return 42/*weight*/ + contents().getWeight();
 	}
 
 	/**
@@ -186,7 +185,7 @@ public abstract class Entity extends Thing implements Actor {
 	@Override
 	public Description describe() {
 		final Description.Builder builder = new Description.Builder("description." + getDescriptionKey());
-		builder.wrap("name", getName());
+		builder.wrap("name", name());
 		builder.wrap("action", "entity." + stance); // TODO - custom actions
 		// TODO - wrap commas, builder.wrap("wielding", equipment.get(DeploymentSlot.MAIN_HAND)); // TODO - "held" and "wielding", i.e. holding lantern
 		// TODO - current action/induction/emote
@@ -196,14 +195,14 @@ public abstract class Entity extends Thing implements Actor {
 	/**
 	 * @return Current location of this entity
 	 */
-	public Location getLocation() {
+	public Location location() {
 		return (Location) super.root();
 	}
 
 	/**
 	 * @return Group containing this entity (if any)
 	 */
-	public Optional<Group> getGroup() {
+	public Optional<Group> group() {
 		return group;
 	}
 
@@ -218,7 +217,7 @@ public abstract class Entity extends Thing implements Actor {
 	/**
 	 * @return Attributes of this entity
 	 */
-	public IntegerMap<Attribute> getAttributes() {
+	public IntegerMap<Attribute> attributes() {
 		return attrs;
 	}
 
@@ -234,7 +233,7 @@ public abstract class Entity extends Thing implements Actor {
 	/**
 	 * @return Values of this entity
 	 */
-	public IntegerMap<EntityValue> getValues() {
+	public IntegerMap<EntityValue> values() {
 		return values;
 	}
 
@@ -272,7 +271,7 @@ public abstract class Entity extends Thing implements Actor {
 	/**
 	 * @return Skill-set
 	 */
-	public SkillSet getSkills() {
+	public SkillSet skills() {
 		return skills;
 	}
 
@@ -281,14 +280,14 @@ public abstract class Entity extends Thing implements Actor {
 	 * @param skill Skill to lookup
 	 * @return Skill level
 	 */
-	public Optional<Integer> getSkillLevel(Skill skill) {
+	public Optional<Integer> skillLevel(Skill skill) {
 		return skills.getLevel(skill);
 	}
 
 	/**
 	 * @return Stance of this entity
 	 */
-	public Stance getStance() {
+	public Stance stance() {
 		return stance;
 	}
 
@@ -306,41 +305,41 @@ public abstract class Entity extends Thing implements Actor {
 	}
 
 	@Override
-	public Contents getContents() {
+	public Contents contents() {
 		return Contents.EMPTY;
 	}
 
 	/**
 	 * @return Equipment being worn by this entity
 	 */
-	public Equipment getEquipment() {
+	public Equipment equipment() {
 		return equipment;
 	}
 
 	/**
 	 * @return Currently equipped weapon
-	 * @see Race#getWeapon()
+	 * @see Race#weapon()
 	 */
-	public WorldObject getWeapon() {
-		return equipment.get(DeploymentSlot.MAIN_HAND).orElse(race.getEquipment().getWeapon());
+	public Weapon weapon() {
+		return equipment.weapon().orElse(race.equipment().weapon());
 	}
 
 	@Override
 	public boolean perceives(Hidden obj) {
 		// Short-cut tests
-		if(Percentile.ONE.equals(obj.getVisibility())) return true;
-		if(Percentile.ZERO.equals(obj.getVisibility())) return false;
+		if(Percentile.ONE.equals(obj.visibility())) return true;
+		if(Percentile.ZERO.equals(obj.visibility())) return false;
 
 		// Passive perception test
 		// TODO - modifier
 		final int perception = attrs.get(Attribute.PERCEPTION);
-		if((perception * 3) > obj.getVisibility().invert().intValue()) {
+		if((perception * 3) > obj.visibility().invert().intValue()) {
 			return true;
 		}
 
 		// Check group members
 		if(group.isPresent()) {
-			final boolean result = group.get().getMembers().anyMatch(e -> e.perceives(obj));
+			final boolean result = group.get().members().anyMatch(e -> e.perceives(obj));
 			if(result) return true;
 		}
 
@@ -351,14 +350,14 @@ public abstract class Entity extends Thing implements Actor {
 	/**
 	 * @return Conversation topics of this entity
 	 */
-	public Stream<Topic> getTopics() {
+	public Stream<Topic> topics() {
 		return Stream.empty();
 	}
 
 	/**
 	 * @return Tracks generated by this entity
 	 */
-	public Stream<Tracks> getTracks() {
+	public Stream<Tracks> tracks() {
 		return tracks.stream();
 	}
 
@@ -389,7 +388,7 @@ public abstract class Entity extends Thing implements Actor {
 	/**
 	 * @return Followers of this entity (default is empty)
 	 */
-	public Stream<Entity> getFollowers() {
+	public Stream<Entity> followers() {
 		return Stream.empty();
 	}
 
@@ -420,11 +419,17 @@ public abstract class Entity extends Thing implements Actor {
 			this.size = size;
 		}
 
-		public EffectMethod getEffect() {
+		/**
+		 * @return Effect method
+		 */
+		public EffectMethod effect() {
 			return effect;
 		}
 
-		public int getSize() {
+		/**
+		 * @return Effect magnitude
+		 */
+		public int size() {
 			return size;
 		}
 
@@ -477,7 +482,7 @@ public abstract class Entity extends Thing implements Actor {
 	 * Dispels all transient effects.
 	 */
 	void dispel() {
-		applied.stream().filter(e -> !e.getEffect().isWound()).forEach(AppliedEffect::remove);
+		applied.stream().filter(e -> !e.effect().isWound()).forEach(AppliedEffect::remove);
 		applied.clear();
 	}
 
@@ -535,7 +540,7 @@ public abstract class Entity extends Thing implements Actor {
 
 	@Override
 	public void alert(Notification n) {
-		n.accept(getNotificationHandler());
+		n.accept(handler());
 	}
 
 	@Override

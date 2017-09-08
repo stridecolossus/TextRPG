@@ -25,7 +25,7 @@ public class ObjectDescriptorTest {
 
 	@Before
 	public void before() {
-		emission = new Emission("emission", Emission.Type.ODOUR, Percentile.ONE);
+		emission = new Emission(Emission.Type.SOUND, Percentile.ONE);
 		mat = new Material("mat", Collections.emptySet(), Collections.emptySet(), 0);
 		descriptor = new Builder("object")
 			// Properties
@@ -78,7 +78,7 @@ public class ObjectDescriptorTest {
 		assertEquals(true, descriptor.isCategory("one"));
 		assertEquals(true, descriptor.isCategory("two"));
 		assertEquals(Percentile.HALF, descriptor.getCharacteristics().getVisibility());
-		assertEquals(Optional.of(emission), descriptor.getCharacteristics().getEmission(Emission.Type.ODOUR));
+		assertEquals(Optional.of(emission), descriptor.getCharacteristics().getEmission(Emission.Type.SOUND));
 		assertEquals(true, descriptor.getCharacteristics().isQuiet());
 
 		// Check equipment

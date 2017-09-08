@@ -30,14 +30,14 @@ public class ConsumeAction extends AbstractAction {
 		verifyCarried(actor, food);
 		
 		// Check whether hungry
-		final IntegerMap<EntityValue> values = actor.getValues();
+		final IntegerMap<EntityValue> values = actor.values();
 		if(values.get(EntityValue.HUNGER) == 0) throw new ActionException("consume.not.hungry");
 		
 		// Consume food
 		food.consume();
 
 		// Reduce hunger
-		final int value = food.getDescriptor().getLevel();
+		final int value = food.descriptor().getLevel();
 		actor.modify(EntityValue.HUNGER, -value);
 		
 		// Build response

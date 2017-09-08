@@ -28,7 +28,7 @@ public class TracksFollowerTest {
 		// Create location
 		loc = mock(Location.class);
 		contents = new TrackedContents();
-		when(loc.getContents()).thenReturn(contents);
+		when(loc.contents()).thenReturn(contents);
 	}
 	
 	/*

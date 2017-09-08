@@ -26,7 +26,7 @@ public class PortalScript implements Script {
 	 */
 	public PortalScript(WorldObject obj, Operation op) {
 		Check.notNull(op);
-		if(!obj.getOpenableModel().isPresent()) throw new IllegalArgumentException("Not an openable object");
+		if(!obj.openableModel().isPresent()) throw new IllegalArgumentException("Not an openable object");
 		this.obj = obj;
 		this.op = op;
 	}
@@ -34,8 +34,8 @@ public class PortalScript implements Script {
 	@Override
 	public void execute(Actor actor) {
 		// Perform operation
-		final Openable model = obj.getOpenableModel().get();
-		if(model.getState() != op.getState()) {
+		final Openable model = obj.openableModel().get();
+		if(model.state() != op.state()) {
 			try {
 				model.apply(op);
 			}
