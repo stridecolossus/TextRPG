@@ -1,0 +1,6 @@
+# key		diff
+very.easy	20
+easy		35
+normal		50
+hard		65
+very.hard	80

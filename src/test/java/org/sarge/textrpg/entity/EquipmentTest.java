@@ -1,116 +1,161 @@
 package org.sarge.textrpg.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
-import java.util.List;
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.common.Description;
-import org.sarge.textrpg.object.DeploymentSlot;
-import org.sarge.textrpg.object.ObjectDescriptor;
-import org.sarge.textrpg.object.ObjectDescriptor.Builder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.common.Emission;
+import org.sarge.textrpg.object.Slot;
+import org.sarge.textrpg.object.Weapon;
 import org.sarge.textrpg.object.WorldObject;
+import org.sarge.textrpg.util.Percentile;
 
-public class EquipmentTest extends ActionTest {
-	private static final DeploymentSlot SLOT = DeploymentSlot.MAIN_HAND;
-
+public class EquipmentTest {
 	private Equipment equipment;
 	private WorldObject obj;
 
-	@Before
+	@BeforeEach
 	public void before() {
-		final ObjectDescriptor.Equipment equip = new ObjectDescriptor.EquipmentBuilder().slot(SLOT).armour(3).build();
-		obj = new Builder("object").weight(2).equipment(equip).build().create();
 		equipment = new Equipment();
+		obj = mock(WorldObject.class);
+		when(obj.emission(any(Emission.class))).thenReturn(Percentile.ZERO);
 	}
 
 	@Test
 	public void constructor() {
-		assertNotNull(equipment.stream());
-		assertEquals(0, equipment.stream().count());
-		assertEquals(0, equipment.getWeight());
+		assertNotNull(equipment.equipment());
+		assertEquals(true, equipment.equipment().isEmpty());
+		assertNotNull(equipment.select(WorldObject.class));
+		assertEquals(0, equipment.select(WorldObject.class).count());
+		assertEquals(Optional.empty(), equipment.weapon());
+		for(Emission e : Emission.values()) {
+			assertEquals(Percentile.ZERO, equipment.emission(e));
+		}
 	}
 
 	@Test
-	public void equip() throws ActionException {
-		equipment.equip(obj);
-		assertEquals(Optional.of(obj), equipment.get(SLOT));
-		assertEquals(2, equipment.getWeight());
+	public void equip() {
+		equipment.equip(obj, Slot.BACK);
+		assertEquals(true, equipment.contains(obj));
+		assertEquals(true, equipment.contains(Slot.BACK));
+		assertEquals(obj, equipment.equipment().get(Slot.BACK));
+		assertEquals(Slot.BACK, equipment.slot(obj));
+		assertEquals(1, equipment.select(WorldObject.class).count());
+		assertEquals(obj, equipment.select(WorldObject.class).iterator().next());
 	}
 
 	@Test
-	public void equipCannotEquip() throws ActionException {
-		final WorldObject invalid = new Builder("invalid").build().create();
-		expect("equipment.cannot.equip");
-		equipment.equip(invalid);
-	}
-
-	private static WorldObject createTwoHanded() {
-		final ObjectDescriptor.Equipment equip = new ObjectDescriptor.EquipmentBuilder().slot(DeploymentSlot.OFF_HAND).twoHanded(true).build();
-		return new Builder("off.hand").equipment(equip).build().create();
+	public void equipSlotOccupied() {
+		equipment.equip(obj, Slot.BACK);
+		assertThrows(IllegalStateException.class, () -> equipment.equip(obj, Slot.BACK));
 	}
 
 	@Test
-	public void equipTwoHanded() throws ActionException {
-		final WorldObject other = createTwoHanded();
-		equipment.equip(obj);
-		expect("equipment.two.handed");
-		equipment.equip(other);
+	public void remove() {
+		equipment.equip(obj, Slot.BACK);
+		equipment.remove(Slot.BACK);
+		assertEquals(false, equipment.contains(obj));
+		assertEquals(false, equipment.contains(Slot.BACK));
+		assertEquals(null, equipment.slot(obj));
+		assertEquals(true, equipment.equipment().isEmpty());
 	}
 
 	@Test
-	public void equipTwoHandedEquipped() throws ActionException {
-		final WorldObject other = createTwoHanded();
-		equipment.equip(other);
-		expect("equipment.two.handed");
-		equipment.equip(obj);
+	public void removeSlotNotOccupied() {
+		assertThrows(IllegalStateException.class, () -> equipment.remove(Slot.BACK));
 	}
 
 	@Test
-	public void equipOccupied() throws ActionException {
-		equipment.equip(obj);
-		expect("equipment.equip.occupied");
-		equipment.equip(obj);
+	public void emissions() {
+		when(obj.emission(Emission.LIGHT)).thenReturn(Percentile.HALF);
+		equipment.equip(obj, Slot.BACK);
+		assertEquals(Percentile.HALF, equipment.emission(Emission.LIGHT));
+		assertEquals(Percentile.ZERO, equipment.emission(Emission.SMOKE));
+		assertEquals(Percentile.ZERO, equipment.emission(Emission.SOUND));
 	}
 
 	@Test
-	public void remove() throws ActionException {
-		equipment.equip(obj);
-		equipment.remove(obj);
-		assertEquals(0, equipment.stream().count());
-		assertEquals(0, equipment.getWeight());
+	public void weapon() {
+		// Create weapon
+		final Weapon weapon = mock(Weapon.class);
+		when(weapon.emission(any(Emission.class))).thenReturn(Percentile.ZERO);
+
+		// Wield weapon
+		equipment.equip(weapon, Slot.MAIN);
+		assertEquals(Optional.of(weapon), equipment.weapon());
+		assertEquals(Slot.MAIN, equipment.slot(weapon));
+		assertEquals(1, equipment.select(Weapon.class).count());
+		assertEquals(weapon, equipment.select(Weapon.class).iterator().next());
+
+		// Remove weapon
+		equipment.remove(Slot.MAIN);
+		assertEquals(Optional.empty(), equipment.weapon());
 	}
 
 	@Test
-	public void removeEmpty() throws ActionException {
-		expect("equipment.remove.empty");
-		equipment.remove(obj);
+	public void free() {
+		assertEquals(Optional.of(Slot.MAIN), equipment.free());
 	}
 
 	@Test
-	public void removeAll() throws ActionException {
-		equipment.equip(obj);
-		equipment.removeAll();
-		assertEquals(0, equipment.stream().count());
-		assertEquals(0, equipment.getWeight());
+	public void freeMainHand() {
+		equipment.equip(obj, Slot.OFF);
+		assertEquals(Optional.of(Slot.MAIN), equipment.free());
 	}
 
 	@Test
-	public void removeAllEmpty() throws ActionException {
-		expect("equipment.remove.all");
-		equipment.removeAll();
+	public void freeOffHand() {
+		equipment.equip(obj, Slot.MAIN);
+		assertEquals(Optional.of(Slot.OFF), equipment.free());
 	}
 
 	@Test
-	public void describe() throws ActionException {
-		equipment.equip(obj);
-		final List<Description> desc = equipment.describe();
-		assertNotNull(desc);
-		assertEquals(1, desc.size());
+	public void freeNotAvailable() {
+		equipment.equip(obj, Slot.MAIN);
+		equipment.equip(obj, Slot.OFF);
+		assertEquals(Optional.empty(), equipment.free());
+	}
+
+	@Test
+	public void isTwoHandedAvailable() {
+		assertEquals(true, equipment.isTwoHandedAvailable());
+	}
+
+	@Test
+	public void isTwoHandedAvailableMainHandOccupied() {
+		equipment.equip(obj, Slot.MAIN);
+		assertEquals(false, equipment.isTwoHandedAvailable());
+	}
+
+	@Test
+	public void isTwoHandedAvailableOffHandOccupied() {
+		equipment.equip(obj, Slot.OFF);
+		assertEquals(false, equipment.isTwoHandedAvailable());
+	}
+
+	@Test
+	public void isTwoHandedAvailableBothHandOccupied() {
+		equipment.equip(obj, Slot.MAIN);
+		equipment.equip(obj, Slot.OFF);
+		assertEquals(false, equipment.isTwoHandedAvailable());
+	}
+
+	@Test
+	public void clear() {
+		equipment.equip(obj, Slot.BACK);
+		equipment.clear();
+		assertEquals(true, equipment.equipment().isEmpty());
+	}
+
+	@Test
+	public void clearEmptyEquipment() {
+		assertThrows(IllegalStateException.class, () -> equipment.clear());
 	}
 }

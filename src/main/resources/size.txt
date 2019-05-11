@@ -1,7 +1,0 @@
-size		weight		tracks
-NONE		0			0
-TINY		5			10
-SMALL		10			50
-MEDIUM		15			65
-LARGE		20			80
-HUGE		25			100

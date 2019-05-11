@@ -1,39 +1,62 @@
 package org.sarge.textrpg.object;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.Condition;
-import org.sarge.textrpg.entity.Skill;
-import org.sarge.textrpg.entity.Skill.Tier;
-import org.sarge.textrpg.object.Readable.Chapter;
-import org.sarge.textrpg.object.Readable.Descriptor;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.common.Skill;
+import org.sarge.textrpg.object.Readable.Section;
+import org.sarge.textrpg.util.ArgumentFormatter;
+import org.sarge.textrpg.util.Description;
 
 public class ReadableTest {
-	private Readable readable;
-	private Skill lang;
-	
-	@Before
-	public void before() {
-		final List<Chapter> chapters = Arrays.asList(new Chapter("1", "one"), new Chapter("2", "two"));
-		lang = new Skill("lang", Collections.singletonList(new Tier(Condition.TRUE, 1)));
-		readable = new Readable(new Descriptor(new ObjectDescriptor("book"), "lang", chapters));
+	@Nested
+	class Simple {
+		private Readable readable;
+
+		@BeforeEach
+		public void before() {
+			readable = new Readable(new Readable.Descriptor(ObjectDescriptor.of("readable"), Skill.NONE));
+		}
+
+		@Test
+		public void constructor() {
+			assertEquals(Skill.NONE, readable.descriptor().language());
+			assertEquals(false, readable.descriptor().isBook());
+			assertEquals(1, readable.descriptor().sections().size());
+		}
+
+		@Test
+		public void section() {
+			final Section section = readable.descriptor().sections().get(0);
+			assertEquals(new Section(null, "readable", false), section);
+		}
+
+		@Test
+		public void describe() {
+			final Description expected = new Description("readable.text");
+			assertEquals(expected, readable.descriptor().sections().get(0).describe(ArgumentFormatter.PLAIN));
+		}
 	}
-	
-	@Test
-	public void constructor() {
-		assertEquals("lang", readable.descriptor().language());
-		assertEquals(2, readable.descriptor().size());
-	}
-	
-	@Test
-	public void getChapter() {
-		assertEquals("2", readable.descriptor().chapter(1).title());
-		assertEquals("two", readable.descriptor().chapter(1).text());
+
+	@Nested
+	class Book {
+		private Readable book;
+
+		@BeforeEach
+		public void before() {
+			final Section section = new Section("title", "text", false);
+			book = new Readable(new Readable.Descriptor(ObjectDescriptor.of("readable"), true, Skill.NONE, List.of(section, section)));
+		}
+
+		@Test
+		public void constructor() {
+			assertEquals(Skill.NONE, book.descriptor().language());
+			assertEquals(true, book.descriptor().isBook());
+			assertEquals(2, book.descriptor().sections().size());
+		}
 	}
 }

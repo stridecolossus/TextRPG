@@ -1,0 +1,6 @@
+# key		durability
+very.low	25
+low			50
+normal		100
+high		200
+very.high	500

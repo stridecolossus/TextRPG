@@ -1,0 +1,11 @@
+<area name="hobbiton" terrain="urban" route="lane">
+	<resource res="fish">
+		<money amount="42" />		
+	</resource>
+	
+	<ambient name="ambient" period="10s" repeat="true" />
+	
+	<weather>
+		<max type="precipitation" level="1" />
+	</weather>
+</area>

@@ -1,7 +1,4 @@
-<area name="root" default-route="road">
-
-<resource res="wood">
-	<object type="fire.wood" />
-</resource>
-
+<area name="middle.earth">
+	<weather>
+	</weather>
 </area>

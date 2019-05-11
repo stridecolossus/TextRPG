@@ -1,0 +1,5 @@
+0		very.low
+25		low
+50		medium
+75		high
+100		very.high

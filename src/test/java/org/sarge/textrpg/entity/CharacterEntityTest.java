@@ -1,123 +1,59 @@
 package org.sarge.textrpg.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.common.Contents;
-import org.sarge.textrpg.common.Topic;
-import org.sarge.textrpg.common.Script;
-import org.sarge.textrpg.common.Topic;
-import org.sarge.textrpg.entity.Race.Builder;
-import org.sarge.textrpg.util.MutableIntegerMap;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.common.Alignment;
+import org.sarge.textrpg.common.Gender;
+import org.sarge.textrpg.common.SkillSet.MutableSkillSet;
+import org.sarge.textrpg.entity.CharacterEntity.CharacterEntityDescriptor;
 
-public class CharacterEntityTest extends ActionTest {
-	private CharacterEntity character, other;
-	private Race race;
+public class CharacterEntityTest {
+	private CharacterEntity entity;
 	private Topic topic;
-	
-	@Before
+	private MovementMode movement;
+
+	@BeforeEach
 	public void before() {
-		race = new Builder("race").build();
-		topic = new Topic("topic", Script.NONE);
-		character = new CharacterEntity("name", race, new MutableIntegerMap<>(Attribute.class), EntityManager.IDLE, Gender.FEMALE, Alignment.EVIL, Collections.singletonList(topic));
-		other = new CharacterEntity("other", race, new MutableIntegerMap<>(Attribute.class), EntityManager.IDLE, Gender.FEMALE, Alignment.EVIL, Collections.emptyList());
+		topic = new Topic("topic");
+		final Race race = new Race.Builder("race").build();
+		final EntityDescriptor descriptor = new CharacterEntityDescriptor(race, "name", Gender.FEMALE, Alignment.EVIL, null, new MutableSkillSet(), Set.of(topic));
+		entity = new CharacterEntity(descriptor, mock(EntityManager.class)); //new EntityManager(mock(Event), mock(Notification.Handler.class), () -> false));
+		movement = mock(MovementMode.class);
 	}
-	
+
 	@Test
 	public void constructor() {
-		assertEquals("name", character.name());
-		assertEquals(Gender.FEMALE, character.gender());
-		assertEquals(Alignment.EVIL, character.alignment());
-		assertEquals(Contents.EMPTY, character.contents());
-		assertNotNull(character.topics());
-		assertEquals(1, character.topics().count());
-		assertEquals(topic, character.topics().iterator().next());
-		assertEquals(Optional.empty(), character.getMount());
-		assertNotNull(character.followers());
-	}
-	
-	@Test
-	public void follow() throws ActionException {
-		character.follow(other);
-		assertEquals(true, character.isFollowing(other));
-		assertEquals(1, other.followers().count());
-		assertEquals(character, other.followers().iterator().next());
+		assertEquals("name", entity.name());
+		assertEquals(Gender.FEMALE, entity.descriptor().gender());
+		assertEquals(Alignment.EVIL, entity.descriptor().alignment());
+		assertNotNull(entity.skills());
+		assertNotNull(entity.descriptor().topics());
+		assertArrayEquals(new Topic[]{topic}, entity.descriptor().topics().toArray());
+		assertNotNull(entity.movement());
+		assertTrue(entity.movement() instanceof Entity.DefaultMovementMode);
+		assertNotNull(entity.follower());
+		assertNotNull(entity.leader());
 	}
 
 	@Test
-	public void followStopFollowing() throws ActionException {
-		character.follow(other);
-		character.follow(null);
-		assertEquals(false, character.isFollowing(other));
-		assertEquals(0, other.followers().count());
-	}
-	
-	@Test
-	public void followSwitchFollowing() throws ActionException {
-		character.follow(other);
-		character.follow(other);
-		assertEquals(true, character.isFollowing(other));
-		assertEquals(1, other.followers().count());
-		assertEquals(character, other.followers().iterator().next());
+	public void movement() {
+		entity.movement(movement);
+		assertEquals(movement, entity.movement());
 	}
 
 	@Test
-	public void followNotFollowing() throws ActionException {
-		expect("follow.not.following");
-		character.follow(null);
-	}
-
-	@Test
-	public void followInvalid() throws ActionException {
-		final CharacterEntity good = new CharacterEntity("name", race, new MutableIntegerMap<>(Attribute.class), EntityManager.IDLE, Gender.FEMALE, Alignment.GOOD, Collections.emptyList());
-		expect("follow.entity.invalid");
-		character.follow(good);
-	}
-
-	@Test
-	public void setMount() throws ActionException {
-		final Entity mount = mock(Entity.class);
-		when(mount.race()).thenReturn(new Builder("mount").mount().build());
-		when(mount.isFollowing(character)).thenReturn(true);
-		character.setMount(mount);
-		assertEquals(Optional.of(mount), character.getMount());
-		assertEquals(Stance.MOUNTED, character.stance());
-	}
-
-	@Test
-	public void setMountDismount() throws ActionException {
-		final Entity mount = mock(Entity.class);
-		when(mount.race()).thenReturn(new Builder("mount").mount().build());
-		when(mount.isFollowing(character)).thenReturn(true);
-		character.setMount(mount);
-		character.setMount(null);
-		assertEquals(Optional.empty(), character.getMount());
-		assertEquals(Stance.DEFAULT, character.stance());
-	}
-
-	@Test
-	public void setMountNotFollowing() throws ActionException {
-		final Entity mount = mock(Entity.class);
-		when(mount.race()).thenReturn(new Builder("mount").mount().build());
-		expect("mount.not.leading");
-		character.setMount(mount);
-	}
-
-	@Test
-	public void setMountInvalidMount() throws ActionException {
-		final Entity mount = mock(Entity.class);
-		when(mount.race()).thenReturn(race);
-		when(mount.isFollowing(character)).thenReturn(true);
-		expect("mount.invalid.mount");
-		character.setMount(mount);
+	public void movementClear() {
+		final MovementMode prev = entity.movement();
+		entity.movement(movement);
+		entity.movement(null);
+		assertEquals(prev, entity.movement());
 	}
 }

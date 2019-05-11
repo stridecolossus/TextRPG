@@ -1,0 +1,19 @@
+<materials>
+
+<material name="wood" strength="10">
+	<damaged>
+		<SLASHING />
+		<CRUSHING />
+		<FIRE />		
+	</damaged>
+</material>
+
+<material name="glass" strength="1">
+	<damaged>
+		<PIERCING />
+		<SLASHING />
+		<CRUSHING />		
+	</damaged>
+</material>
+
+</materials>

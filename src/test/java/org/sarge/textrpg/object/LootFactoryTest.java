@@ -1,58 +1,53 @@
 package org.sarge.textrpg.object;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.stream.Stream;
 
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.common.Value;
-import org.sarge.textrpg.util.Percentile;
+import org.junit.jupiter.api.Test;
 
-public class LootFactoryTest extends ActionTest {
+public class LootFactoryTest {
 	@Test
-	public void object() {
-		// Define loot-factory to generate a single object
-		final ObjectDescriptor descriptor = new ObjectDescriptor("object");
-		final LootFactory f = LootFactory.object(descriptor, 1);
+	public void none() {
+		assertEquals(0, LootFactory.EMPTY.generate(null).count());
+	}
+
+	@Test
+	public void descriptor() {
+		// Create factory
+		final ObjectDescriptor descriptor = ObjectDescriptor.of("object");
+		final LootFactory factory = LootFactory.of(descriptor, 1);
+		assertNotNull(factory);
 
 		// Generate loot
-		final Stream<WorldObject> loot = f.generate(actor);
+		final Stream<WorldObject> loot = factory.generate(null);
 		assertNotNull(loot);
-		
-		// Check loot generated
-		final Iterator<WorldObject> itr = loot.iterator();
-		assertEquals(true, itr.hasNext());
-		
-		// Check generated object
-		final WorldObject obj = itr.next();
-		assertEquals(descriptor, obj.descriptor());
-		assertEquals(false, itr.hasNext());
+
+		// Check loot
+		final Collection<WorldObject> results = loot.collect(toList());
+		assertEquals(1, results.size());
+		assertEquals(descriptor, results.iterator().next().descriptor());
 	}
-	
+
 	@Test
 	public void money() {
-		final LootFactory f = LootFactory.money(Value.literal(42));
-		assertArrayEquals(new WorldObject[]{new Money(42)}, f.generate(actor).toArray());
-	}
-	
-	@Test
-	public void chance() {
-		// Create a factory that has zero chance of being invoked
-		final LootFactory delegate = mock(LootFactory.class);
-		final LootFactory no = LootFactory.chance(Percentile.ZERO, Value.literal(-999), delegate);
-		no.generate(actor);
-		verifyZeroInteractions(delegate);
+		// Create factory
+		final var factory = LootFactory.money(42);
+		assertNotNull(factory);
 
-		// Create a factory that will always be invoked
-		final LootFactory yes = LootFactory.chance(Percentile.ZERO, null, delegate);
-		yes.generate(actor);
-		verify(delegate).generate(actor);
+		// Check loot
+		final var loot = factory.generate(null);
+		assertNotNull(loot);
+
+		// Check results
+		final var results = loot.collect(toList());
+		assertEquals(1, results.size());
+
+		// Check money
+		final var money = (Money) results.iterator().next();
+		assertEquals(42, money.value());
 	}
 }

@@ -1,0 +1,42 @@
+<updater>
+	<health>
+		<compound op="multiply">
+			<compound>
+				<scaled scale="5">
+					<attribute attribute="end" />
+				</scaled>
+				<value value="health" type="regeneration" />
+			</compound>
+			<percentile>
+				<value value="hunger" />
+			</percentile>
+		</compound>
+	</health>
+	<stamina>
+		<compound op="multiply">
+			<compound>
+				<scaled scale="5">
+					<attribute attribute="end" />
+				</scaled>
+				<scaled scale="2">
+					<attribute attribute="str" />
+				</scaled>
+				<value value="stamina" type="regeneration" />
+			</compound>
+			<percentile>
+				<value value="hunger" />
+			</percentile>
+			<percentile>
+				<value value="thirst" />
+			</percentile>
+		</compound>
+	</stamina>
+	<power>
+		<compound>
+			<scaled scale="5">
+				<attribute attribute="will" />
+			</scaled>
+			<value value="power" type="regeneration" />
+		</compound>
+	</power>
+</updater>

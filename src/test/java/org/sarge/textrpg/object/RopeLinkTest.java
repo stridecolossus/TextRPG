@@ -1,53 +1,46 @@
 package org.sarge.textrpg.object;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.object.Rope.Anchor;
-import org.sarge.textrpg.world.Route;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.util.Description;
+import org.sarge.textrpg.world.Link;
+import org.sarge.textrpg.world.ExtendedLink;
 
-public class RopeLinkTest extends ActionTest {
-	private RopeLink link;
-	private Anchor anchor;
-	private Rope rope;
-	
-	@Before
-	public void before() throws ActionException {
-		anchor = new Rope.Anchor(new ObjectDescriptor("anchor"));
-		link = new RopeLink(anchor, true);
-		rope = new Rope(new Rope.Descriptor(new ObjectDescriptor("rope"), 1, 2, true));
-		rope.setParent(actor);
-		when(actor.perceives(anchor)).thenReturn(true);
+public class RopeLinkTest {
+	private Link link;
+	private Rope.Anchor anchor;
+
+	@BeforeEach
+	public void before() {
+		anchor = mock(Rope.Anchor.class);
+		link = new Rope.RopeLink(new ExtendedLink.Properties(), anchor);
 	}
-	
+
 	@Test
 	public void constructor() {
-		assertEquals(Route.ROPE, link.route());
+		assertEquals(false, link.isQuiet());
+		assertEquals(false, link.isTraversable());
+		assertEquals(true, link.isEntityOnly());
 		assertEquals(Optional.of(anchor), link.controller());
-		assertEquals(false, link.isVisible(actor));
-		assertEquals(false, link.isTraversable(actor));
 	}
-	
+
 	@Test
-	public void attach() throws ActionException {
-		rope.attach(actor, anchor);
-		assertEquals(true, link.isVisible(actor));
-		assertEquals(true, link.isTraversable(actor));
-		assertEquals(Optional.of(anchor), link.controller());
-		rope.remove(actor);
-		assertEquals(false, link.isTraversable(actor));
+	public void reason() {
+		assertEquals(Optional.of(new Description("link.requires.rope")), link.reason(null));
+		when(anchor.isAttached()).thenReturn(true);
+		assertEquals(Optional.empty(), link.reason(null));
 	}
-	
+
 	@Test
-	public void describe() throws ActionException {
-		assertEquals("!dir!", link.describe("dir"));
-		rope.attach(actor, anchor);
-		assertEquals("|dir|", link.describe("dir"));
+	public void wrap() {
+		assertEquals("dir", link.wrap("dir"));
+		when(anchor.isAttached()).thenReturn(true);
+		assertEquals("|dir|", link.wrap("dir"));
 	}
 }

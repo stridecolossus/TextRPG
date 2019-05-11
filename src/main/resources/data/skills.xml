@@ -1,0 +1,156 @@
+<skills>
+
+<!-- RANGER -->
+<skill name="wilderness" score="50" default="25" cost="2" />
+<skill name="track" score="50" cost="2" />
+<skill name="ride" score="50" cost="2" />
+<skill name="swim" score="50" cost="2" />
+<skill name="fish" score="75" cost="1" />
+<skill name="climb" score="50" default="10" cost="2" />
+<!--
+ranger
+tracker
+rider
+horse.master
+master fisherman
+cragsman
+hiker
+mountaineer
+-->
+
+<!-- BURGLAR -->
+<group>
+	<skill name="hide" score="25" cost="5" power="5" duration="3s" />
+	<skill name="lurk" score="50" cost="25" power="15" duration="3s" />
+</group>
+<group>
+	<skill name="sneak" score="25" cost="10" power="5">
+		<required>hide</required>
+	</skill>
+	<skill name="footpad" score="50" cost="20" power="5" />
+</group>
+<group>
+	<skill name="pick" score="25" cost="25" power="25" duration="10s" />
+	<skill name="burglar" score="50" cost="50" power="20" duration="8s" />
+	<skill name="master.burglar" score="75" cost="100" power="15" duration="5s" />
+</group>
+<skill name="detect" score="50" cost="25" power="10" duration="5s" />
+<skill name="disarm" score="25" cost="25" power="25" duration="10s">
+	<required>detect</required>
+</skill>
+<group>
+	<skill name="backstab" score="40" cost="100" power="25" duration="10s">
+		<required>sneak</required>
+		<modifier>
+			<attribute attribute="agility" scale="1" />
+		</modifier>
+	</skill>
+	<skill name="assassin" score="80" cost="250" power="100" duration="10s">
+		<required>footpad</required>
+		<modifier>
+			<compound>
+				<attribute attribute="agility" scale="2" />
+				<attribute attribute="str" scale="0.5" />
+			</compound>
+		</modifier>		
+	</skill>
+</group>
+
+<!-- ARCHERY -->
+<skill name="archery" score="75" cost="5" />
+<!--
+bowman
+archer
+dead eye
+double shot 
+crossbows
+-->
+
+<!-- HEALER -->
+<skill name="bandage" score="50" cost="5" power="10" duration="5s" />
+<skill name="herblore" score="50" cost="10" power="5" duration="10s" />
+
+<!-- MAGICAL -->
+<skill name="break" score="50" cost="50" power="50" duration="10s" />
+<skill name="block" score="50" cost="50" power="50" duration="10s" />
+
+<!-- CRAFTING -->
+<skill name="farm" score="75" cost="5" duration="5s" />
+<skill name="mine" score="75" cost="5" duration="5s" />
+
+<!-- LANGUAGES -->
+<skill name="advanced.languages" score="50" cost="100" />
+<skill name="common" score="50" cost="1" />
+<skill name="adunaic" score="25" cost="5" />
+
+
+<!-- 
+
+GENERAL SKILLS
+
+cook
+
+WARRIOR
+
+swords
+axes
+martial
+shields
+bash
+kick
+rescue
+taunt 
+
+RANGER
+
+wilderness-lore
+listen
+track
+butcher
+climb
+summon?
+snare?
+weather lore?
+
+ARCHER
+
+archery
+crossbows
+skill shot
+fast loader
+pin foot
+
+BURGLAR
+
+daggers
+dodge
+sneak
+pick-lock
+back-stab
+pick-pocket
+trip
+detect traps
+disarm traps
+set trap?
+
+HEALER
+
+herblore
+bandage
+heal
+cure disease
+cure poison
+remove curse
+
+LANGUAGES
+
+westron
+sindarin
+quenya
+adunaic
+orcish
+black-speech
+
+-->
+
+</skills>

@@ -1,82 +1,63 @@
 package org.sarge.textrpg.object;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.common.Message;
-import org.sarge.textrpg.object.Food.Descriptor;
-import org.sarge.textrpg.object.Food.Type;
+import java.time.Duration;
 
-public class FoodTest extends ActionTest {
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.util.TestHelper;
+
+public class FoodTest {
 	private Food food;
 
-	@Before
-	public void before() throws ActionException {
-		food = new Food(new Descriptor(new ObjectDescriptor("food"), Type.RAW, 1, 2));
-		food.setParent(actor);
-	}
-
-	@After
-	public void after() {
-		Food.QUEUE.reset();
+	@BeforeEach
+	public void before() {
+		final ObjectDescriptor descriptor = new ObjectDescriptor.Builder("meat").decay(Duration.ofMinutes(1)).build();
+		food = new Food.Descriptor(descriptor, true, 2, 3f).create();
+		food.parent(TestHelper.parent());
 	}
 
 	@Test
 	public void constructor() {
-		assertEquals("raw.food", food.name());
-		assertEquals(false, food.isEdible());
-		assertEquals(false, food.isDead());
-		assertEquals(1, Food.QUEUE.size());
+		assertEquals("meat", food.name());
+		assertNotNull(food.descriptor());
+		assertEquals(true, food.isCookable());
+		assertEquals(2, food.descriptor().nutrition());
+		assertEquals(false, food.descriptor().isStackable());
 	}
 
 	@Test
-	public void consume() throws ActionException {
-		food.cook();
-		food.consume();
-		assertEquals(true, food.isDead());
-		assertEquals(2, Food.QUEUE.size());
+	public void cook() {
+		final Food cooked = food.cook();
+		assertNotNull(cooked);
+		assertEquals(false, cooked.isCookable());
+		assertEquals(2 * 3, cooked.descriptor().nutrition());
 	}
 
 	@Test
-	public void consumeNotCooked() throws ActionException {
-		expect("consume.not.cooked");
-		food.consume();
+	public void cookAlreadyCooked() {
+		final Food cooked = food.cook();
+		assertThrows(IllegalStateException.class, () -> cooked.cook());
 	}
 
+	@DisplayName("Decay to rotten meat")
 	@Test
-	public void cook() throws ActionException {
-		food.verifyCook();
-		food.cook();
-		assertEquals("food", food.name());
-		assertEquals(true, food.isEdible());
-		assertEquals(false, food.isDead());
-		assertEquals(2, Food.QUEUE.size());
+	public void decayMeat() {
+		assertEquals(true, food.decay());
+		assertEquals(true, food.isAlive());
+		assertEquals(false, food.isCookable());
+		assertEquals("rotten.meat", food.name());
 	}
 
+	@DisplayName("Decay destroys rotten meat")
 	@Test
-	public void cookCannotCook() throws ActionException {
-		food = new Food(new Descriptor(new ObjectDescriptor("food"), Type.FOOD, 1, 2));
-		expect("cook.cannot.cook");
-		food.verifyCook();
-	}
-
-	@Test
-	public void cookAlreadyCooked() throws ActionException {
-		food.cook();
-		expect("cook.already.cooked");
-		food.verifyCook();
-	}
-
-	@Test
-	public void decay() {
-		Food.QUEUE.execute(2);
-		assertEquals(true, food.isDead());
-		verify(actor).alert(new Message("food.decayed", food));
-		assertEquals(0, Food.QUEUE.size());
+	public void decayRotten() {
+		assertEquals(true, food.decay());
+		assertEquals(false, food.decay());
+		assertEquals(false, food.isAlive());
 	}
 }

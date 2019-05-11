@@ -1,0 +1,76 @@
+<area name="area" view="view" terrain="woodland" route="road">
+	<ambient name="ambient" period="10s" repeat="true" />
+	
+	<weather>
+		<min>
+			<weather type="temperature" level="0" />
+			<weather type="precipitation" level="1" />
+			<weather type="wind" level="2" />
+		</min>
+		<max>
+			<weather type="temperature" level="1" />
+			<weather type="precipitation" level="2" />
+			<weather type="wind" level="2" />
+		</max>
+	</weather>
+	
+	<resource type="fish">
+		<object ref="fish" />
+	</resource>
+	
+	<resource type="herbs">
+		<random range="2">
+			<object name="athelas">
+			</object>
+		</random>
+	</resource>
+	
+	<location name="location" terrain="forest">
+		<properties>
+			<fish />
+		</properties>
+		<route dir="n" dest="other" route="lane" reverse="one-way" />
+		<link dir="s" dest="start" reverse="one-way" />
+		<link dir="e" dest="end" reverse="one-way" />
+		<links>
+			<route dir="w" dest="location" route="lane" reverse="one-way" /> <!-- TODO default -->
+		</links>
+		<contents>
+			<fixture ref="fixture" />
+			<object ref="object" />
+		</contents>
+	</location>
+
+	<location name="other" terrain="forest" orphan="true">
+	</location>
+	
+	<path terrain="hill" route="trail">
+		<location name="start" />
+		<location name="middle" dir="e" terrain="mountain">
+			<properties>
+				<vantage-point />
+			</properties>
+			<fixture ref="fixture" />
+		</location>
+		<location name="end" dir="s" />
+	</path>
+	
+	<grid width="2" height="3">
+		<descriptor name="grid.location" terrain="scrubland">
+			<properties>
+				<water />
+			</properties>
+		</descriptor>
+		<fill />
+		<clear-section start="0,1" end="0,2" />
+		<descriptor name="grid.location" terrain="grassland" />
+		<set coords="0,2">
+			<fixture ref="fixture" />
+		</set>
+		<block coords="1,0" dir="e" />
+		<exit coords="1,0">
+			<route dir="n" dest="grid.location" route="trail" reverse="one-way" /> <!-- TODO -->
+		</exit>
+		<expose coords="0,0" />
+	</grid>	
+</area>

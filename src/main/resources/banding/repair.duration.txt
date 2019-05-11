@@ -1,0 +1,4 @@
+0		shortly
+25		minutes
+50		hour
+75		long

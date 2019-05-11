@@ -1,0 +1,49 @@
+<area name="prancing.pony" terrain="indoors" route="none">
+
+<location name="pony.yard">
+	<links>
+		<portal dir="n" dest="reception" route="stair" />
+	</links>
+	<contents>
+		<lamp descriptor="lamp" />
+		<readable name="pony.sign" placement="mounted" lang="common" text="pony.sign.text" />
+	</contents>
+</location>
+
+<location name="reception">
+	<links>
+		<link dir="w" dest="common.room" />
+		<fake dir="e" dest="self" name="kitchens" reason="kitchens.message" reverse="one-way" />
+		<link dir="u" dest="first.floor" route="stairs" />
+	</links>
+</location>
+
+<location name="common.room">
+</location>
+
+<location name="first.floor">
+	<links>
+		<link dir="u" dest="second.floor" route="stairs" />
+		<portal dir="n" dest="parlour" />
+	</links>
+</location>
+
+<location name="parlour">
+	<link dir="w" dest="bedroom" />
+	<contents>
+		<container descriptor="table" />
+		<furniture descriptor="small.chair" />
+	</contents>
+</location>
+
+<location name="bedroom">
+	<contents>
+		<object descriptor="small.bed" />
+		<object name="bedroom.window" />
+	</contents>
+</location>
+
+<location name="second.floor">
+</location>
+
+</area>

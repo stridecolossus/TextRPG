@@ -1,349 +1,231 @@
 package org.sarge.textrpg.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.util.function.Consumer;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.common.Condition;
-import org.sarge.textrpg.common.DamageType;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.common.Alignment;
+import org.sarge.textrpg.common.Damage;
 import org.sarge.textrpg.common.Emission;
 import org.sarge.textrpg.common.Hidden;
-import org.sarge.textrpg.common.Notification.Handler;
 import org.sarge.textrpg.common.Size;
-import org.sarge.textrpg.entity.Entity.AppliedEffect;
-import org.sarge.textrpg.entity.Race.Builder;
-import org.sarge.textrpg.entity.Skill.Tier;
-import org.sarge.textrpg.object.DeploymentSlot;
-import org.sarge.textrpg.object.ObjectDescriptor;
-import org.sarge.textrpg.object.WorldObject;
-import org.sarge.textrpg.util.MutableIntegerMap;
+import org.sarge.textrpg.common.Skill;
+import org.sarge.textrpg.util.ActionException;
+import org.sarge.textrpg.util.Description;
+import org.sarge.textrpg.util.Event;
 import org.sarge.textrpg.util.Percentile;
+import org.sarge.textrpg.util.TestHelper;
+import org.sarge.textrpg.world.Area;
+import org.sarge.textrpg.world.DefaultLocation;
 import org.sarge.textrpg.world.Direction;
-import org.sarge.textrpg.world.Tracks;
+import org.sarge.textrpg.world.Exit;
+import org.sarge.textrpg.world.Link;
+import org.sarge.textrpg.world.Location;
 
-public class EntityTest extends ActionTest {
+public class EntityTest {
 	private Entity entity;
 	private Race race;
-	private Skill skill;
-	private Induction induction;
+	private EntityDescriptor descriptor;
+	private EntityManager manager;
 
-	@Before
+	@SuppressWarnings("unchecked")
+	@BeforeEach
 	public void before() {
-		skill = new Skill("skill", Collections.singletonList(new Tier(Condition.TRUE, 1)));
-		race = new Builder("race").size(Size.MEDIUM).skills(new SkillSet(skill, 6)).build();
-		entity = new Entity(race, new MutableIntegerMap<>(Attribute.class), EntityManager.IDLE) {
-			@Override
-			public Handler handler() {
-				return null;
-			}
+		// Create descriptor
+		race = new Race.Builder("race").alignment(Alignment.EVIL).weight(42).size(Size.MEDIUM).skill(Skill.NONE).category("cat").build();
+		descriptor = new DefaultEntityDescriptor(race, null);
 
-			@Override
-			public Gender gender() {
-				return Gender.NEUTER;
-			}
+		// Create manager
+		final Event.Queue queue = mock(Event.Queue.class);
+		final Notification.Handler handler = mock(Notification.Handler.class);
+		manager = new EntityManager(queue, handler, mock(Consumer.class));
 
-			@Override
-			public Alignment alignment() {
-				return null;
-			}
-
-			@Override
-			protected String getDescriptionKey() {
-				return "mock";
-			}
-		};
-		entity.setParentAncestor(loc);
-		induction = mock(Induction.class);
+		// Create entity
+		entity = new Entity(descriptor, manager);
 	}
 
-	@After
-	public void after() {
-		entity.queue().reset();
+	@Nested
+	class EntityTests {
+		@Test
+		public void constructor() {
+			// Check basic properties
+			assertEquals("race", entity.name());
+			assertEquals(descriptor, entity.descriptor());
+			assertEquals(Size.MEDIUM, entity.size());
+			assertEquals(42, entity.weight());
+			assertEquals(Percentile.ONE, entity.visibility());
+			assertEquals(Percentile.ZERO, entity.emission(Emission.LIGHT));
+			assertNotNull(entity.contents());
+			assertEquals(false, entity.isAlive());
+			assertEquals(true, entity.isSentient());
+
+			// Check entity properties
+			assertNotNull(entity.skills());
+			assertEquals(true, entity.skills().contains(Skill.NONE));
+			assertEquals(null, entity.location());
+			assertEquals(false, entity.isPlayer());
+			assertEquals(true, entity.isRaceCategory("cat"));
+			assertEquals(false, entity.isAssociated(null));
+
+			// Check generated components
+			assertNotNull(entity.model());
+			assertNotNull(entity.manager());
+			assertNotNull(entity.movement());
+		}
+
+		@Test
+		public void follower() {
+			assertThrows(UnsupportedOperationException.class, () -> entity.follower());
+			assertThrows(UnsupportedOperationException.class, () -> entity.leader());
+		}
+
+		@Test
+		public void location() {
+			final Location loc = new DefaultLocation(new Location.Descriptor("loc"), Area.ROOT);
+			entity.parent(loc);
+			assertEquals(loc, entity.location());
+		}
+
+		@Test
+		public void alert() {
+			final Description alert = new Description("notification");
+			entity.alert(alert);
+		}
+
+		@Test
+		public void damage() {
+			final var values = entity.model().values();
+			values.get(EntityValue.HEALTH.key()).set(3);
+			entity.damage(Damage.Type.CRUSHING, 2);
+			assertEquals(1, values.get(EntityValue.HEALTH.key()).get());
+		}
+
+		@Test
+		public void describe() {
+			final Description description = entity.describe(null);
+			final Description expected = new Description.Builder("entity.description").name("race").add("stance", Stance.DEFAULT).build();
+			assertEquals(expected, description);
+		}
+
+		@Test
+		public void destroy() {
+			final Event.Queue queue = manager.queue();
+			entity.parent(TestHelper.parent());
+			entity.destroy();
+			verify(queue).remove();
+		}
 	}
 
-	@Test
-	public void constructor() {
-		// Check entity attributes
-		assertEquals(race, entity.race());
-		assertEquals("race", entity.name());
-		assertEquals(42, entity.weight());
-		assertEquals(true, entity.isSentient());
-		assertEquals(loc, entity.location());
+	@Nested
+	class Perception {
+		private Hidden hidden;
 
-		// Check transient attributes
-		assertEquals(Stance.DEFAULT, entity.stance());
-		assertEquals(Percentile.ONE, entity.visibility());
-		assertEquals(Optional.empty(), entity.group());
-		assertEquals(true, entity.isDead());
+		@BeforeEach
+		public void before() {
+			hidden = mock(Hidden.class);
+		}
 
-		// Check stats
-		assertNotNull(entity.attributes());
-		assertNotNull(entity.values());
+		@Test
+		public void self() {
+			assertEquals(false, entity.perceives(entity));
+		}
 
-		// Check effects
-		assertNotNull(entity.getAppliedEffects());
-		assertEquals(0, entity.getAppliedEffects().count());
+		@Test
+		public void invisible() {
+			when(hidden.visibility()).thenReturn(Percentile.ZERO);
+			assertEquals(false, entity.perceives(hidden));
+		}
 
-		// Check gear
-		assertEquals(Optional.of(6), entity.skillLevel(skill));
+		@Test
+		public void visible() {
+			when(hidden.visibility()).thenReturn(Percentile.ONE);
+			assertEquals(true, entity.perceives(hidden));
+		}
 
-		// Check followers
-		assertNotNull(entity.followers());
-		assertEquals(0, entity.followers().count());
+		@Test
+		public void group() {
+			final Group group = mock(Group.class);
+			when(group.perceives(entity, hidden)).thenReturn(true);
+			entity.model().group(group);
+			assertEquals(true, entity.perceives(hidden));
+		}
 	}
 
-	@Test
-	public void setStance() throws ActionException {
-		// Reset
-		entity.setStance(Stance.RESTING);
-		assertEquals(Stance.RESTING, entity.stance());
+	@Nested
+	class MovementModeTests {
+		private MovementMode mode;
 
-		// Sleep
-		entity.setStance(Stance.SLEEPING);
-		assertEquals(Stance.SLEEPING, entity.stance());
+		@BeforeEach
+		public void before() {
+			mode = entity.movement();
+			assertNotNull(mode);
+		}
 
-		// Wake
-		entity.setStance(Stance.RESTING);
-		assertEquals(Stance.RESTING, entity.stance());
+		@Test
+		public void constructor() {
+			assertEquals(entity, mode.mover());
+			assertEquals(Percentile.ZERO, mode.noise());
+			assertEquals(entity.model().trail(), mode.trail());
+		}
 
-		// Stand
-		entity.setStance(Stance.DEFAULT);
-		assertEquals(Stance.DEFAULT, entity.stance());
+		@Test
+		public void transactions() {
+			// TODO
+		}
 
-		// Mount
-		entity.setStance(Stance.MOUNTED);
-		assertEquals(Stance.MOUNTED, entity.stance());
-
-		// Dismount
-		entity.setStance(Stance.DEFAULT);
-		assertEquals(Stance.DEFAULT, entity.stance());
-
-		// Sneak
-		entity.setStance(Stance.SNEAKING);
-		assertEquals(Stance.SNEAKING, entity.stance());
-
-		// Fight
-		entity.setStance(Stance.COMBAT);
-		assertEquals(Stance.COMBAT, entity.stance());
+		@Test
+		public void move() throws ActionException {
+			final Location loc = new DefaultLocation(new Location.Descriptor("loc"), Area.ROOT);
+			final Exit exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+			mode.move(exit);
+			assertEquals(loc, entity.parent());
+		}
 	}
 
-	@Test
-	public void setGroup() {
-		final Group group = mock(Group.class);
-		entity.setGroup(group);
-		assertEquals(group, group);
-	}
+	@Nested
+	class ValidTarget {
+		private Entity other;
 
-	@Test
-	public void perceives() {
-		// Check full visible
-		final Hidden obj = mock(Hidden.class);
-		when(obj.visibility()).thenReturn(Percentile.ONE);
-		assertEquals(true, entity.perceives(obj));
+		@BeforeEach
+		public void before() {
+			final EntityModel model = mock(EntityModel.class);
+			final EntityDescriptor descriptor = mock(EntityDescriptor.class);
+			other = mock(Entity.class);
+			when(other.model()).thenReturn(model);
+			when(other.descriptor()).thenReturn(descriptor);
+		}
 
-		// Check passive detection
-		entity.modify(Attribute.PERCEPTION, 5);
-		when(obj.visibility()).thenReturn(new Percentile(0.9f));
-		assertEquals(true, entity.perceives(obj));
+		@Test
+		public void self() {
+			assertEquals(false, entity.isValidTarget(entity));
+		}
 
-		// Check not visible
-		when(obj.visibility()).thenReturn(new Percentile(0.8f));
-		assertEquals(false, entity.perceives(obj));
+		@Test
+		public void groupMember() {
+			final Group group = mock(Group.class);
+			entity.model().group(group);
+			when(other.model().group()).thenReturn(group);
+			assertEquals(false, entity.isValidTarget(other));
+		}
 
-		// Check completely invisible
-		when(obj.visibility()).thenReturn(Percentile.ZERO);
-		assertEquals(false, entity.perceives(obj));
-	}
+		@Test
+		public void notValidTargetAlignment() {
+			when(other.descriptor().alignment()).thenReturn(Alignment.EVIL);
+			assertEquals(false, entity.isValidTarget(other));
+		}
 
-	@Test
-	public void perceivesGroup() throws ActionException {
-		// Create hidden object
-		final Hidden obj = mock(Hidden.class);
-		when(obj.visibility()).thenReturn(new Percentile(0.01f));
-		assertEquals(false, entity.perceives(obj));
-
-		// Create an entity that perceives the object
-		final Entity other = mock(Entity.class);
-		when(other.group()).thenReturn(Optional.empty());
-		when(other.perceives(obj)).thenReturn(true);
-
-		// Add both to a group and check this entity can now perceive the object
-		final Group group = new Group(other);
-		group.add(entity);
-		assertEquals(true, entity.perceives(obj));
-	}
-
-	@Test
-	public void modifyAttribute() {
-		entity.modify(Attribute.ENDURANCE, 1);
-		entity.modify(Attribute.ENDURANCE, 2);
-		assertEquals(1 + 2, entity.attributes().get(Attribute.ENDURANCE));
-	}
-
-	@Test
-	public void modifyValue() {
-		entity.modify(EntityValue.POWER, 42);
-		assertEquals(42, entity.values().get(EntityValue.POWER));
-	}
-
-	@Test
-	public void damage() {
-		entity.modify(EntityValue.HEALTH, 3);
-		entity.damage(DamageType.COLD, 1);
-		assertEquals(3 - 1, entity.values().get(EntityValue.HEALTH));
-	}
-
-	@Test
-	public void damageKilled() {
-		entity.damage(DamageType.COLD, 999);
-		assertEquals(true, entity.isDead());
-	}
-
-	@Test
-	public void applyEffect() {
-		// Apply effect
-		final EffectMethod method = mock(EffectMethod.class);
-		entity.apply(method, 1, Optional.of(2), entity.queue());
-		verify(method).apply(entity, 1);
-
-		// Check applied effect registered
-		assertEquals(1, entity.getAppliedEffects().count());
-		final AppliedEffect applied = entity.getAppliedEffects().iterator().next();
-		assertEquals(method, applied.effect());
-		assertEquals(1, applied.size());
-
-		// Advance past duration and check expiry event
-		entity.queue().execute(2);
-		verify(method).apply(entity, -1);
-		assertEquals(0, entity.getAppliedEffects().count());
-	}
-
-	@Test
-	public void dispel() {
-		// Apply a transient effect
-		final EffectMethod method = mock(EffectMethod.class);
-		entity.apply(method, 1, Optional.of(2), actor.queue());
-
-		// Dispel and check effect removed
-		entity.dispel();
-		verify(method).apply(entity, -1);
-		assertEquals(0, entity.getAppliedEffects().count());
-	}
-
-	@Test
-	public void equipmentEmission() throws ActionException {
-		assertEquals(Optional.empty(), entity.emission(Emission.Type.LIGHT));
-		final Emission light = new Emission(Emission.Type.LIGHT, Percentile.HALF);
-		final WorldObject obj = new ObjectDescriptor.Builder("light").emission(light).slot(DeploymentSlot.HEAD).build().create();
-		entity.equipment().equip(obj);
-		assertEquals(Optional.of(light), entity.emission(Emission.Type.LIGHT));
-	}
-
-	@Test
-	public void getWeapon() throws ActionException {
-		// Equip a weapon
-		final ObjectDescriptor desc = new ObjectDescriptor.Builder("weapon").slot(DeploymentSlot.MAIN_HAND).build();
-		final WorldObject obj = new WorldObject(desc);
-		entity.equipment().equip(obj);
-		assertEquals(obj, entity.weapon());
-
-		// Remove and check using default weapon
-		entity.equipment().remove(obj);
-		assertEquals(race.equipment().weapon(), entity.weapon());
-	}
-
-	@Test
-	public void addTracks() {
-		final Tracks t = new Tracks(entity.name(), loc, Direction.EAST, Percentile.ONE, 1L);
-		entity.add(t, 0);
-		assertEquals(1, entity.tracks().count());
-		assertEquals(t, entity.tracks().iterator().next());
-	}
-
-	@Test
-	public void removeOldTracks() {
-		// Add some tracks
-		final Tracks older = new Tracks(entity.name(), loc, Direction.EAST, Percentile.ONE, 0);
-		entity.add(older, 0);
-
-		// Add some more and check old tracks removed
-		final Tracks tracks = new Tracks(entity.name(), loc, Direction.EAST, Percentile.ONE, 2);
-		entity.add(tracks, 1);
-		assertEquals(1, entity.tracks().count());
-		assertEquals(tracks, entity.tracks().iterator().next());
-	}
-
-	@Test
-	public void setVisibility() {
-		entity.setVisibility(Percentile.HALF);
-		assertEquals(Percentile.HALF, entity.visibility());
-	}
-
-	@Test
-	public void setStanceNotSneaking() throws ActionException {
-		entity.setVisibility(Percentile.HALF);
-		entity.setStance(Stance.RESTING);
-		assertEquals(Percentile.ONE, entity.visibility());
-	}
-
-	@Test
-	public void startInduction() {
-		entity.start(induction, 42, false);
-		assertEquals(induction, entity.getInduction());
-		assertEquals(1, entity.queue().size());
-	}
-
-	@Test
-	public void completeInduction() throws ActionException {
-		entity.start(induction, 42, false);
-		entity.queue().execute(42);
-		verify(induction).complete();
-		assertEquals(null, entity.getInduction());
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void startInductionAlreadyActive() {
-		entity.start(induction, 42, false);
-		entity.start(induction, 42, false);
-	}
-
-	@Test
-	public void interruptInduction() {
-		entity.start(induction, 42, false);
-		entity.interrupt();
-		verify(induction).interrupt();
-		assertEquals(null, entity.getInduction());
-	}
-
-	@Test
-	public void repeatingInduction() throws ActionException {
-		entity.start(induction, 1, true);
-		entity.queue().execute(1);
-		entity.queue().execute(2);
-		assertEquals(induction, entity.getInduction());
-		verify(induction, times(2)).complete();
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void interruptInductionNotActive() {
-		entity.interrupt();
-	}
-
-	@Test
-	public void destroy() throws ActionException {
-		entity.destroy();
-		assertEquals(true, entity.isDead());
-		assertEquals(0, loc.contents().stream().filter(e -> e == entity).count());
+		@Test
+		public void isValidTarget() {
+			when(other.descriptor().alignment()).thenReturn(Alignment.GOOD);
+			assertEquals(true, entity.isValidTarget(other));
+		}
 	}
 }

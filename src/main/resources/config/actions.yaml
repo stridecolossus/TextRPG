@@ -1,0 +1,50 @@
+# Actions configuration
+
+flee:
+  cost.modifier:    5
+  delay:            1s
+  panic:            3
+
+hiddenlink.forget: 30m
+
+camp:
+  lifetime:     15m
+  light.level:  50
+  smoke.level:  50
+
+search:
+  base.duration:    5s
+  forget.duration:  30m
+
+cook.duration: 5s
+
+butcher.duration: 10s
+
+smoke.duration: 5s
+
+trap.forget: 30m
+
+hide.object.duration: 2500ms
+
+whet.period: 2500ms
+
+herbs.forget: 30m
+
+listen.perception.modifier: 5
+
+farm:
+  decay.duration: 30m
+  grow.duration: 5m
+
+pyre:
+  build.duration: 15s
+  base.lifetime:  10m
+
+barrow:
+  build.duration: 25s
+  decay: 1h
+
+dig.snow:
+  period:         2s
+  stamina.cost:   5
+  lifetime:       10

@@ -1,8 +1,0 @@
-stance			move		rest		tracks
-DEFAULT			1			1			100
-RESTING			1			5			0
-SLEEPING		1			10			0
-COMBAT			1			0			100
-SNEAKING		5			0			25
-MOUNTED			0.25		1			100
-

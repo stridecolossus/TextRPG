@@ -1,16 +1,32 @@
 package org.sarge.textrpg.world;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Test;
-import org.sarge.textrpg.common.Size;
+import java.util.Optional;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.util.Description;
 
 public class FakeLinkTest {
+	private Link link;
+
+	@BeforeEach
+	public void before() {
+		link = new FakeLink("name", "reason");
+	}
+
 	@Test
 	public void constructor() {
-		final Link link = new FakeLink(Route.CORRIDOR, Size.NONE, "dest", "message");
-		assertEquals(false, link.isTraversable(null));
-		assertEquals("message", link.reason(null));
-		assertEquals("dest", link.destinationName(null));
+		assertEquals("name", link.name(null));
+		assertEquals(Optional.of(new Description("reason")), link.reason(null));
+		assertEquals(false, link.isTraversable());
+		assertEquals(Optional.empty(), link.controller());
+	}
+
+	@Test
+	public void invert() {
+		assertThrows(UnsupportedOperationException.class, () -> link.invert());
 	}
 }

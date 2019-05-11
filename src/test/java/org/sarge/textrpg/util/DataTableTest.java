@@ -1,16 +1,14 @@
 package org.sarge.textrpg.util;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sarge.lib.util.Converter;
 
 public class DataTableTest {
@@ -19,46 +17,47 @@ public class DataTableTest {
 		TWO
 	}
 
-	private DataTable table;
+	private DataTable<MockEnum> table;
 
-	@Before
+	@BeforeEach
 	public void before() {
-		final String[][] rows = {
-			{"ONE", "1", "2"},
-			{"TWO", "3", "4"},
-		};
-		table = new DataTable(Arrays.asList("key", "a", "b"), rows);
+		final var map = Map.of(
+			MockEnum.ONE, List.of("1", "true"),
+			MockEnum.TWO, List.of("2", "false")
+		);
+		table = new DataTable<>(List.of("key", "integer", "boolean"), map);
 	}
 
 	@Test
-	public void get() {
-		assertEquals("ONE", table.get(0, "key"));
-		assertEquals("1", table.get(0, "a"));
-		assertEquals("2", table.get(0, "b"));
-		assertEquals("TWO", table.get(1, "key"));
-		assertEquals("3", table.get(1, "a"));
-		assertEquals("4", table.get(1, "b"));
-	}
-
-	@Test
-	public void getRow() {
-		assertArrayEquals(new String[]{"ONE", "1", "2"}, table.getRow(0).toArray());
-		assertArrayEquals(new String[]{"TWO", "3", "4"}, table.getRow(1).toArray());
-	}
-
-	@Test
-	public void getColumn() {
-		final Map<String, Integer> map = table.getColumn("a", Converter.INTEGER);
-		assertEquals(new Integer(1), map.get("ONE"));
-		assertEquals(new Integer(3), map.get("TWO"));
+	public void column() {
+		assertEquals(Map.of(MockEnum.ONE, 1, MockEnum.TWO, 2), table.column("integer", Converter.INTEGER));
+		assertEquals(Map.of(MockEnum.ONE, true, MockEnum.TWO, false), table.column("boolean", Converter.BOOLEAN));
 	}
 
 	@Test
 	public void load() throws IOException {
-		final String str = "key a b \n ONE 1 2 \n TWO 3 4 \n";
-		table = DataTable.load(new StringReader(str));
-		assertNotNull(table);
-		get();
-		getColumn();
+		final var loaded = DataTable.load(MockEnum.class, new StringReader("key integer boolean \n ONE 1 true\n TWO 2 false"), true);
+		assertEquals(table, loaded);
+	}
+
+	@Test
+	public void loadEmpty() throws IOException {
+		TestHelper.expect(IOException.class, "Empty table", () -> DataTable.load(MockEnum.class, new StringReader(""), false));
+	}
+
+	@Test
+	public void loadUnknownKey() throws IOException {
+		TestHelper.expect(IllegalArgumentException.class, "Unknown enum constant", () -> DataTable.load(MockEnum.class, new StringReader("key integer boolean \n cobblers 1 true"), false));
+	}
+
+	@Test
+	public void loadInvalidRow() throws IOException {
+		TestHelper.expect(IllegalArgumentException.class, "mis-match", () -> DataTable.load(MockEnum.class, new StringReader("key integer boolean \n ONE 1"), false));
+	}
+
+	@Test
+	public void loadIncompleteTable() throws IOException {
+		DataTable.load(MockEnum.class, new StringReader("key integer boolean \n ONE 1 true"), false);
+		TestHelper.expect(IOException.class, "Incomplete table", () -> DataTable.load(MockEnum.class, new StringReader("key integer boolean \n ONE 1 true"), true));
 	}
 }

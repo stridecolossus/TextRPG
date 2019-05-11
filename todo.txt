@@ -1,0 +1,52 @@
+FEATURES
+- entity loader
+- dampness ~ rain, water level (TODO), swimming -> flu, disease ~ temperature as well
+- fatigue value, e.g. Old Man Willow, disease, FEAR that causes auto-flee?
+- introduce dawn/dusk times ~ season => would bugger TimeCycle, map-lighter entity manager ~ dawn/dusk, mock lantern for NPCs?
+- create character: name, race, gender, alignment, attributes ~ character class archetype & race, equipment/skills ~ race, factions ~ starting location ~ race, cash? => builder, save controller
+- location triggers: quest triggers, watch locations?
+- quests, deeds: collect N objects, visit locations, kill X of race category
+- move group/followers -> MoveAction (probably not a move-controller listener)
+- persistant player modifications: new skills, carried objects, XP earned, etc => some sort of re-playable log?
+- regeneration ~ furniture (bed, chair, etc)
+- sneaking: feel exposed in open terrain, X comes dangerously close to your hiding place
+[DONE?] - objects that cast visions: palantir, Galadriels mirror, Mirrormere, Seat of Amon Hen => objects -> description, Amon Hen -> views?
+- how to model fear effect of Nazgul? sort of aura?
+- combat controller
+- PlayerName command-arg: post letter <name>, tell <name> xxx, etc
+
+TODO
+- is sneak a movement mode? higher STA cost, less noise, less tracks visibility
+- weather will be different in neighbouring areas! => global weather?
+- PC::alert -> response handler? how? listener accepts response
+- ferry ticket seller / ferryman => not all waypoints need tickets (e.g. orphans)
+- other AI responses, default 'emote'
+- calendar::isLeapYear imcompatible with DateTime from Clock!
+- currents: damage if rapids/waterfall, fall off boat
+- location contents for paths and grids
+- archetype loader: furniture, vehicle, others
+- draw action sheathes current weapon (and potentially swaps)
+- action BROADCAST flag and implementation
+- object stack limit -> descriptor
+- partial exit descriptions, e.g. fog
+- auto carry
+- reveal handler -> player hidden, control XML inside the controlled object/link?
+- fire-place light? fixture, can be re-fueled with wood, put wood campfire | fireplace, or light campfire | fireplace
+- invoke EntityController::update AI in DefaultNotificationHandler
+
+TESTING
+- all other actions
+- coverage report (especially actions)
+- effect controller test
+
+IMPROVEMENTS
+- Equipment: only needed for PC, equivalent for NPCs (e.g. emissions). Overlaps with Inventory? Either combine or break dependency on inv.
+- WorldLoader is a mess!
+- Loader interface (for POJOs that can self-load)?
+- gates/shops refer to *single* faction in current loader context, better to lookup by name (implies need faction name in XML) and/or use default?
+- grid neighbours currently limited to current area
+- Money size <- amount, banded, e.g. < 10s small, <100s medium, etc
+- underground views?
+- multiple ambient events - either multiple ambient descriptors, or single descriptor with multiple names?
+- cache should insert into priority-queue, no point in sorting on every eviction => entry is comparable
+- consider splitting up large packages?

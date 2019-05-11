@@ -1,0 +1,4 @@
+0		none
+25		low
+50		medium
+75		high

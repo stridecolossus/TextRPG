@@ -1,0 +1,15 @@
+<initialiser>
+	<health>
+		<entry attribute="end" mod="20" />
+		<entry attribute="str" mod="50" />
+	</health>
+	<stamina>
+		<entry attribute="end" mod="25" />
+		<entry attribute="str" mod="10" />
+		<entry attribute="agility" mod="5" />
+	</stamina>
+	<power>
+		<entry attribute="will" mod="50" />
+		<entry attribute="int" mod="5" />
+	</power>
+</initialiser>

@@ -1,74 +1,63 @@
 package org.sarge.textrpg.entity;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.stream.Stream;
+import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.entity.Race.Builder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.sarge.textrpg.object.LootFactory;
 import org.sarge.textrpg.object.ObjectDescriptor;
 import org.sarge.textrpg.object.WorldObject;
+import org.sarge.textrpg.util.ActionException;
+import org.sarge.textrpg.util.TestHelper;
 
-public class CorpseTest extends ActionTest {
+public class CorpseTest {
 	private Corpse corpse;
-	private Race race;
-	private WorldObject obj;
 	private LootFactory butcher;
-	
-	@Before
+	private WorldObject obj;
+
+	@BeforeEach
 	public void before() {
-		// Create an object
-		obj = mock(WorldObject.class);
-		when(obj.weight()).thenReturn(2);
-		
-		// Create butchery loot
 		butcher = mock(LootFactory.class);
-		when(butcher.generate(actor)).thenReturn(Stream.of(obj));
-		
-		// Create corpse
-		final ObjectDescriptor descriptor = new ObjectDescriptor.Builder("corpse").weight(3).build();
-		race = new Builder("race").butcherFactory(butcher).build();
-		corpse = new Corpse(descriptor, race, Collections.singleton(mock(WorldObject.class)));
+		obj = create("object", 1).create();
+		corpse = new Corpse(create("corpse", 2), Optional.of(butcher), List.of(obj));
 	}
-	
+
+	private static ObjectDescriptor create(String name, int weight) {
+		return new ObjectDescriptor.Builder(name).weight(weight).decay(Duration.ofMinutes(1)).build();
+	}
+
 	@Test
 	public void constructor() {
 		assertEquals("corpse", corpse.name());
 		assertEquals(3, corpse.weight());
-		assertNotNull(corpse.contents());
-		assertEquals(1, corpse.contents().size());
-		assertEquals(false, corpse.isButchered());
-	}
-	
-	@Test
-	public void butcher() throws ActionException {
-		corpse.butcher(actor);
-		assertEquals(true, corpse.isButchered());
-		verify(butcher).generate(actor);
-		assertEquals(2, corpse.contents().size());
-		assertEquals(3 + 2, corpse.weight());
 	}
 
-	@Test(expected = IllegalStateException.class)
-	public void butcherAlreadyButchered() throws ActionException {
-		corpse.butcher(actor);
-		corpse.butcher(actor);
+	@Test
+	public void butcher() throws ActionException {
+		corpse.butcher(null);
+		verify(butcher).generate(null);
 	}
-	
+
+	@Test
+	public void butcherAlreadyButchered() throws ActionException {
+		corpse.butcher(null);
+		TestHelper.expect("corpse.already.butchered", () -> corpse.butcher(null));
+	}
+
 	@Test
 	public void butcherCannotButcher() throws ActionException {
-		race = new Builder("race").butcherFactory(null).build();
-		corpse = new Corpse(new ObjectDescriptor("corpse"), race, Collections.singleton(obj));
-		expect("corpse.cannot.butcher");
-		corpse.butcher(actor);
+		corpse = new Corpse(create("corpse", 0), Optional.empty(), List.of(obj));
+		TestHelper.expect("corpse.cannot.butcher", () -> corpse.butcher(null));
+	}
+
+	@Test
+	public void fixedContents() {
+		// TODO
 	}
 }

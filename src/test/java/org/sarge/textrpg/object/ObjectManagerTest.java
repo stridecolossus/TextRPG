@@ -1,54 +1,46 @@
 package org.sarge.textrpg.object;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.common.Parent;
-import org.sarge.textrpg.common.Thing;
+// TODO
+public class ObjectManagerTest {
+	private WorldObject obj;
 
-public class ObjectManagerTest extends ActionTest {
-	private ObjectDescriptor descriptor;
-	private Parent parent;
-
-	@SuppressWarnings("unused")
-	@Before
+	@BeforeEach
 	public void before() {
-		parent = createParent();
-		descriptor = new ObjectDescriptor("object");
-		new ObjectManager(LootFactory.object(descriptor, 1), parent, 2, 1);
+		obj = new WorldObject(ObjectDescriptor.of("object"));
 	}
 
 	@Test
-	public void constructor() {
-		assertEquals(2, parent.contents().stream().count());
-		assertNotNull(ObjectManager.QUEUE);
-		assertEquals(0, ObjectManager.QUEUE.size());
+	public void container() {
+//		// Create container
+//		final var container = mock(Container.class);
+//		when(container.contents()).thenReturn(contents);
+//
+//		// Add some contents
+//		contents.add(obj);
+//
+//		// Update and check contents replenished
+//		final var factory = mock(LootFactory.class);
+//		final var manager = ObjectManager.of(container, factory);
+//		manager.update();
+//		assertEquals(0, contents.size());
+//		verify(factory).generate(null);
 	}
 
 	@Test
-	public void remove() {
-		// Move one of the contents
-		final Thing obj = parent.contents().stream().iterator().next();
-		obj.setParentAncestor(createParent());
-		assertEquals(1, parent.contents().stream().count());
-
-		// Check refresh event generated
-		assertEquals(1, ObjectManager.QUEUE.size());
-
-		// Advance time and check new contents added
-		ObjectManager.QUEUE.execute(1);
-		assertEquals(2, parent.contents().stream().count());
-	}
-
-	@Test
-	public void removeOther() {
-		final WorldObject other = new WorldObject(new ObjectDescriptor("other"));
-		other.setParentAncestor(parent);
-		other.setParentAncestor(createParent());
-		assertEquals(2, parent.contents().stream().count());
-		assertEquals(0, ObjectManager.QUEUE.size());
+	public void location() {
+//		// Create location
+//		final var loc = mock(WorldLocation.class);
+//		when(loc.objects()).thenReturn(contents);
+//
+//		// Add some contents
+//		contents.add(obj);
+//
+//		// Update and check contents replenished
+//		final var manager = ObjectManager.of(loc, obj.descriptor(), 2);
+//		manager.update();
+//		assertEquals(2, contents.size());
 	}
 }

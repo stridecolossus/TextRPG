@@ -1,8 +1,14 @@
 package org.sarge.textrpg.world;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Test;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 public class DirectionTest {
 	@Test
@@ -15,13 +21,28 @@ public class DirectionTest {
 		assertEquals(Direction.DOWN, Direction.UP.reverse());
 	}
 
+	@ParameterizedTest
+	@EnumSource(Direction.class)
+	public void mnenomic(Direction dir) {
+		final String expected = dir.name().substring(0, 1).toLowerCase();
+		assertEquals(expected, dir.mnemonic());
+	}
+
+	@ParameterizedTest
+	@EnumSource(value=Direction.class, names={"NORTH", "SOUTH", "EAST", "WEST"})
+	public void isCardinal(Direction dir) {
+		assertTrue(dir.isCardinal());
+	}
+
+	@ParameterizedTest
+	@EnumSource(value=Direction.class, mode=EnumSource.Mode.EXCLUDE, names={"NORTH", "SOUTH", "EAST", "WEST"})
+	public void isNotCardinal(Direction dir) {
+		assertFalse(dir.isCardinal());
+	}
+
 	@Test
-	public void getMnenomic() {
-		assertEquals("n", Direction.NORTH.getMnemonic());
-		assertEquals("s", Direction.SOUTH.getMnemonic());
-		assertEquals("e", Direction.EAST.getMnemonic());
-		assertEquals("w", Direction.WEST.getMnemonic());
-		assertEquals("u", Direction.UP.getMnemonic());
-		assertEquals("d", Direction.DOWN.getMnemonic());
+	public void path() {
+		final List<Direction> path = Direction.path("nsew");
+		assertEquals(List.of(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST), path);
 	}
 }

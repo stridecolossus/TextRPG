@@ -1,0 +1,5 @@
+0		none
+1		light
+25		fairly.deep
+50		deep
+75		very.deep

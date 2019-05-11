@@ -1,0 +1,24 @@
+<objects>
+
+<!-- COMMON -->
+<portal name="door" placement="stands" reset="1m" />
+<object name="gate" fixture="true" placement="stands" reset="5s" />
+ 
+<receptacle name="well" fixture="true" placement="stands" level="infinite" liquid="water" />
+<object name="lamp" fixture="true" placement="stands" />
+<container name="table" fixture="true" placement="stands" prep="on">
+	<limits>
+		<size size="medium" reason="container.too.large" />
+	</limits>
+</container>
+<object name="small.chair" fixture="true" placement="placed" />
+<object name="small.bed" fixture="true" placement="placed" />
+
+<!-- ACTION OBJECTS -->
+<object name="firewood" weight="5" size="medium" />
+<object name="tinderbox" value="10" size="tiny" weight="1" />
+<object name="pipe.weed" value="10" />
+<object name="bandages" value="1" />
+<object name="hunting.knife" value="25" weight="5" size="small" />
+
+</objects>

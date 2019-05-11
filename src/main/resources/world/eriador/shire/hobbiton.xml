@@ -1,0 +1,58 @@
+<area name="hobbiton" terrain="urban" route="lane">
+
+<!--
+
+resources
+ambient
+weather
+
+OR
+
+location
+grid
+path
+
+OR
+
+introduce locations child?
+ 
+-->
+
+<!--
+
+<location name="hobbiton">
+	<route dir="n" dest="hobbiton.lane" />
+	<route dir="s" dest="hobbiton.fields" />
+	<route dir="e" dest="bywater.road.east" />
+	<route dir="w" dest="bywater.road.west" />
+	<contents>
+		<fixture name="well" />
+	</contents>
+</location>
+
+<location name="hobbiton.mill">
+	<properties>
+		<fish />
+	</properties>
+	<contents>
+		<fixture name="hobbiton.mill" quiet="true" />
+	</contents>
+</location>
+
+<location name="party.field">
+	<contents>
+		<fixture name="party.tree" description="stands" />
+	</contents>
+</location>
+
+<location name="bywater.road.pool">
+	<properties>
+		<fish />
+	</properties>
+	<route dir="s" dest="bywater" />
+	<link dir="n" dest="bywater.pool" />
+</location>
+
+-->
+ 
+</area>

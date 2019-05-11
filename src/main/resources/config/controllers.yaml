@@ -1,0 +1,65 @@
+# Controller configuration
+
+movement:
+  multiplier:       10
+  encumberance:
+    strength:       2
+    endurance:      3
+    threshold:      25
+    modifier:       2
+  sneak.modifier:   2.5
+  snow:
+    modifier:   5
+    threshold:  5
+    max.level:  10
+
+effect:
+  panic.duration: 30s
+
+tracks:
+  lifetime:       5d
+  weather.scale:  0.75
+
+decay.default: 1h
+
+emissions:
+  traversal.depth: 3
+  intensity.scale: 75
+  threshold: 5
+
+perception:
+  calculator.multiplier: 2
+
+light:
+  warning.threshold: 0.8
+  visibility.threshold: 25
+
+proximity.traversal.depth: 5
+
+weather:
+  history.size:       10
+  iteration.period:   1h
+
+swim:
+  iteration.period:   2s
+  stamina.cost:       5
+  drown.damage:       5
+  drown.panic:        1
+
+river.fast.period: 500ms
+  
+repair:
+  cost:       5
+  duration:   5m
+  expiry:     1d
+
+mangler:
+  low:          50
+  high:         75
+  cache.size:   100
+
+entity:
+  warning.threshold:  5
+  iteration.period:   5m
+  tick.period:        1s
+  camp.mod:           2

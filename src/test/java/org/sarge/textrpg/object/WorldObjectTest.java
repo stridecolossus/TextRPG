@@ -1,148 +1,197 @@
 package org.sarge.textrpg.object;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Collections;
-import java.util.Optional;
+import java.time.Duration;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.common.Actor;
-import org.sarge.textrpg.common.Contents;
-import org.sarge.textrpg.common.DamageType;
-import org.sarge.textrpg.common.Description;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.sarge.textrpg.common.Damage;
 import org.sarge.textrpg.common.Emission;
-import org.sarge.textrpg.common.Message;
-import org.sarge.textrpg.common.Parent;
 import org.sarge.textrpg.common.Size;
-import org.sarge.textrpg.object.ObjectDescriptor.Builder;
+import org.sarge.textrpg.contents.ContentStateChange;
+import org.sarge.textrpg.contents.Contents;
+import org.sarge.textrpg.contents.Parent;
+import org.sarge.textrpg.contents.TrackedContents;
+import org.sarge.textrpg.object.WorldObject.Interaction;
+import org.sarge.textrpg.util.Description;
 import org.sarge.textrpg.util.Percentile;
+import org.sarge.textrpg.util.TestHelper;
+import org.sarge.textrpg.util.TextHelper;
 
-public class WorldObjectTest extends ActionTest {
+public class WorldObjectTest {
 	private WorldObject obj;
-	private ObjectDescriptor descriptor;
-	private Emission light;
 
-	@Before
+	@BeforeEach
 	public void before() {
-		light = new Emission(Emission.Type.LIGHT, Percentile.ONE);
-
-		descriptor = new Builder("object")
+		final Material mat = new Material.Builder("mat").strength(1).damaged(Damage.Type.COLD).build();
+		obj = new ObjectDescriptor.Builder("object")
 			.weight(1)
 			.value(2)
-			.size(Size.SMALL)
-			.material(new Material("wood", Collections.emptySet(), Collections.singleton(DamageType.FIRE), 3))
-			.visibility(Percentile.HALF)
-			.emission(light)
-			.quiet()
-			.description("full")
-			.build();
-
-		obj = new WorldObject(descriptor);
+			.size(Size.MEDIUM)
+			.decay(Duration.ofMinutes(1))
+			.reset(Duration.ofMinutes(2))
+			.visibility(Percentile.ONE)
+			.material(mat)
+			.category("cat")
+			.build()
+			.create();
 	}
 
 	@Test
 	public void constructor() {
 		assertEquals("object", obj.name());
-		assertEquals(descriptor, obj.descriptor());
-		assertEquals("object", descriptor.getDescriptionKey());
+		assertNotNull(obj.descriptor());
+		assertEquals(false, obj.isAlive());
 		assertEquals(1, obj.weight());
+		assertEquals(1, obj.count());
 		assertEquals(2, obj.value());
-		assertEquals(Percentile.HALF, obj.visibility());
-		assertEquals(Optional.of(light), obj.emission(Emission.Type.LIGHT));
-		assertEquals(Optional.empty(), obj.openableModel());
+		assertEquals(Size.MEDIUM, obj.size());
+		assertEquals(Percentile.ONE, obj.visibility());
+		assertEquals(Percentile.ZERO, obj.emission(Emission.LIGHT));
 		assertEquals(false, obj.isDamaged());
 		assertEquals(false, obj.isBroken());
-		assertEquals(false, obj.isSentient());
-		assertEquals(true, obj.isDead());
-		assertEquals(false, obj.isFixture());
-		assertEquals(true, obj.isQuiet());
+	}
+
+	@Test
+	public void isCategory() {
+		assertEquals(true, obj.isCategory("cat"));
+		assertEquals(false, obj.isCategory("cobblers"));
+	}
+
+	@Test
+	public void isCarried() {
+		assertEquals(false, obj.isCarried());
+		final Parent parent = mock(Parent.class);
+		when(parent.isSentient()).thenReturn(true);
+		when(parent.contents()).thenReturn(new Contents());
+		obj.parent(parent);
+		assertEquals(true, obj.isCarried());
+	}
+
+	@Test
+	public void placement() {
+		assertEquals("carried", obj.key(true));
+		assertEquals("dropped", obj.key(false));
+	}
+
+	@Test
+	public void placementContained() {
+		final Container container = mock(Container.class);
+		when(container.contents()).thenReturn(new Contents());
+		obj.parent(container);
+		assertEquals("contained", obj.key(false));
 	}
 
 	@Test
 	public void describe() {
-		final Description desc = obj.describe();
-		assertNotNull(desc);
-		assertEquals("description.full", desc.getKey());
-		assertEquals("{cardinality.single}", desc.get("cardinality"));
-		assertEquals("{size.small}", desc.get("size"));
+		final Description expected = new Description.Builder("object.dropped")
+			.add("name", "object")
+			.add("size", TextHelper.prefix(Size.MEDIUM))
+			.add("cardinality", TextHelper.prefix(Cardinality.SINGLE))
+			.add("placement", "placement.default")
+			.add(WorldObject.KEY_STATE, StringUtils.EMPTY)
+			.add(WorldObject.KEY_CONDITION, StringUtils.EMPTY)
+			.build();
+		assertEquals(expected, obj.describe(null));
 	}
 
 	@Test
-	public void describeShort() {
-		final Description desc = obj.describeShort();
-		assertNotNull(desc);
-		assertEquals("description.object", desc.getKey());
-	}
-
-	@Test
-	public void take() throws ActionException {
-		obj.take(actor);
-	}
-
-	@Test
-	public void takeImmovable() throws ActionException {
-		obj = new Builder("immovable").weight(ObjectDescriptor.IMMOVABLE).build().create();
-		expect("take.immovable.object");
-		obj.take(actor);
-	}
-
-	@Test
-	public void takeAlreadyCarried() throws ActionException {
-		obj.setParent(actor);
-		expect("take.already.carried");
-		obj.take(actor);
-	}
-
-	@Test
-	public void takeNotAvailable() throws ActionException {
-		final Parent parent = mock(Actor.class);
-		when(parent.contents()).thenReturn(new Contents());
-		obj.setParent(parent);
-		expect("take.cannot.take");
-		obj.take(actor);
-	}
-
-	@Test
-	public void isOwner() throws ActionException {
-		final Actor actor = mock(Actor.class);
-		when(actor.contents()).thenReturn(new Contents());
-		obj.setParent(actor);
-		assertEquals(actor, obj.owner());
-	}
-
-	@Test
-	public void alertOwner() throws ActionException {
-		final Actor actor = mock(Actor.class);
-		when(actor.contents()).thenReturn(new Contents());
-		obj.setParent(actor);
-		obj.alertOwner("alert");
-		verify(actor).alert(new Message("alert", obj));
-	}
-
-	@Test
-	public void damage() throws ActionException {
-		// Add to parent (so not dead)
+	public void damage() {
 		final Parent parent = mock(Parent.class);
 		when(parent.contents()).thenReturn(new Contents());
-		obj.setParent(parent);
+		obj.parent(parent);
+		obj.damage(Damage.Type.COLD, 1);
+		assertEquals(false, obj.isAlive());
+	}
 
-		// Check damage resistance
-		obj.damage(DamageType.COLD, 999);
-		assertEquals(false, obj.isDead());
+	@Test
+	public void damageIgnored() {
+		obj.parent(TestHelper.parent());
+		obj.damage(Damage.Type.CRUSHING, 999);
+		assertNotNull(obj.parent());
+	}
 
-		// Check strength
-		obj.damage(DamageType.FIRE, 1);
-		assertEquals(false, obj.isDead());
+	@ParameterizedTest
+	@EnumSource(value=Interaction.class, mode=EnumSource.Mode.EXCLUDE, names={"PUSH", "PULL", "EXAMINE"})
+	public void interactionInvert(Interaction interaction) {
+		assertEquals(interaction, interaction.invert());
+	}
 
-		// Check destroyed by sufficient damage
-		obj.damage(DamageType.FIRE, 999);
-		assertEquals(true, obj.isDead());
+	@Test
+	public void interactionInvertSpecial() {
+		assertEquals(Interaction.PULL, Interaction.PUSH.invert());
+		assertEquals(Interaction.PUSH, Interaction.PULL.invert());
+		assertThrows(IllegalStateException.class, () -> Interaction.EXAMINE.invert());
+	}
+
+	@Test
+	public void filter() {
+		final WorldObject.Filter filter = WorldObject.Filter.of(ObjectDescriptor.Filter.of(obj.descriptor()));
+		assertEquals(true, filter.test(obj));
+		assertEquals(false, filter.test(mock(WorldObject.class)));
+	}
+
+	@Test
+	public void categoryFilter() {
+		final WorldObject.Filter filter = WorldObject.Filter.of("cat");
+		assertEquals(true, filter.test(obj));
+		assertEquals(false, filter.test(mock(WorldObject.class)));
+	}
+
+	@Test
+	public void decay() {
+		final Parent parent = mock(Parent.class);
+		when(parent.contents()).thenReturn(new TrackedContents());
+		obj.parent(parent);
+		obj.decay();
+		assertEquals(false, obj.isAlive());
+		verify(parent).notify(ContentStateChange.of(ContentStateChange.Type.CONTENTS, new Description("object.decayed", "object")));
+	}
+
+	@Test
+	public void decayZeroWeight() {
+		final Parent parent = mock(Parent.class);
+		when(parent.contents()).thenReturn(new TrackedContents());
+		obj = ObjectDescriptor.of("object").create();
+		obj.parent(parent);
+		obj.decay();
+		assertEquals(false, obj.isAlive());
+		verify(parent, never()).notify(any());
+	}
+
+	@Test
+	public void decayIgnoreCarried() {
+		final Parent parent = mock(Parent.class);
+		when(parent.isSentient()).thenReturn(true);
+		when(parent.contents()).thenReturn(new Contents());
+		obj.parent(parent);
+		obj.decay();
+		assertEquals(true, obj.isAlive());
+		verify(parent, never()).notify(any());
+	}
+
+	@Test
+	public void destroy() {
+		obj.parent(TestHelper.parent());
+		obj.destroy();
+		assertEquals(false, obj.isAlive());
+	}
+
+	@Test
+	public void destroyFixture() {
+		obj = ObjectDescriptor.fixture("fixture").create();
+		obj.parent(TestHelper.parent());
+		assertThrows(AssertionError.class, () -> obj.destroy());
 	}
 }

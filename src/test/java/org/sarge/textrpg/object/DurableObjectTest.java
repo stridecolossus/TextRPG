@@ -1,69 +1,73 @@
 package org.sarge.textrpg.object;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.common.Description;
-import org.sarge.textrpg.object.DurableObject.Descriptor;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.common.Damage;
+import org.sarge.textrpg.util.ActionException;
+import org.sarge.textrpg.util.Percentile;
+import org.sarge.textrpg.util.TestHelper;
 
-public class DurableObjectTest extends ActionTest {
+public class DurableObjectTest {
 	private DurableObject obj;
-	
-	@Before
+
+	@BeforeEach
 	public void before() {
-		obj = new DurableObject(new Descriptor(new ObjectDescriptor("durable"), 2));
+		final Material mat = new Material.Builder("mat").strength(1).damaged(Damage.Type.COLD).build();
+		final ObjectDescriptor descriptor = new ObjectDescriptor.Builder("tool").material(mat).build();
+		obj = new DurableObject.Descriptor(descriptor, 2).create();
 	}
-	
+
 	@Test
 	public void constructor() {
+		assertEquals("tool", obj.name());
 		assertEquals(0, obj.wear());
+		assertEquals(Percentile.ZERO, obj.condition());
 		assertEquals(false, obj.isDamaged());
 		assertEquals(false, obj.isBroken());
-		assertEquals("durable", obj.descriptor().getDescriptionKey());
 	}
-	
+
 	@Test
-	public void describe() {
-		final Description desc = obj.describe();
-		assertEquals("{durable}", desc.get("name"));
-		assertEquals("{wear.new}", desc.get("wear"));
-	}
-	
-	@Test
-	public void wear() throws ActionException {
+	public void use() throws ActionException {
 		obj.use();
+		assertEquals(1, obj.wear());
+		assertEquals(Percentile.HALF, obj.condition());
 		assertEquals(true, obj.isDamaged());
 		assertEquals(false, obj.isBroken());
-		assertEquals(1, obj.wear());
-		assertEquals("{wear.damaged}", obj.describe().get("wear"));
+	}
 
-		obj.use();
-		assertEquals(2, obj.wear());
-		assertEquals(true, obj.isBroken());
-		assertEquals("{wear.broken}", obj.describe().get("wear"));
-	}
-	
 	@Test
-	public void consumeBroken() throws ActionException {
+	public void useBroken() throws ActionException {
 		obj.use();
 		obj.use();
-		expect("durable.object.broken");
-		obj.use();
+		assertEquals(Percentile.ONE, obj.condition());
+		assertThrows(IllegalStateException.class, obj::use);
 	}
-	
+
 	@Test
 	public void repair() throws ActionException {
 		obj.use();
 		obj.repair();
 		assertEquals(0, obj.wear());
 	}
-	
+
 	@Test
-	public void repairNotDamaged() throws ActionException {
-		expect("repair.not.damaged");
-		obj.repair();
+	public void repairNotBroken() throws ActionException {
+		TestHelper.expect(IllegalStateException.class, "Not damaged", obj::repair);
+	}
+
+	@Test
+	public void repairPartial() {
+		obj.use();
+		obj.use();
+		obj.repair(1);
+		assertEquals(1, obj.wear());
+	}
+
+	@Test
+	public void repairPartialNotBroken() throws ActionException {
+		TestHelper.expect(IllegalStateException.class, "Not damaged", () -> obj.repair(1));
 	}
 }

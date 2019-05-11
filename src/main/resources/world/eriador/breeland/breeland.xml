@@ -1,145 +1,22 @@
-<area name="breeland" default-terrain="farmland" default-race="man">
+<area name="breeland" terrain="grassland" route="lane">
 
-<location name="bree.road.west">
-	<contents>
-		<factory type="oil.flask" reset="00:05:00" />
-	</contents>
-</location>
+<!-- GW crossing -->
 
-<tunnel name="secret.tunnel">
-	<contents>
-	</contents>
-</tunnel>
-
-<location name="highwaymans.hut" terrain="indoors_dark">
-<!-- 
-	<links>
-		<object dir="d" dest="secret.tunnel" route="ladder" type="ladder" name="tunnel" />
-	</links>
-	 -->
-	<contents>
-	<!-- 
-		<control name="crate" op="push" reset="00:02:30">
-			<open>
-				<reveal-link loc="highwaymans.hut" dir="d" />
-			</open>
-		</control>
-		 -->
-		<factory-container type="chest">
-			<object type="lockpicks" />
-		</factory-container>
-		<factory type="ladder" />
-		<!-- 
-		<light type="lantern" />
-		<object type="tinderbox" />
-		 -->
-	</contents>
-</location>
-
-<location name="bree.road.central">
-	<links>
-		<route dir="w" dest="bree.road.west" route="road" />
-<!-- 	<hidden dir="s" dest="highwaymans.hut" vis="easy" /> -->	
-		<link dir="s" dest="highwaymans.hut" />
-	</links>
-	<contents>
-		<character name="highwayman" />
-	</contents>
-</location>
-
-<location name="bree.road.east">
-	<links>
-		<route dir="w" dest="bree.road.central" route="road" />
-	</links>
-</location>
-
-<location name="greenway.crossing">
-	<links>
-		<route dir="w" dest="bree.road.east" />
-	</links>
-</location>
-
-<location name="west.gate.outside">
-	<links>
-		<route dir="w" dest="greenway.crossing" />
-	</links>
-</location>
-
-<location name="greenway.north">
-	<links>
-		<route dir="s" dest="greenway.crossing" />
-	</links>
-</location>
-
-<location name="bree.hill" terrain="hill">
-	<links>
-		<route dir="w" dest="greenway.north" route="path" />
-	</links>
-</location>
-
-<location name="archet">
-	<links>
-		<route dir="w" dest="bree.hill" route="path" />
-	</links>
-</location>
-
-<location name="combe">
-	<links>
-		<route dir="w" dest="archet" route="lane" />
-	</links>
-</location>
-
-<location name="south.gate.outside">
-</location>
-
-<location name="east.road.junction">
-	<links>
-		<route dir="w" dest="south.gate.outside" />
-	</links>
-</location>
-
-<location name="combe.path">
-	<links>
-		<route dir="n" dest="combe" route="path" />
-		<route dir="s" dest="east.road.junction" route="path" />
-	</links>
-</location>
-
-<location name="east.road.west">
-	<links>
-		<route dir="w" dest="east.road.junction" />
-	</links>
-</location>
-
-<location name="east.road.marshes">
-	<links>
-		<route dir="w" dest="east.road.west" />
-	</links>
-</location>
-
-<location name="east.road.east">
-	<links>
-		<route dir="w" dest="east.road.marshes" />
-	</links>
-</location>
-
-<location name="forsaken.inn">
-	<links>
-		<route dir="w" dest="east.road.east" />
-	</links>
-</location>
-
-<location name="forsaken.inn.bar" terrain="indoors">
-	<links>
-		<door dir="s" dest="forsaken.inn" />
-	</links>
-</location>
-
-<location name="greenway.south">
-	<links>
-		<route dir="n" dest="greenway.crossing" />
-		<route dir="e" dest="south.gate.outside" />
-	</links>
-</location>
+<grid>
+	<default name="breeland" />
+	<map>
+		----------
+		----------
+		----------
+		----------
+		----------
+		----------
+		----------
+		----------
+		----------
+		----------
+		----------
+	</map>
+</grid>
 
 </area>

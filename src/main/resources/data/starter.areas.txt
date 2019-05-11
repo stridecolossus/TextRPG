@@ -1,0 +1,2 @@
+# location				faction		race
+prancing.pony.sign		bree		hobbit

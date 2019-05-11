@@ -1,0 +1,9 @@
+# Day-night cycle
+# http://www.glyphweb.com/arda/dates.html
+# name			time		light
+dawn			06:00		50
+morning			08:00		80
+afternoon		12:00		100
+evening			17:00		80
+dusk			20:00		50
+night			22:00		0

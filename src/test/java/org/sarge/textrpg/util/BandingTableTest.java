@@ -1,63 +1,54 @@
 package org.sarge.textrpg.util;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.StringReader;
 
-import org.junit.Test;
-import org.sarge.textrpg.util.BandingTable;
+import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.util.BandingTable.Builder;
+import org.sarge.textrpg.util.BandingTable.Loader;
 
 public class BandingTableTest {
 	@Test
-	public void build() {
-		final BandingTable table = new BandingTable.Builder()
-			.add(0, "zero")
-			.add(50, "half")
-			.add(100, "one")
+	public void builder() {
+		// Create table
+		final BandingTable<Percentile> table = new Builder<Percentile>()
+			.add(Percentile.HALF, "half")
+			.add(Percentile.ONE, "one")
 			.build();
-		checkTable(table);
-	}
-	
-	private static void checkTable(BandingTable table) {
-		assertEquals("zero", table.get(0));
-		assertEquals("half", table.get(25));
-		assertEquals("half", table.get(50));
-		assertEquals("one", table.get(75));
-		assertEquals("one", table.get(100));
-	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void buildInvalid() {
-		new BandingTable.Builder()
-			.add(1, "one")
-			.add(0, "zero");
+
+		// Check bands
+		assertEquals("half", table.map(Percentile.ZERO));
+		assertEquals("half", table.map(Percentile.HALF));
+		assertEquals("one", table.map(Percentile.ONE));
+
+		// Check maximum
+		assertEquals(Percentile.ONE, table.max());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void buildDuplicateName() {
-		new BandingTable.Builder()
-			.add(0, "same")
-			.add(1, "same");
+	@Test
+	public void empty() {
+		assertThrows(IllegalArgumentException.class, () -> new Builder<>().build());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void buildEmptyTable() {
-		new BandingTable.Builder().build();
+	@Test
+	public void notAscending() {
+		assertThrows(IllegalArgumentException.class, () -> new Builder<Percentile>().add(Percentile.ONE, "one").add(Percentile.HALF, "half").build());
 	}
-	
+
 	@Test
 	public void load() throws IOException {
-		final String in =
-			"0 zero \n" +
-			"50 half \n" +
-			"100 one \n";
-		final BandingTable table = BandingTable.load(new StringReader(in));
-		checkTable(table);
+		final Loader<Percentile> loader = new Loader<>(Percentile.CONVERTER);
+		final BandingTable<Percentile> table = loader.load(new StringReader("50 half \n 100 one"));
+		final BandingTable<Percentile> expected = new Builder<Percentile>().add(Percentile.HALF, "half").add(Percentile.ONE, "one").build();
+		assertEquals(expected, table);
 	}
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void loadInvalidEntry() throws IOException {
-		BandingTable.load(new StringReader("cobblers"));
+
+	@Test
+	public void loadInvalidLine() throws IOException {
+		final Loader<Percentile> loader = new Loader<>(Percentile.CONVERTER);
+		assertThrows(IllegalArgumentException.class, () -> loader.load(new StringReader("50")));
 	}
 }

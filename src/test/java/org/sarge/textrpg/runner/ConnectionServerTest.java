@@ -1,37 +1,47 @@
 package org.sarge.textrpg.runner;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.util.function.Consumer;
+import java.time.Duration;
+import java.util.concurrent.Semaphore;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ConnectionServerTest {
-    private static final int PORT = 1234;
+	private ConnectionServer server;
+	private ConnectionServer.Handler handler;
+	private Semaphore semaphore;
 
-    private ConnectionServer server;
-    private Consumer<Socket> listener;
+	@BeforeEach
+	public void before() throws IOException {
+		semaphore = new Semaphore(0);
+		handler = con -> {
+			assertNotNull(con);
+			final Connection.Listener listener = mock(Connection.Listener.class);
+			semaphore.release();
+			return listener;
+		};
+		server = new ConnectionServer(1234, handler);
+	}
 
-    @Before
-    public void before() throws IOException {
-        listener = mock(Consumer.class);
-        server = new ConnectionServer(PORT, listener);
-    }
+	@AfterEach
+	public void after() {
+		server.stop();
+	}
 
-    @After
-    public void after() throws IOException {
-        server.stop();
-    }
-
-    @Test
-    public void connect() throws IOException {
-        final Socket socket = new Socket("localhost", 1234);
-        verify(listener).accept(socket);
-        socket.close();
-    }
+	@Test
+	public void connect() throws Exception {
+		server.start();
+		try(final Socket client = new Socket("localhost", 1234)) {
+			assertTimeout(Duration.ofSeconds(1), () -> semaphore.acquire());
+		}
+		assertEquals(0, semaphore.availablePermits());
+	}
 }

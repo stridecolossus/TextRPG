@@ -1,0 +1,5 @@
+0		fine
+25		worn
+50		damaged
+75		very.damaged
+100		broken

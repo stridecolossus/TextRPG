@@ -1,0 +1,107 @@
+<area name="bree" terrain="urban" route="street">
+
+<faction name="bree" alignment="neutral">
+	<opening-time open="08:00" close="17:30" />
+</faction>
+
+<location name="west.gate.outside">
+	<contents>
+		<object name="hedge" placement="stands" />
+	</contents>
+</location>
+
+<location name="west.gate">
+	<links>
+		<gate dir="w" dest="west.gate.outside" faction="bree" keeper="harry" />
+		<route dir="e" dest="prancing.pony.sign" />
+		<route dir="s" dest="common" route="path" />
+	</links>
+</location>
+
+<location name="common">
+	<route dir="e" dest="road.bend" route="path" />
+	<property>WATER</property>
+	<contents>
+		<!-- TODO sheep, pigs, shepherd -->
+	</contents>
+</location>
+
+<location name="prancing.pony.sign">
+	<route dir="n" dest="hill.lower" route="lane" />
+	<link dir="e" dest="pony.yard" />
+	<route dir="s" dest="road.bend" />
+	
+	<property>NOT_DESCRIBED</property>
+	
+	<contents>
+		<container name="table" fixture="true" prep="on">
+			<contents>
+				<dispenser refresh="1m">
+					<food name="pie" nutrition="42" />
+				</dispenser>
+			</contents>
+		</container>
+	</contents>
+</location>
+
+<location name="hill.lower">
+	<route dir="e" dest="hill.upper" route="lane" />
+</location>
+
+<location name="hill.upper">
+	<route dir="e" dest="staddle.gate" route="lane" />
+	<route dir="s" dest="market" route="lane" />
+</location>
+
+<location name="staddle.gate">
+	<contents>
+		<object name="hedge" placement="stands" />
+	</contents>
+	<!-- GATE to staddle -->
+</location>
+
+<location name="road.bend">
+	<route dir="e" dest="south.gate" />
+	<contents>
+		<object name="statue" placement="stands" cardinality="unique" />
+	</contents>
+</location>
+
+<location name="market">
+	<route dir="s" dest="south.gate" route="lane" />
+	<!-- TODO shops: basic: grocer, outfitter -->
+	<contents>
+		<readable name="plaque" placement="stands" lang="adunaic" text="plaque.text" />
+		<object descriptor="well" />
+	</contents>
+</location>
+
+<location name="south.gate">
+	<links>
+		<portal dir="e" dest="bill.fernys.house" key="bill.fernys.key" />
+	</links>
+	<contents>
+		<object name="hedge" placement="stands" />
+	</contents>
+	<!-- TODO -->
+</location>
+
+<location name="bill.fernys.house" terrain="dark">
+	<links>
+		<portal dir="d" dest="smugglers.cave" name="trapdoor" />
+		<!-- TODO vis="0" how to reveal a portal link -->
+	</links>
+	<contents>
+		<!--
+		<control name="rug">
+			<portal dir
+		</control>
+		-->
+	</contents>
+</location>
+
+<location name="smugglers.cave" terrain="underground">
+	<!-- TODO concealed barrel link to hidden outside -->
+</location>
+
+</area>

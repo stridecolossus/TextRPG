@@ -1,0 +1,29 @@
+# Application configuration
+
+logging.level:
+  root: WARN
+  org.sarge.textrpg.runner.Main: INFO
+  org.sarge.textrpg.runner.WorldThread: INFO
+  org.sarge.textrpg.runner.SessionManager: INFO
+  # org.sarge.textrpg.parser.ParserComponents: DEBUG
+  org.sarge.textrpg.parser.ActionParser: DEBUG
+  org.sarge.textrpg.util.PeriodModel: INFO
+
+server.port: 1234
+  
+frame:
+  duration: 50
+  scale: 5
+
+database.location: database
+
+data:
+  coins:
+    silver:   100
+    gold:     20
+
+### TODO - not here
+stop.words: the, a, in, into, inside, on, onto
+
+### TODO - should be a separate file/resources?
+welcome.banner: Welcome!

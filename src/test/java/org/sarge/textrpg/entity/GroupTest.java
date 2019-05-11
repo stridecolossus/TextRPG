@@ -1,124 +1,138 @@
 package org.sarge.textrpg.entity;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.common.ActionTestBase;
+import org.sarge.textrpg.common.Hidden;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.ActionTest;
-
-public class GroupTest extends ActionTest {
+public class GroupTest extends ActionTestBase {
+	private Entity entity;
 	private Group group;
-	private Entity leader;
-	private Entity member;
-	
-	private static Entity createEntity() {
-		final Entity e = mock(Entity.class);
-		when(e.group()).thenReturn(Optional.empty());
-		return e;
+
+	@BeforeEach
+	public void before() {
+		final EntityModel model = mock(EntityModel.class);
+		entity = mock(Entity.class);
+		when(model.group()).thenReturn(Group.NONE);
+		when(entity.model()).thenReturn(model);
+
+		when(actor.model().group()).thenReturn(Group.NONE);
+		group = new Group(actor);
 	}
-	
-	@Before
-	public void before() throws ActionException {
-		leader = createEntity();
-		member = createEntity();
-		group = new Group(leader);
-	}
-	
+
 	@Test
 	public void constructor() {
-		assertEquals(leader, group.leader());
-		assertArrayEquals(new Entity[]{leader}, group.members().toArray());
-		verify(leader).setGroup(group);
+		assertNotNull(group.members());
+		assertEquals(1, group.members().count());
+		assertEquals(actor, group.members().iterator().next());
+		assertEquals(actor, group.leader());
+		verify(actor.model()).group(group);
 	}
-	
+
 	@SuppressWarnings("unused")
 	@Test
-	public void constructorAlreadyGrouped() throws ActionException {
-		when(leader.group()).thenReturn(Optional.of(group));
-		expect("group.cannot.create");
-		new Group(leader);
+	public void groupAlreadyGrouped() {
+		new Group(actor);
 	}
-	
+
 	@Test
-	public void add() throws ActionException {
-		group.add(member);
-		assertArrayEquals(new Entity[]{leader, member}, group.members().toArray());
-		verify(member).setGroup(group);
+	public void add() {
+		group.add(entity);
+		verify(entity.model()).group(group);
+		assertArrayEquals(new Entity[]{actor, entity}, group.members().toArray());
+		assertEquals(actor, group.leader());
 	}
-	
+
 	@Test
-	public void addDuplicate() throws ActionException {
-		group.add(member);
-		expect("group.add.member");
-		group.add(member);
+	public void addAlreadyMember() {
+		assertThrows(IllegalArgumentException.class, () -> group.add(actor));
 	}
-	
+
 	@Test
-	public void addAlreadyGrouped() throws ActionException {
-		when(member.group()).thenReturn(Optional.of(mock(Group.class)));
-		expect("group.already.grouped");
-		group.add(member);
+	public void addAlreadyGrouped() {
+		when(entity.model().group()).thenReturn(group);
+		assertThrows(IllegalArgumentException.class, () -> group.add(entity));
 	}
-	
+
 	@Test
-	public void remove() throws ActionException {
-		group.add(member);
-		group.remove(member);
-		verify(member).setGroup(group);
-		verify(member).setGroup(null);
-		assertArrayEquals(new Entity[]{leader}, group.members().toArray());
+	public void addInvalidEntity() {
+		// TODO
 	}
-	
+
 	@Test
-	public void removeNotMember() throws ActionException {
-		expect("group.not.member");
-		group.remove(member);
+	public void remove() {
+		group.add(entity);
+		group.remove(entity);
+		assertEquals(1, group.members().count());
+		verify(entity.model()).group(Group.NONE);
 	}
-	
+
 	@Test
-	public void removeLeader() throws ActionException {
-		expect("group.remove.leader");
-		group.remove(leader);
+	public void removeNotMember() {
+		assertThrows(IllegalArgumentException.class, () -> group.remove(entity));
 	}
-	
+
 	@Test
-	public void setLeader() throws ActionException {
-		group.add(member);
-		group.setLeader(member);
-		assertEquals(member, group.leader());
+	public void removeLeader() {
+		assertThrows(IllegalArgumentException.class, () -> group.remove(actor));
 	}
-	
+
 	@Test
-	public void setLeaderDuplicate() throws ActionException {
-		expect("group.already.leader");
-		group.setLeader(leader);
+	public void setLeader() {
+		group.add(entity);
+		group.leader(entity);
+		assertEquals(entity, group.leader());
 	}
-	
+
 	@Test
-	public void setLeaderNotMember() throws ActionException {
-		expect("group.invalid.leader");
-		group.setLeader(member);
+	public void setLeaderAlreadyLeader() {
+		assertThrows(IllegalArgumentException.class, () -> group.leader(actor));
 	}
-	
+
 	@Test
-	public void disband() throws ActionException {
-		group.add(member);
+	public void setLeaderNotMember() {
+		assertThrows(IllegalArgumentException.class, () -> group.leader(entity));
+	}
+
+	@Test
+	public void disband() {
+		group.add(entity);
 		group.disband();
-		verify(leader).setGroup(null);
-		verify(member).setGroup(null);
 		assertEquals(0, group.members().count());
+		verify(actor.model()).group(Group.NONE);
+		verify(entity.model()).group(Group.NONE);
 	}
-	
-	@Test(expected = IllegalStateException.class)
+
+	@Test
 	public void disbandAlreadyDisbanded() {
 		group.disband();
-		group.disband();
+		assertThrows(IllegalArgumentException.class, () -> group.disband());
+	}
+
+	@Test
+	public void perceives() {
+		// Check ignores actor
+		assertEquals(false, group.perceives(actor, actor));
+
+		// Check perceives group members
+		group.add(entity);
+		assertEquals(true, group.perceives(actor, entity));
+		assertEquals(true, group.perceives(entity, actor));
+
+		// Check group does not perceive hidden objects
+		final var hidden = mock(Hidden.class);
+		assertEquals(false, group.perceives(actor, hidden));
+
+		// Check actor perceives objects known to other members
+		when(entity.perceives(hidden)).thenReturn(true);
+		assertEquals(true, group.perceives(actor, hidden));
 	}
 }

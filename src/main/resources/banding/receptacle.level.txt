@@ -1,0 +1,5 @@
+0		full
+1		almost.full
+50		half
+75		almost.empty
+100		empty

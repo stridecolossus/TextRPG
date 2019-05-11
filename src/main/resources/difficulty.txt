@@ -1,6 +1,0 @@
-name			difficulty		xp
-very.easy		10				5
-easy			25				5
-medium			50				3
-hard			75				1
-very.hard		90				0

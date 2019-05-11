@@ -1,72 +1,54 @@
 package org.sarge.textrpg.object;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.sarge.textrpg.common.ActionException;
-import org.sarge.textrpg.common.ActionTest;
-import org.sarge.textrpg.common.Script;
-import org.sarge.textrpg.common.Size;
-import org.sarge.textrpg.util.Percentile;
-import org.sarge.textrpg.world.Route;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.contents.Parent;
+import org.sarge.textrpg.util.Description;
 
-public class ContainerLinkTest extends ActionTest {
+public class ContainerLinkTest {
 	private ContainerLink link;
-	private ObjectDescriptor descriptor;
+	private Parent parent;
+	private WorldObject obj;
 
-	@Before
+	@BeforeEach
 	public void before() {
-		descriptor = new ObjectDescriptor("ladder");
-		link = new ContainerLink(Route.NONE, Script.NONE, Size.NONE, "name", descriptor);
+		link = new ContainerLink(ContainerLink.DEFAULT_PROPERTIES, "link", "cat");
+		parent = (Parent) link.controller().get();
+		obj = new ObjectDescriptor.Builder("object").category("cat").build().create();
 	}
 
 	@Test
 	public void constructor() {
-		assertEquals(Route.NONE, link.route());
-		assertEquals(Script.NONE, link.script());
-		assertNotNull(link.controller());
 		assertEquals(true, link.controller().isPresent());
-		assertEquals("name", link.controller().get().toString());
-		assertEquals(Percentile.ONE, link.controller().get().visibility());
-		assertEquals(true, link.controller().get().isQuiet());
-		assertEquals(0L, link.controller().get().forgetPeriod());
-		assertEquals(false, link.isTraversable(null));
+		assertEquals(Optional.of(new Description("link.requires.object")), link.reason(null));
+		assertEquals(true, link.isTraversable());
+		assertEquals(false, link.isQuiet());
+		assertEquals(true, link.isEntityOnly());
+		assertEquals("!dir!", link.wrap("dir"));
 	}
 
 	@Test
-	public void put() throws ActionException {
-		final WorldObject obj = descriptor.create();
-		link.put(obj);
-		assertEquals(true, link.isTraversable(null));
-		assertNotNull(link.controller());
-		assertEquals(true, link.controller().isPresent());
-		assertEquals(Optional.of(obj), link.controller());
+	public void add() {
+		// Add the required object
+		assertEquals(Optional.empty(), parent.contents().reason(obj));
+		obj.parent(parent);
+
+		// Check link can now be traversed
+		assertEquals(true, link.isTraversable());
+		assertEquals(Optional.empty(), link.reason(null));
+		assertEquals("dir", link.wrap("dir"));
+
+		// Remove object
+		obj.destroy();
 	}
 
 	@Test
-	public void putRemoved() throws ActionException {
-		final WorldObject obj = descriptor.create();
-		link.put(obj);
-		obj.setParent(loc);
-		assertEquals(false, link.isTraversable(null));
-	}
-
-	@Test
-	public void putOccupied() throws ActionException {
-		final WorldObject obj = descriptor.create();
-		link.put(obj);
-		expect("object.link.occupied");
-		link.put(obj);
-	}
-
-	@Test
-	public void putInvalidObject() throws ActionException {
-		final WorldObject obj = new ObjectDescriptor("invalid").create();
-		expect("object.link.invalid");
-		link.put(obj);
+	public void invalid() {
+		final var invalid = ObjectDescriptor.of("invalid").create();
+		assertEquals(Optional.of("link.invalid.object"), parent.contents().reason(invalid));
 	}
 }

@@ -1,0 +1,6 @@
+key			track	search	
+QUICK		0.25	20		
+FAST		0.5		40		
+NORMAL		1		60		
+CAREFUL		1.5		80		
+THOROUGH	2		100
