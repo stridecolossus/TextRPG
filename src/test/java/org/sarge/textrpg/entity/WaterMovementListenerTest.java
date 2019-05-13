@@ -44,7 +44,7 @@ public class WaterMovementListenerTest extends ActionTestBase {
 	@Test
 	public void updateRiverCurrent() {
 		when(loc.isWater()).thenReturn(true);
-		final Exit exit = new Exit(Direction.EAST, new CurrentLink(Current.MEDIUM), loc);
+		final Exit exit = Exit.of(Direction.EAST, new CurrentLink(Current.MEDIUM), loc);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 		listener.update(actor, null, null);
 		verify(controller).start(actor);

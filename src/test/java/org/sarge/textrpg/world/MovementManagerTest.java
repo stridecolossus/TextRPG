@@ -24,7 +24,7 @@ public class MovementManagerTest {
 		@BeforeEach
 		public void before() {
 			loc = mock(Location.class);
-			exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+			exit = Exit.of(Direction.EAST, loc);
 			when(loc.exits()).thenReturn(ExitMap.of(exit));
 			when(loc.terrain()).thenReturn(Terrain.FOREST);
 		}

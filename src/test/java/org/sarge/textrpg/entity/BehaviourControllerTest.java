@@ -18,7 +18,6 @@ import org.sarge.textrpg.util.ActionException;
 import org.sarge.textrpg.world.Direction;
 import org.sarge.textrpg.world.Exit;
 import org.sarge.textrpg.world.FleeAction;
-import org.sarge.textrpg.world.Link;
 import org.sarge.textrpg.world.MovementController;
 import org.sarge.textrpg.world.MovementManager;
 
@@ -45,7 +44,7 @@ public class BehaviourControllerTest extends ActionTestBase {
 	@Test
 	public void revert() throws ActionException {
 		// Create a movement manager
-		final Exit exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+		final Exit exit = Exit.of(Direction.EAST, loc);
 		final MovementManager manager = ignore -> Optional.of(exit);
 
 		// Init race

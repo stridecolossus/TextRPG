@@ -16,7 +16,7 @@ public class DefaultMovementRequirementTest extends ActionTestBase {
 	@BeforeEach
 	public void before() {
 		req = new DefaultMovementRequirement();
-		exit = new Exit(Direction.EAST, RouteLink.of(Route.LANE), loc);
+		exit = Exit.of(Direction.EAST, RouteLink.of(Route.LANE), loc);
 	}
 
 	@Test

@@ -47,7 +47,7 @@ public class GateActionTest extends ActionTestBase {
 		when(actor.isAssociated(gate.descriptor().keeper().get().association())).thenReturn(true);
 
 		// Add as link controller
-		final Exit exit = new Exit(Direction.EAST, gate.link(), loc);
+		final Exit exit = Exit.of(Direction.EAST, gate.link(), loc);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 
 		return gate;

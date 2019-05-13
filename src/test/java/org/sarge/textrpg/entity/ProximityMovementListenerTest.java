@@ -16,7 +16,6 @@ import org.sarge.textrpg.util.Percentile;
 import org.sarge.textrpg.world.Direction;
 import org.sarge.textrpg.world.Exit;
 import org.sarge.textrpg.world.ExitMap;
-import org.sarge.textrpg.world.Link;
 import org.sarge.textrpg.world.Location;
 
 public class ProximityMovementListenerTest extends ActionTestBase {
@@ -39,7 +38,7 @@ public class ProximityMovementListenerTest extends ActionTestBase {
 		listener.add(entity);
 
 		// Link locations
-		final Exit exit = new Exit(Direction.EAST, Link.DEFAULT, dest);
+		final Exit exit = Exit.of(Direction.EAST, dest);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 
 		// Equip glowing weapon and check now receives alert

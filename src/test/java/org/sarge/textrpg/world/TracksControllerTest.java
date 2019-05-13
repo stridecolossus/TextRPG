@@ -49,7 +49,7 @@ public class TracksControllerTest {
 		// Create exit
 		final Area area = new Area.Builder("area").weather(mock(Weather.class)).build();
 		final Location loc = new DefaultLocation(new Location.Descriptor("loc"), area);
-		final Exit exit = new Exit(Direction.EAST, RouteLink.of(Route.LANE), loc);
+		final Exit exit = Exit.of(Direction.EAST, RouteLink.of(Route.LANE), loc);
 		when(actor.location()).thenReturn(loc);
 
 		// Add tracks
@@ -82,7 +82,7 @@ public class TracksControllerTest {
 
 	private static void isTracksLocation(Terrain terrain, Link link, boolean expected) {
 		final Location loc = new DefaultLocation(new Location.Descriptor.Builder().name("loc").terrain(terrain).build(), Area.ROOT);
-		final Exit exit = new Exit(Direction.EAST, link, loc);
+		final Exit exit = Exit.of(Direction.EAST, link, loc);
 		assertEquals(expected, TracksController.isTracksLocation(loc, exit));
 	}
 }

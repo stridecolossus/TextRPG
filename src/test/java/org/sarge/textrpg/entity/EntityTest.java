@@ -27,7 +27,6 @@ import org.sarge.textrpg.world.Area;
 import org.sarge.textrpg.world.DefaultLocation;
 import org.sarge.textrpg.world.Direction;
 import org.sarge.textrpg.world.Exit;
-import org.sarge.textrpg.world.Link;
 import org.sarge.textrpg.world.Location;
 
 public class EntityTest {
@@ -184,7 +183,7 @@ public class EntityTest {
 		@Test
 		public void move() throws ActionException {
 			final Location loc = new DefaultLocation(new Location.Descriptor("loc"), Area.ROOT);
-			final Exit exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+			final Exit exit = Exit.of(Direction.EAST, loc);
 			mode.move(exit);
 			assertEquals(loc, entity.parent());
 		}

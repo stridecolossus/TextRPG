@@ -37,7 +37,7 @@ public class LocationLinkerTest {
 		linker.link();
 
 		// Check linked
-		final Exit expected = new Exit(Direction.EAST, Link.DEFAULT, loc);
+		final Exit expected = Exit.of(Direction.EAST, loc);
 		verify(loc).add(expected);
 		verify(loc).complete();
 	}
@@ -53,8 +53,8 @@ public class LocationLinkerTest {
 		linker.link();
 
 		// Check links
-		verify(loc).add(new Exit(Direction.EAST, link, loc));
-		verify(loc).add(new Exit(Direction.NORTH, Link.DEFAULT, loc));
+		verify(loc).add(Exit.of(Direction.EAST, link, loc));
+		verify(loc).add(Exit.of(Direction.NORTH, Link.DEFAULT, loc));
 		verify(loc).complete();
 	}
 

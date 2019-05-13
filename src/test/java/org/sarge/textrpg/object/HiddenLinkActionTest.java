@@ -13,8 +13,8 @@ import org.sarge.textrpg.util.TestHelper;
 import org.sarge.textrpg.world.Direction;
 import org.sarge.textrpg.world.Exit;
 import org.sarge.textrpg.world.ExitMap;
-import org.sarge.textrpg.world.HiddenLink;
 import org.sarge.textrpg.world.ExtendedLink;
+import org.sarge.textrpg.world.HiddenLink;
 
 public class HiddenLinkActionTest extends ActionTestBase {
 	private HiddenLinkAction action;
@@ -23,7 +23,7 @@ public class HiddenLinkActionTest extends ActionTestBase {
 	@BeforeEach
 	public void before() {
 		link = new HiddenLink(new ExtendedLink.Properties(), "hidden", Percentile.HALF);
-		final ExitMap exits = ExitMap.of(new Exit(Direction.EAST, link, loc));
+		final ExitMap exits = ExitMap.of(Exit.of(Direction.EAST, link, loc));
 		when(loc.exits()).thenReturn(exits);
 		action = new HiddenLinkAction(DURATION);
 	}

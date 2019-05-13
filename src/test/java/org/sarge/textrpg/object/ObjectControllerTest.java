@@ -64,7 +64,7 @@ public class ObjectControllerTest {
 		when(link.route()).thenReturn(Route.NONE);
 
 		// Create portal exit
-		final Exit exit = new Exit(Direction.EAST, link, other);
+		final Exit exit = Exit.of(Direction.EAST, link, other);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 
 		// Check both sides

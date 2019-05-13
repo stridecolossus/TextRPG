@@ -74,14 +74,14 @@ public class PathLoaderTest {
 		final Location middle = start.exits().find(Direction.NORTH).get().destination();
 		assertEquals("loc", middle.name());
 		assertEquals(2, middle.exits().stream().count());
-		assertEquals(Optional.of(new Exit(Direction.SOUTH, RouteLink.of(Route.TUNNEL), start)), middle.exits().find(Direction.SOUTH));
+		assertEquals(Optional.of(Exit.of(Direction.SOUTH, RouteLink.of(Route.TUNNEL), start)), middle.exits().find(Direction.SOUTH));
 		assertTrue(middle.exits().find(Direction.EAST).isPresent());
 
 		// Check end
 		final Location end = middle.exits().find(Direction.EAST).get().destination();
 		assertEquals("loc", end.name());
 		assertEquals(1, end.exits().stream().count());
-		assertEquals(Optional.of(new Exit(Direction.WEST, RouteLink.of(Route.TUNNEL), middle)), end.exits().find(Direction.WEST));
+		assertEquals(Optional.of(Exit.of(Direction.WEST, RouteLink.of(Route.TUNNEL), middle)), end.exits().find(Direction.WEST));
 	}
 
 	@Test

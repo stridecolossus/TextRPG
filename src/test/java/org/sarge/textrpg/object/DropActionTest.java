@@ -16,7 +16,6 @@ import org.sarge.textrpg.util.TestHelper;
 import org.sarge.textrpg.world.Direction;
 import org.sarge.textrpg.world.Exit;
 import org.sarge.textrpg.world.ExitMap;
-import org.sarge.textrpg.world.Link;
 import org.sarge.textrpg.world.Location;
 import org.sarge.textrpg.world.Property;
 import org.sarge.textrpg.world.RiverController;
@@ -53,7 +52,7 @@ public class DropActionTest extends ActionTestBase {
 		when(bottom.contents()).thenReturn(new Contents());
 
 		// Create floorless exit
-		final ExitMap exits = ExitMap.of(new Exit(Direction.DOWN, Link.DEFAULT, bottom));
+		final ExitMap exits = ExitMap.of(Exit.of(Direction.DOWN, bottom));
 		when(loc.isProperty(Property.FLOORLESS)).thenReturn(true);
 		when(loc.exits()).thenReturn(exits);
 

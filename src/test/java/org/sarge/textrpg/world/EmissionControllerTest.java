@@ -41,7 +41,7 @@ public class EmissionControllerTest {
 	}
 
 	private static void link(Location a, Location b) {
-		final ExitMap exits = ExitMap.of(new Exit(Direction.EAST, Link.DEFAULT, b));
+		final ExitMap exits = ExitMap.of(Exit.of(Direction.EAST, b));
 		when(a.exits()).thenReturn(exits);
 	}
 

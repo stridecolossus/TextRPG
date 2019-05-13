@@ -32,6 +32,6 @@ public class DefaultLocationTest {
 	@Test
 	public void addExitOrphan() {
 		final DefaultLocation loc = builder.orphan().build();
-		assertThrows(IllegalArgumentException.class, () -> loc.exits.add(new Exit(Direction.EAST, Link.DEFAULT, loc)));
+		assertThrows(IllegalArgumentException.class, () -> loc.exits.add(Exit.of(Direction.EAST, loc)));
 	}
 }

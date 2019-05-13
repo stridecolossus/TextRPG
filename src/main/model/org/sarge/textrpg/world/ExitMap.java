@@ -2,7 +2,9 @@ package org.sarge.textrpg.world;
 
 import static org.sarge.lib.util.Check.notNull;
 
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -11,7 +13,7 @@ import org.sarge.lib.util.AbstractEqualsObject;
 import org.sarge.lib.util.StreamUtil;
 
 /**
- * Set of exits indexed by direction.
+ * An <i>exit map</i> is a set of exits from a location indexed by direction.
  */
 public interface ExitMap {
 	/**
@@ -20,16 +22,14 @@ public interface ExitMap {
 	Optional<Exit> EMPTY_EXIT = Optional.empty();
 
 	/**
+	 * Empty set of exits, e.g. for an orphaned location.
+	 */
+	ExitMap EMPTY = new Empty();
+
+	/**
 	 * @return Whether this set of exits is empty
 	 */
 	boolean isEmpty();
-
-	/**
-	 * Finds the exit in the given direction.
-	 * @param dir Direction
-	 * @return Exit descriptor
-	 */
-	Optional<Exit> find(Direction dir);
 
 	/**
 	 * @return All exits as a stream
@@ -37,60 +37,28 @@ public interface ExitMap {
 	Stream<Exit> stream();
 
 	/**
-	 * Adds an exit.
-	 * @param exit Exit
-	 * @throws UnsupportedOperationException by default
+	 * Helper - Finds the exit in the given direction.
+	 * @param dir Direction
+	 * @return Exit descriptor
 	 */
-	default void add(Exit exit) {
-		throw new UnsupportedOperationException();
-	}
+	Optional<Exit> find(Direction dir);
 
 	/**
-	 * Empty set of exits, e.g. for an orphaned location.
-	 */
-	ExitMap EMPTY = new Empty();
-
-	/**
-	 * Creates an exits-map with a single entry.
+	 * Creates an exit-map for a single entry.
 	 * @param exit Exit
-	 * @return Exits map
-	 * @see SingleExitMap
+	 * @return Single exit-map
 	 */
 	static ExitMap of(Exit exit) {
 		return new SingleExitMap(exit);
 	}
 
 	/**
-	 * Creates a specialised exit map implementation for the given set of exits. The resultant map may be immutable.
-	 * @param map Exit map
-	 * @return New exit map
-	 */
-	static ExitMap of(ExitMap map) {
-		if(map instanceof MutableExitMap) {
-			final MutableExitMap mutable = (MutableExitMap) map;
-			switch(mutable.exits.size()) {
-			case 0:
-				// Empty map
-				return EMPTY;
-
-			case 1:
-				// Single exit
-				return new SingleExitMap(mutable.exits.values().iterator().next());
-
-			default:
-				// Multiple exits
-				return new ArrayExitMap(mutable);
-			}
-		}
-		else {
-			return map;
-		}
-	}
-
-	/**
 	 * Empty set of exits.
 	 */
 	class Empty implements ExitMap {
+		private Empty() {
+		}
+
 		@Override
 		public boolean isEmpty() {
 			return true;
@@ -117,13 +85,18 @@ public interface ExitMap {
 		 * Constructor.
 		 * @param exit Single exit
 		 */
-		public SingleExitMap(Exit exit) {
+		private SingleExitMap(Exit exit) {
 			this.exit = notNull(exit);
 		}
 
 		@Override
 		public boolean isEmpty() {
 			return false;
+		}
+
+		@Override
+		public Stream<Exit> stream() {
+			return Stream.of(exit);
 		}
 
 		@Override
@@ -135,10 +108,42 @@ public interface ExitMap {
 				return EMPTY_EXIT;
 			}
 		}
+	}
+
+
+	/**
+	 * Exits stored as an array indexed by the {@link Direction} ordinal.
+	 */
+	class ArrayExitMap extends AbstractEqualsObject implements ExitMap {
+		private final Exit[] exits;
+
+		/**
+		 * Constructor.
+		 * @param len		Array length
+		 * @param array 	Exits
+		 */
+		protected ArrayExitMap(int len, Exit[] exits) {
+			assert exits.length > 0;
+			this.exits = new Exit[len];
+			for(Exit e : exits) {
+				final int index = e.direction().ordinal();
+				this.exits[index] = e;
+			}
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return false;
+		}
 
 		@Override
 		public Stream<Exit> stream() {
-			return Stream.of(exit);
+			return Arrays.stream(exits).filter(Objects::nonNull);
+		}
+
+		@Override
+		public Optional<Exit> find(Direction dir) {
+			return Optional.ofNullable(exits[dir.ordinal()]);
 		}
 	}
 
@@ -163,10 +168,15 @@ public interface ExitMap {
 			return Optional.ofNullable(exits.get(dir));
 		}
 
-		@Override
-		public void add(Exit exit) {
+		/**
+		 * Adds an exit.
+		 * @param exit Exit
+		 * @throws IllegalArgumentException for a duplicate direction
+		 */
+		public MutableExitMap add(Exit exit) {
 			verify(exit);
 			exits.put(exit.direction(), exit);
+			return this;
 		}
 
 		private void verify(Exit exit) {
@@ -174,6 +184,48 @@ public interface ExitMap {
 				if(StreamUtil.select(CurrentLink.class, exits.values().stream().map(Exit::link)).count() > 0) {
 					throw new IllegalArgumentException("Location can only have one current link");
 				}
+			}
+		}
+
+		/**
+		 * Creates a specialised immutable implementation from this exit-map.
+		 * @return New immutable exit-map
+		 */
+		public ExitMap compact() {
+			switch(exits.size()) {
+			case 0:
+				// Empty map
+				return EMPTY;
+
+			case 1:
+				// Single exit
+				return new SingleExitMap(exits.values().iterator().next());
+
+			default:
+				// Multiple exits
+				final Exit[] array = exits.values().toArray(Exit[]::new);
+				if(isCardinal(array)) {
+					return new ArrayExitMap(4, array);
+				}
+				else {
+					return new ArrayExitMap(6, array);
+				}
+			}
+		}
+
+		/**
+		 * @return Whether the given exits are <b>all</b> default links in the cardinal directions
+		 * @see Direction#isCardinal()
+		 */
+		private static boolean isCardinal(Exit[] exits) {
+			if(exits.length != 4) {
+				return false;
+			}
+			else {
+				return Arrays.stream(exits)
+					.filter(e -> e.link() == Link.DEFAULT)
+					.map(Exit::direction)
+					.allMatch(Direction::isCardinal);
 			}
 		}
 	}

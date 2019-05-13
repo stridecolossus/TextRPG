@@ -17,7 +17,7 @@ public class WaterMovementRequirementTest extends ActionTestBase {
 	@BeforeEach
 	public void before() {
 		req = new WaterMovementRequirement();
-		exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+		exit = Exit.of(Direction.EAST, loc);
 	}
 
 	@Test

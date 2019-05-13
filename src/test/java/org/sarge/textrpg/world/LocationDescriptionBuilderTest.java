@@ -62,7 +62,7 @@ public class LocationDescriptionBuilderTest {
 
 	@Test
 	public void describeExit() {
-		final Exit exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+		final Exit exit = Exit.of(Direction.EAST, loc);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 		final Description expected = new Description.Builder("location.description.exits").add("exits", "East", ArgumentFormatter.PLAIN).build();
 		assertEquals(expected, builder.build(actor, false).get(2));

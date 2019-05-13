@@ -51,6 +51,6 @@ public class DefaultVehicleTest {
 		when(link.route()).thenReturn(route);
 
 		// Create exit
-		return new Exit(Direction.EAST, link, dest);
+		return Exit.of(Direction.EAST, link, dest);
 	}
 }

@@ -218,7 +218,7 @@ public abstract class Location extends AbstractEqualsObject implements Parent {
 	 * @param exit Exit
 	 */
 	protected void add(Exit exit) {
-		exits.add(exit);
+//		exits.add(exit);
 	}
 
 	/**
@@ -226,7 +226,7 @@ public abstract class Location extends AbstractEqualsObject implements Parent {
 	 * @see Linker#link()
 	 */
 	protected void complete() {
-		exits = ExitMap.of(exits);
+//		exits = ExitMap.of(exits);
 	}
 
 	@Override

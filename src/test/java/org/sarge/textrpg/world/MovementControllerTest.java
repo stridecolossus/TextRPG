@@ -30,7 +30,7 @@ public class MovementControllerTest extends ActionTestBase {
 		controller = new MovementController();
 
 		// Add exit
-		exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+		exit = Exit.of(Direction.EAST, loc);
 
 		// Add requirement
 		final Requirement req = mock(Requirement.class);

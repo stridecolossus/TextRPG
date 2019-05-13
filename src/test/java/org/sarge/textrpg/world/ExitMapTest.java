@@ -1,68 +1,108 @@
 package org.sarge.textrpg.world;
 
+import static java.util.stream.Collectors.toSet;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.sarge.textrpg.world.ExitMap.MutableExitMap;
 
 public class ExitMapTest {
-	private Exit exit;
-	private MutableExitMap map;
+	private Exit east, west;
+	private Location dest;
 
 	@BeforeEach
 	public void before() {
-		exit = new Exit(Direction.EAST, Link.DEFAULT, mock(Location.class));
-		map = new MutableExitMap();
+		dest = mock(Location.class);
+		east = Exit.of(Direction.EAST, dest);
+		west = Exit.of(Direction.WEST, dest);
 	}
 
-	@Test
-	@DisplayName("Create an exit-map with a single entry")
-	public void of() {
-		final ExitMap map = ExitMap.of(exit);
-		assertNotNull(map);
-		assertEquals(false, map.isEmpty());
-		assertEquals(1, map.stream().count());
-		assertEquals(Optional.of(exit), map.find(Direction.EAST));
+	@Nested
+	class EmptyTests {
+		@Test
+		public void empty() {
+			assertEquals(true, ExitMap.EMPTY.isEmpty());
+			assertEquals(0, ExitMap.EMPTY.stream().count());
+		}
 	}
 
-	@Test
-	@DisplayName("Non-mutable map returns self")
-	public void self() {
-		final ExitMap map = mock(ExitMap.class);
-		assertEquals(map, ExitMap.of(map));
+	@Nested
+	class MutableExitsTests {
+		private MutableExitMap exits;
+
+		@BeforeEach
+		public void before() {
+			exits = new MutableExitMap();
+		}
+
+		@Test
+		public void constructor() {
+			assertEquals(true, exits.isEmpty());
+			assertEquals(0, exits.stream().count());
+		}
+
+		@Test
+		public void add() {
+			exits.add(west);
+			exits.add(east);
+			assertEquals(false, exits.isEmpty());
+			assertEquals(Set.of(west, east), exits.stream().collect(toSet()));
+			assertEquals(Optional.of(east), exits.find(Direction.EAST));
+			assertEquals(Optional.of(west), exits.find(Direction.WEST));
+		}
 	}
 
-	@Test
-	public void empty() {
-		assertEquals(ExitMap.EMPTY, ExitMap.of(map));
-		assertEquals(true, ExitMap.EMPTY.isEmpty());
-	}
+	@Nested
+	class CompactTests {
+		private MutableExitMap exits;
 
-	@Test
-	@DisplayName("Converts single exit to custom implementation")
-	public void single() {
-		map.add(exit);
-		final ExitMap result = ExitMap.of(map);
-		assertEquals(false, map.isEmpty());
-		assertEquals(1, result.stream().count());
-		assertEquals(Optional.of(exit), result.find(Direction.EAST));
-	}
+		@BeforeEach
+		public void before() {
+			exits = new MutableExitMap();
+		}
 
-	@Test
-	@DisplayName("Converts multiple exits to custom array implementation")
-	public void multiple() {
-		map.add(exit);
-		map.add(new Exit(Direction.WEST, Link.DEFAULT, mock(Location.class)));
-		final ExitMap result = ExitMap.of(map);
-		assertEquals(false, result.isEmpty());
-		assertTrue(result instanceof ArrayExitMap);
-		assertEquals(2, result.stream().count());
+		@Test
+		public void empty() {
+			final ExitMap empty = exits.compact();
+			assertEquals(true, empty.isEmpty());
+			assertEquals(0, empty.stream().count());
+		}
+
+		@Test
+		public void single() {
+			final ExitMap single = exits.add(east).compact();
+			assertEquals(false, single.isEmpty());
+			assertArrayEquals(new Exit[]{east}, single.stream().toArray());
+			assertEquals(Optional.of(east), single.find(Direction.EAST));
+			assertEquals(Optional.empty(), single.find(Direction.WEST));
+		}
+
+		@Test
+		public void array() {
+			final ExitMap array = exits.add(west).add(east).compact();
+			assertEquals(false, array.isEmpty());
+			assertArrayEquals(new Exit[]{east, west}, array.stream().toArray());
+			assertEquals(Optional.of(east), array.find(Direction.EAST));
+			assertEquals(Optional.of(west), array.find(Direction.WEST));
+		}
+
+		@Test
+		public void cardinal() {
+			final ExitMap array = exits
+				.add(west)
+				.add(east)
+				.add(Exit.of(Direction.SOUTH, dest))
+				.add(Exit.of(Direction.NORTH, dest))
+				.compact();
+			assertEquals(false, array.isEmpty());
+			assertArrayEquals(new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}, array.stream().map(Exit::direction).toArray());
+		}
 	}
 }

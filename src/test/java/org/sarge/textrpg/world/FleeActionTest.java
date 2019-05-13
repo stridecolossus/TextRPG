@@ -28,7 +28,7 @@ public class FleeActionTest extends ActionTestBase {
 		// Create exit
 		final Link link = mock(Link.class);
 		when(link.route()).thenReturn(Route.NONE);
-		exit = new Exit(Direction.EAST, link, loc);
+		exit = Exit.of(Direction.EAST, link, loc);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 		when(link.isTraversable()).thenReturn(true);
 

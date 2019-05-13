@@ -21,11 +21,16 @@ public class ExitTest {
 
 	@BeforeEach
 	public void before() {
+		// Create link
 		link = mock(Link.class);
 		when(link.route()).thenReturn(Route.NONE);
+
+		// Create destination
 		dest = mock(Location.class);
 		when(dest.terrain()).thenReturn(Terrain.GRASSLAND);
-		exit = new Exit(Direction.EAST, link, dest);
+
+		// Create exit
+		exit = Exit.of(Direction.EAST, link, dest);
 		actor = mock(Actor.class);
 	}
 
@@ -34,6 +39,14 @@ public class ExitTest {
 		assertEquals(Direction.EAST, exit.direction());
 		assertEquals(link, exit.link());
 		assertEquals(dest, exit.destination());
+	}
+
+	@Test
+	public void constructorDefaultLink() {
+		final Exit def = Exit.of(Direction.EAST, dest);
+		assertEquals(Direction.EAST, def.direction());
+		assertEquals(Link.DEFAULT, def.link());
+		assertEquals(dest, def.destination());
 	}
 
 	@Test
@@ -49,7 +62,7 @@ public class ExitTest {
 
 	@Test
 	public void describe() {
-		exit = new Exit(Direction.EAST, RouteLink.of(Route.LANE), dest);
+		exit = Exit.of(Direction.EAST, RouteLink.of(Route.LANE), dest);
 		when(dest.name()).thenReturn("dest");
 		final var expected = new Description.Builder("location.exit.default")
 			.add("dest", "dest")
@@ -61,12 +74,12 @@ public class ExitTest {
 	@Test
 	public void equals() {
 		assertEquals(exit, exit);
-		assertEquals(exit, new Exit(Direction.EAST, link, dest));
+		assertEquals(exit, Exit.of(Direction.EAST, link, dest));
 	}
 
 	@Test
 	public void notEquals() {
 		assertNotEquals(exit, null);
-		assertNotEquals(exit, new Exit(Direction.WEST, Link.DEFAULT, dest));
+		assertNotEquals(exit, Exit.of(Direction.WEST, dest));
 	}
 }

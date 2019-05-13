@@ -35,7 +35,7 @@ class MovementNotificationMovementListenerTest extends ActionTestBase {
 	public void update() {
 		final Location prev = location();
 		final Location dest = location();
-		final Exit exit = new Exit(Direction.EAST, Link.DEFAULT, dest);
+		final Exit exit = Exit.of(Direction.EAST, dest);
 		listener.update(actor, exit, prev);
 		verify(controller).broadcast(actor, loc, new MovementNotification(actor, Direction.EAST, false), Percentile.HALF);
 		verify(controller).broadcast(actor, loc, new MovementNotification(actor, Direction.WEST, true), Percentile.HALF);

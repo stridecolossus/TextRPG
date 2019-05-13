@@ -53,11 +53,11 @@ public class PathTest {
 		// Check start exits
 		final Link link = RouteLink.of(Route.TRAIL);
 		assertEquals(1, start.exits().stream().count());
-		assertEquals(Optional.of(new Exit(Direction.EAST, link, end)), start.exits().find(Direction.EAST));
+		assertEquals(Optional.of(Exit.of(Direction.EAST, link, end)), start.exits().find(Direction.EAST));
 
 		// Check end exits
 		assertEquals(1, end.exits().stream().count());
-		assertEquals(Optional.of(new Exit(Direction.WEST, link, start)), end.exits().find(Direction.WEST));
+		assertEquals(Optional.of(Exit.of(Direction.WEST, link, start)), end.exits().find(Direction.WEST));
 	}
 
 	@Test
@@ -79,6 +79,6 @@ public class PathTest {
 		final Location start = connectors.get(0);
 		final Location end = connectors.get(1);
 		assertEquals(junction, start);
-		verify(junction).add(new Exit(Direction.NORTH, RouteLink.of(Route.TRAIL), end));
+		verify(junction).add(Exit.of(Direction.NORTH, RouteLink.of(Route.TRAIL), end));
 	}
 }

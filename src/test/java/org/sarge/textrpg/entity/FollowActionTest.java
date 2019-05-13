@@ -85,7 +85,7 @@ public class FollowActionTest extends ActionTestBase {
 	@Test
 	public void followRoute() throws ActionException {
 		// Add an exit with a route
-		final Exit exit = new Exit(Direction.EAST, Link.DEFAULT, dest);
+		final Exit exit = Exit.of(Direction.EAST, dest);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 
 		// Start following
@@ -101,8 +101,8 @@ public class FollowActionTest extends ActionTestBase {
 	@Test
 	public void followRouteAmbiguous() throws ActionException {
 		final MutableExitMap exits = new MutableExitMap();
-		exits.add(new Exit(Direction.EAST, Link.DEFAULT, dest));
-		exits.add(new Exit(Direction.WEST, Link.DEFAULT, dest));
+		exits.add(Exit.of(Direction.EAST, dest));
+		exits.add(Exit.of(Direction.WEST, dest));
 		when(loc.exits()).thenReturn(exits);
 		TestHelper.expect("follow.route.ambiguous", () -> action.follow(actor, Route.ROAD));
 	}
@@ -110,14 +110,14 @@ public class FollowActionTest extends ActionTestBase {
 	@Test
 	public void followRouteNotPerceived() throws ActionException {
 		final Link link = new HiddenLink(new ExtendedLink.Properties(), "name", Percentile.ZERO);
-		final Exit exit = new Exit(Direction.EAST, link, dest);
+		final Exit exit = Exit.of(Direction.EAST, link, dest);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 		TestHelper.expect("follow.route.none", () -> action.follow(actor, Route.ROAD));
 	}
 
 	@Test
 	public void followRouteDirection() throws ActionException {
-		final Exit exit = new Exit(Direction.EAST, Link.DEFAULT, dest);
+		final Exit exit = Exit.of(Direction.EAST, dest);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 		action.follow(actor, Route.ROAD);
 	}

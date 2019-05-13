@@ -14,7 +14,7 @@ public class ExitsActionTest extends ActionTestBase {
 
 	@BeforeEach
 	public void before() {
-		exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+		exit = Exit.of(Direction.EAST, loc);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 		action = new ExitsAction();
 	}

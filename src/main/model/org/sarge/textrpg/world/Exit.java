@@ -3,6 +3,7 @@ package org.sarge.textrpg.world;
 import static org.sarge.lib.util.Check.notNull;
 
 import org.sarge.lib.util.AbstractEqualsObject;
+import org.sarge.lib.util.Check;
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.util.Description;
 import org.sarge.textrpg.util.TextHelper;
@@ -11,20 +12,50 @@ import org.sarge.textrpg.util.TextHelper;
  * Descriptor for an exit from a location.
  * @author Sarge
  */
-public final class Exit extends AbstractEqualsObject {
+public class Exit extends AbstractEqualsObject {
+	/**
+	 * Creates a simple exit.
+	 * @param dir		Direction
+	 * @param dest		Destination
+	 * @return Exit
+	 * @see Link#DEFAULT
+	 */
+	public static final Exit of(Direction dir, Location dest) {
+		return new Exit(dir, dest);
+	}
+
+	/**
+	 * Creates an exit with a custom link.
+	 * @param dir		Direction
+	 * @param link		Link descriptor
+	 * @param dest		Destination
+	 * @return Exit
+	 */
+	public static final Exit of(Direction dir, Link link, Location dest) {
+		Check.notNull(link);
+		if(link == Link.DEFAULT) {
+			return of(dir, dest);
+		}
+		else {
+			return new Exit(dir, dest) {
+				@Override
+				public Link link() {
+					return link;
+				}
+			};
+		}
+	}
+
 	private final Direction dir;
-	private final Link link;
 	private final Location dest;
 
 	/**
 	 * Constructor.
 	 * @param dir		Exit direction
-	 * @param link		Link descriptor
 	 * @param dest		Destination
 	 */
-	public Exit(Direction dir, Link link, Location dest) {
+	private Exit(Direction dir, Location dest) {
 		this.dir = notNull(dir);
-		this.link = notNull(link);
 		this.dest = notNull(dest);
 	}
 
@@ -39,7 +70,7 @@ public final class Exit extends AbstractEqualsObject {
 	 * @return Link descriptor of this exit
 	 */
 	public Link link() {
-		return link;
+		return Link.DEFAULT;
 	}
 
 	/**
@@ -57,6 +88,7 @@ public final class Exit extends AbstractEqualsObject {
 	// TODO - partially visible exits, e.g. fog, dark, etc
 	public Description describe() {
 		// Build exit description key
+		final Link link = link();
 		final String key = TextHelper.join("location.exit", link.key());
 
 		// Build exit description
@@ -77,20 +109,26 @@ public final class Exit extends AbstractEqualsObject {
 	 * @return Whether this exit is perceived
 	 */
 	public boolean isPerceivedBy(Actor actor) {
-		return link.controller().map(actor::perceives).orElse(true);
+		return link().controller().map(actor::perceives).orElse(true);
 	}
 
 	@Override
 	public String toString() {
+		// Build exit
 		final StringBuilder str = new StringBuilder();
 		str.append(dir);
 		str.append("->");
 		str.append(dest.name());
+
+		// Add link descriptor
+		final Link link = link();
 		if(link != Link.DEFAULT) {
 			str.append('(');
 			str.append(link);
 			str.append(')');
 		}
+
+		// Build result
 		return str.toString();
 	}
 }

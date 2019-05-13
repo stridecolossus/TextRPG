@@ -13,6 +13,8 @@ import org.sarge.lib.util.AbstractEqualsObject;
 import org.sarge.lib.util.AbstractObject;
 import org.sarge.textrpg.world.ExitMap.MutableExitMap;
 
+import com.sun.jdi.connect.Connector;
+
 /**
  * A <i>path</i> is a linear, one-dimensional list of locations that can be traversed start-to-end in either direction.
  * <p>
@@ -160,7 +162,7 @@ public class Path extends AbstractObject {
 	 * @param end		End location
 	 */
 	private void link(Location start, Direction dir, Location end) {
-		start.add(new Exit(dir, link, end));
+		start.add(Exit.of(dir, link, end));
 	}
 
 	/**

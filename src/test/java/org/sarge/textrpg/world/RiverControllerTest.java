@@ -39,7 +39,7 @@ public class RiverControllerTest {
 		loc = mock(Location.class);
 		when(loc.isWater()).thenReturn(true);
 		when(loc.exits()).thenReturn(ExitMap.EMPTY);
-		exit = new Exit(Direction.EAST, new CurrentLink(Current.MEDIUM), loc);
+		exit = Exit.of(Direction.EAST, new CurrentLink(Current.MEDIUM), loc);
 
 		// Create entity to move
 		thing = mock(Entity.class);
@@ -93,6 +93,6 @@ public class RiverControllerTest {
 
 	@Test
 	public void addNotRiverCurrent() {
-		assertThrows(ClassCastException.class, () -> controller.add(thing, new Exit(Direction.EAST, Link.DEFAULT, loc)));
+		assertThrows(ClassCastException.class, () -> controller.add(thing, Exit.of(Direction.EAST, loc)));
 	}
 }

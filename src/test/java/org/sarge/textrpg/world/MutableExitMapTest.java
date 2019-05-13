@@ -25,7 +25,7 @@ public class MutableExitMapTest {
 
 	@Test
 	public void add() {
-		final Exit exit = new Exit(Direction.EAST, Link.DEFAULT, dest);
+		final Exit exit = Exit.of(Direction.EAST, dest);
 		exits.add(exit);
 		assertEquals(Optional.of(exit), exits.find(Direction.EAST));
 	}
@@ -33,7 +33,7 @@ public class MutableExitMapTest {
 	@Test
 	public void addInvalid() {
 		final CurrentLink link = new CurrentLink(Current.FAST);
-		exits.add(new Exit(Direction.EAST, link, dest));
-		assertThrows(IllegalArgumentException.class, () -> exits.add(new Exit(Direction.NORTH, link, dest)));
+		exits.add(Exit.of(Direction.EAST, link, dest));
+		assertThrows(IllegalArgumentException.class, () -> exits.add(Exit.of(Direction.NORTH, link, dest)));
 	}
 }

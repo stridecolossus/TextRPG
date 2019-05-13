@@ -21,13 +21,13 @@ public class LocationBroadcasterTest {
 		// Create a linked location
 		final Location start = mock(Location.class);
 		final Location dest = mock(Location.class);
-		when(start.exits()).thenReturn(ExitMap.of(new Exit(Direction.EAST, Link.DEFAULT, dest)));
-		when(dest.exits()).thenReturn(ExitMap.of(new Exit(Direction.WEST, Link.DEFAULT, start)));
+		when(start.exits()).thenReturn(ExitMap.of(Exit.of(Direction.EAST, dest)));
+		when(dest.exits()).thenReturn(ExitMap.of(Exit.of(Direction.WEST, start)));
 
 		// Invoke and check only neighbour visited
 		final LocationBroadcaster.Visitor vis = mock(LocationBroadcaster.Visitor.class);
 		broadcaster.visit(start, vis);
-		verify(vis).visit(new Exit(Direction.EAST, Link.DEFAULT, dest), 1);
+		verify(vis).visit(Exit.of(Direction.EAST, dest), 1);
 		verifyNoMoreInteractions(vis);
 	}
 }

@@ -23,7 +23,7 @@ public class AmbientControllerTest extends ActionTestBase {
 
 	@Test
 	public void updateSameArea() {
-		final Exit exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+		final Exit exit = Exit.of(Direction.EAST, loc);
 		controller.update(actor, exit, loc);
 		assertEquals(0, queue.size());
 	}
@@ -39,7 +39,7 @@ public class AmbientControllerTest extends ActionTestBase {
 		when(loc.isTransition(prev)).thenReturn(true);
 
 		// Notify move to area
-		final Exit exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+		final Exit exit = Exit.of(Direction.EAST, loc);
 		controller.update(actor, exit, prev);
 
 		// Check ambient event generated

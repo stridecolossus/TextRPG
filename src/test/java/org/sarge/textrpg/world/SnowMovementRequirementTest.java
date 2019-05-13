@@ -19,7 +19,7 @@ public class SnowMovementRequirementTest extends ActionTestBase {
 	public void before() {
 		model = mock(SnowModel.class);
 		req = new SnowMovementRequirement(model);
-		exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+		exit = Exit.of(Direction.EAST, loc);
 	}
 
 	/**

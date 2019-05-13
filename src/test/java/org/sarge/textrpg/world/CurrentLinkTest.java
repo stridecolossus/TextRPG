@@ -43,7 +43,7 @@ public class CurrentLinkTest {
 		when(loc.isWater()).thenReturn(true);
 
 		// Create current exit
-		final Exit exit = new Exit(Direction.EAST, link, loc);
+		final Exit exit = Exit.of(Direction.EAST, link, loc);
 		final ExitMap exits = ExitMap.of(exit);
 		when(loc.exits()).thenReturn(exits);
 

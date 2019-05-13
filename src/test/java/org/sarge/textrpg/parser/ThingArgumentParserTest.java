@@ -70,7 +70,7 @@ public class ThingArgumentParserTest extends ActionTestBase {
 				return Optional.of(arg);
 			}
 		};
-		final Exit exit = new Exit(Direction.EAST, link, loc);
+		final Exit exit = Exit.of(Direction.EAST, link, loc);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 		assertEquals(arg, run());
 	}

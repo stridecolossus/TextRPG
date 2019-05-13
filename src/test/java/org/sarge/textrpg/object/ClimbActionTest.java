@@ -40,7 +40,7 @@ public class ClimbActionTest extends ActionTestBase {
 		when(actor.perceives(climb)).thenReturn(true);
 
 		// Create exit
-		exit = new Exit(Direction.UP, link, loc);
+		exit = Exit.of(Direction.UP, link, loc);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 
 		// Create action

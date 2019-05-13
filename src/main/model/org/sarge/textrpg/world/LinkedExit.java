@@ -87,7 +87,7 @@ public class LinkedExit extends AbstractEqualsObject {
 	 * @return Exit
 	 */
 	public Exit exit(Location dest) {
-		return new Exit(dir, link, dest);
+		return Exit.of(dir, link, dest);
 	}
 
 	/**
@@ -99,7 +99,7 @@ public class LinkedExit extends AbstractEqualsObject {
 		if(policy == LinkedExit.ReversePolicy.ONE_WAY) throw new IllegalStateException("Cannot reverse a one-way exit: " + this);
 		final Direction reverse = reverseDirection();
 		final Link inverted = invert();
-		return new Exit(reverse, inverted, start);
+		return Exit.of(reverse, inverted, start);
 	}
 
 	/**

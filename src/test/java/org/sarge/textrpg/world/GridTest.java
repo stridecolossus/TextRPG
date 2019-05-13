@@ -181,10 +181,10 @@ public class GridTest {
 			// Check locations on edge can link to neighbouring grid
 			assertEquals(Optional.empty(), grid.get(new Coordinates(2, 0)).exits().find(Direction.EAST));
 			assertEquals(Optional.empty(), grid.get(new Coordinates(2, 1)).exits().find(Direction.EAST));
-			assertEquals(Optional.of(new Exit(Direction.EAST, Link.DEFAULT, right)), grid.get(new Coordinates(2, 2)).exits().find(Direction.EAST));
+			assertEquals(Optional.of(Exit.of(Direction.EAST, right)), grid.get(new Coordinates(2, 2)).exits().find(Direction.EAST));
 
 			// Check reverse exit
-			assertEquals(Optional.of(new Exit(Direction.WEST, Link.DEFAULT, left)), right.exits().find(Direction.WEST));
+			assertEquals(Optional.of(Exit.of(Direction.WEST, left)), right.exits().find(Direction.WEST));
 		}
 
 		@Test

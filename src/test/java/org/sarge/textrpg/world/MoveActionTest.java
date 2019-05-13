@@ -32,7 +32,7 @@ public class MoveActionTest extends ActionTestBase {
 		when(link.controller()).thenReturn(Optional.of(mock(Thing.class)));
 
 		// Create an exit
-		exit = new Exit(Direction.EAST, link, loc);
+		exit = Exit.of(Direction.EAST, link, loc);
 		when(loc.exits()).thenReturn(ExitMap.of(exit));
 		when(actor.perceives(link.controller().get())).thenReturn(true);
 

@@ -13,7 +13,6 @@ import org.sarge.textrpg.util.Percentile;
 import org.sarge.textrpg.util.TestHelper;
 import org.sarge.textrpg.world.Direction;
 import org.sarge.textrpg.world.Exit;
-import org.sarge.textrpg.world.Link;
 import org.sarge.textrpg.world.Location;
 import org.sarge.textrpg.world.Terrain;
 
@@ -34,7 +33,7 @@ public class BoatTest {
 		when(loc.contents()).thenReturn(new Contents());
 
 		// Create exit
-		exit = new Exit(Direction.EAST, Link.DEFAULT, loc);
+		exit = Exit.of(Direction.EAST, loc);
 	}
 
 	@Test

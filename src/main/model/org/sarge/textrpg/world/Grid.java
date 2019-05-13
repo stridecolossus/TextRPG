@@ -279,7 +279,7 @@ public class Grid {
 					}
 					else {
 						// Add exit to neighbour
-						final Exit exit = new Exit(dir, Link.DEFAULT, loc);
+						final Exit exit = Exit.of(dir, loc);
 						exits.add(exit);
 					}
 					continue;
@@ -292,7 +292,7 @@ public class Grid {
 				}
 
 				// Add exit
-				final Exit exit = new Exit(dir, Link.DEFAULT, loc);
+				final Exit exit = Exit.of(dir, loc);
 				exits.add(exit);
 			}
 		}
@@ -416,7 +416,7 @@ public class Grid {
 				Coordinates prev = this;
 				for(Direction dir : path) {
 					final GridLocation next = move(prev, dir);
-					grid.add(prev, dir, new Exit(dir, link, next));
+					grid.add(prev, dir, Exit.of(dir, link, next));
 					prev = next.coords;
 				}
 			}

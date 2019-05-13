@@ -15,7 +15,6 @@ import org.sarge.textrpg.util.Percentile;
 import org.sarge.textrpg.world.DefaultLocation;
 import org.sarge.textrpg.world.Direction;
 import org.sarge.textrpg.world.Exit;
-import org.sarge.textrpg.world.Link;
 import org.sarge.textrpg.world.Terrain;
 import org.sarge.textrpg.world.Trail;
 
@@ -57,7 +56,7 @@ public class MountMovementModeTest extends ActionTestBase {
 	public void move() throws ActionException {
 		final var dest = mock(DefaultLocation.class);
 		when(dest.terrain()).thenReturn(Terrain.DESERT);
-		final var exit = new Exit(Direction.EAST, Link.DEFAULT, dest);
+		final var exit = Exit.of(Direction.EAST, dest);
 		mode.move(exit);
 		verify(actor).parent(dest);
 		verify(mount).parent(dest);
