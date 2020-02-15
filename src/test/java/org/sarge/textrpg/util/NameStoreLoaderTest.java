@@ -10,6 +10,8 @@ import java.io.StringReader;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sarge.textrpg.util.NameStore.ArrayNameStore;
+import org.sarge.textrpg.util.NameStore.DefaultNameStore;
 
 public class NameStoreLoaderTest {
 	private NameStoreLoader loader;

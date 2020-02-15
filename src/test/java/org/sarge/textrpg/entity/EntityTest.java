@@ -1,12 +1,13 @@
 package org.sarge.textrpg.entity;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +19,7 @@ import org.sarge.textrpg.common.Emission;
 import org.sarge.textrpg.common.Hidden;
 import org.sarge.textrpg.common.Size;
 import org.sarge.textrpg.common.Skill;
+import org.sarge.textrpg.entity.Entity.FollowModel;
 import org.sarge.textrpg.util.ActionException;
 import org.sarge.textrpg.util.Description;
 import org.sarge.textrpg.util.Event;
@@ -49,7 +51,14 @@ public class EntityTest {
 		manager = new EntityManager(queue, handler, mock(Consumer.class));
 
 		// Create entity
-		entity = new Entity(descriptor, manager);
+		entity = new Entity(descriptor, manager) {
+			private final FollowModel model = new FollowModel();
+
+			@Override
+			public FollowModel follower() {
+				return model;
+			}
+		};
 	}
 
 	@Nested
@@ -79,12 +88,6 @@ public class EntityTest {
 			assertNotNull(entity.model());
 			assertNotNull(entity.manager());
 			assertNotNull(entity.movement());
-		}
-
-		@Test
-		public void follower() {
-			assertThrows(UnsupportedOperationException.class, () -> entity.follower());
-			assertThrows(UnsupportedOperationException.class, () -> entity.leader());
 		}
 
 		@Test
@@ -226,6 +229,88 @@ public class EntityTest {
 		public void isValidTarget() {
 			when(other.descriptor().alignment()).thenReturn(Alignment.GOOD);
 			assertEquals(true, entity.isValidTarget(other));
+		}
+	}
+
+	@Nested
+	class FollowerTests {
+		private FollowModel model;
+		private Entity leader;
+
+		@BeforeEach
+		public void before() {
+			leader = new Entity(descriptor, manager) {
+				private final FollowModel m = new FollowModel() {
+					@Override
+					protected boolean isLeader() {
+						return true;
+					}
+				};
+
+				@Override
+				public FollowModel follower() {
+					return m;
+				}
+			};
+
+			model = entity.new FollowModel();
+		}
+
+		@Test
+		public void constructor() throws ActionException {
+			assertEquals(Optional.empty(), model.leader());
+			assertNotNull(model.followers());
+			assertEquals(0, model.followers().count());
+		}
+
+		@Test
+		public void follow() throws ActionException {
+			model.follow(leader);
+			assertEquals(Optional.of(leader), model.leader());
+			assertArrayEquals(new Entity[]{entity}, leader.follower().followers().toArray());
+		}
+
+		@Test
+		public void followAlreadyFollowing() throws ActionException {
+			model.follow(leader);
+			TestHelper.expect("follow.already.following",() -> model.follow(leader));
+		}
+
+		@Test
+		public void followFollowingOther() throws ActionException {
+			model.follow(leader);
+			TestHelper.expect("follow.already.other",() -> model.follow(mock(Entity.class)));
+		}
+
+		@Test
+		public void followSelf() throws ActionException {
+			TestHelper.expect("follow.cannot.self",() -> model.follow(entity));
+		}
+
+		@Test
+		public void followCannotFollow() throws ActionException {
+			TestHelper.expect("follow.cannot.follow",() -> leader.follower().follow(entity));
+		}
+
+		@Test
+		public void stop() throws ActionException {
+			model.follow(leader);
+			model.stop();
+			assertEquals(Optional.empty(), model.leader());
+			assertEquals(0, model.followers().count());
+		}
+
+		@Test
+		public void stopNotFollowing() throws ActionException {
+			TestHelper.expect("stop.not.following",() -> model.stop());
+		}
+
+		@Test
+		public void clear() throws ActionException {
+			model.follow(leader);
+			model.clear();
+			assertEquals(Optional.empty(), model.leader());
+			assertEquals(0, model.followers().count());
 		}
 	}
 }

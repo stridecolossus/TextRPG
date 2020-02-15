@@ -2,7 +2,6 @@ package org.sarge.textrpg.object;
 
 import static org.sarge.lib.util.Check.oneOrMore;
 
-import org.sarge.textrpg.util.ArgumentFormatter.Registry;
 import org.sarge.textrpg.util.Description.Builder;
 import org.sarge.textrpg.util.TextHelper;
 
@@ -132,11 +131,11 @@ public class Food extends WorldObject {
 		}
 
 		@Override
-		protected void describe(boolean carried, Builder builder, Registry formatters) {
+		protected void describe(boolean carried, Builder builder) {
 			if(rotten) {
 				builder.add(KEY_STATE, "food.rotten");
 			}
-			super.describe(carried, builder, formatters);
+			super.describe(carried, builder);
 		}
 	}
 

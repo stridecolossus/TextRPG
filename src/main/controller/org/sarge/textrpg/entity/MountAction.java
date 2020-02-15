@@ -9,6 +9,7 @@ import org.sarge.textrpg.common.AbstractAction;
 import org.sarge.textrpg.common.EnumAction;
 import org.sarge.textrpg.common.RequiresActor;
 import org.sarge.textrpg.common.Response;
+import org.sarge.textrpg.entity.Entity.FollowModel;
 import org.sarge.textrpg.util.ActionException;
 import org.sarge.textrpg.util.Description;
 import org.sarge.textrpg.util.TextHelper;
@@ -30,11 +31,10 @@ public class MountAction extends AbstractAction {
 		LEAD {
 			@Override
 			protected Response execute(CharacterEntity actor, Mount mount) throws ActionException {
-				final Follower.FollowerModel follower = mount.follower();
+				final FollowModel follower = mount.follower();
 				if(follower.isFollowing(actor)) throw ActionException.of("lead.already.following");
-				if(follower.isFollowing()) throw ActionException.of("lead.following.other");
 				// TODO - mount that doesn't want to follow, e.g. different alignment
-				Follower.follow(mount, actor);
+				mount.follower().follow(actor);
 				return response(this, mount);
 			}
 		},
@@ -45,9 +45,10 @@ public class MountAction extends AbstractAction {
 		ABANDON {
 			@Override
 			protected Response execute(CharacterEntity actor, Mount mount) throws ActionException {
-				if(!mount.follower().isFollowing(actor)) throw ActionException.of("abandon.not.following");
+				final FollowModel follower = mount.follower();
+				if(!follower.isFollowing(actor)) throw ActionException.of("abandon.not.following");
 				if(mount(actor) == mount) throw ActionException.of("abandon.invalid.mounted");
-				Follower.stop(mount);
+				follower.stop();
 				return response(this, mount);
 			}
 		},
@@ -143,13 +144,14 @@ public class MountAction extends AbstractAction {
 
 		default:
 			// Enumerate current mounts
-			final List<Mount> mounts = StreamUtil.select(Mount.class, actor.leader().followers()).collect(toList());
+			final FollowModel follower = actor.follower();
+			final List<Mount> mounts = StreamUtil.select(Mount.class, follower.followers()).collect(toList());
 			if(mounts.isEmpty()) throw ActionException.of(op.name(), "requires.mount");
 
 			if(op == Operation.ABANDON) {
 				// Abandon all mounts
 				if(mount(actor) != null) throw ActionException.of("abandon.invalid.mounted");
-				mounts.forEach(Follower::stop);
+				mounts.stream().map(Entity::follower).forEach(FollowModel::clear);
 				return Response.of("abandon.mount.all");
 			}
 			else {

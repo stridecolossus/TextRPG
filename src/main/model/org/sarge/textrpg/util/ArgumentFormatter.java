@@ -1,13 +1,11 @@
 package org.sarge.textrpg.util;
 
-import java.util.Map;
-import java.util.function.Function;
+import static org.sarge.lib.util.Check.notNull;
 
-import org.sarge.lib.collection.StrictMap;
-import org.sarge.lib.util.AbstractEqualsObject;
+import org.springframework.stereotype.Component;
 
 /**
- * Argument formatter.
+ * An <i>argument formatter</i> renders a description argument.
  */
 @FunctionalInterface
 public interface ArgumentFormatter {
@@ -20,58 +18,38 @@ public interface ArgumentFormatter {
 	String format(Object arg, NameStore store);
 
 	/**
-	 * Token-replacement formatter.
+	 * Default implementation that looks up the given argument string from the given name-store.
 	 */
-	ArgumentFormatter TOKEN = (arg, store) -> store.get(arg);
+	ArgumentFormatter DEFAULT = (arg, store) -> store.get(arg);
 
 	/**
-	 * Plain formatter.
+	 * A <i>plain argument</i> is rendered as plain text using the {@link #toString()} method of the argument.
 	 */
-	ArgumentFormatter PLAIN = (arg, store) -> arg.toString();
-
-	/**
-	 * Money formatter name.
-	 */
-	String MONEY = "formatter.money";
-
-	/**
-	 * Numeric formatter name.
-	 */
-	String NUMERIC = "formatter.numeric";
-
-	/**
-	 * Creates an integer argument formatter.
-	 * @param formatter Integer formatter
-	 * @return Integer argument formatter
-	 */
-	static ArgumentFormatter integral(Function<Integer, String> formatter) {
-		return (arg, store) -> formatter.apply((Integer) arg);
-	}
-
-	/**
-	 * Argument formatter registry.
-	 */
-	class Registry extends AbstractEqualsObject {
-		private final Map<String, ArgumentFormatter> formatters = new StrictMap<>();
-
+	final class PlainArgument {
 		/**
-		 * Looks up an argument formatter.
-		 * @param name Name
-		 * @return Argument formatter
+		 * Formatter for a plain argument.
 		 */
-		public ArgumentFormatter get(String name) {
-			final ArgumentFormatter formatter = formatters.get(name);
-			if(formatter == null) throw new IllegalArgumentException("Unknown argument formatter: " + name);
-			return formatter;
+		@Component
+		static final class PlainArgumentFormatter implements ArgumentFormatter {
+			@Override
+			public String format(Object arg, NameStore store) {
+				return arg.toString();
+			}
 		}
 
+		private final Object arg;
+
 		/**
-		 * Registers a formatter.
-		 * @param name			Name
-		 * @param formatter		Formatter
+		 * Constructor.
+		 * @param arg Argument
 		 */
-		public void add(String name, ArgumentFormatter formatter) {
-			formatters.put(name, formatter);
+		public PlainArgument(Object arg) {
+			this.arg = notNull(arg);
+		}
+
+		@Override
+		public String toString() {
+			return arg.toString();
 		}
 	}
 }

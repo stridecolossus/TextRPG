@@ -12,7 +12,6 @@ import org.sarge.textrpg.common.Size;
 import org.sarge.textrpg.contents.ContentStateChange;
 import org.sarge.textrpg.contents.Parent;
 import org.sarge.textrpg.contents.Thing;
-import org.sarge.textrpg.util.ArgumentFormatter;
 import org.sarge.textrpg.util.Description;
 import org.sarge.textrpg.util.Percentile;
 import org.sarge.textrpg.util.TextHelper;
@@ -175,8 +174,8 @@ public class WorldObject extends Thing {
 	}
 
 	@Override
-	public final Description describe(ArgumentFormatter.Registry formatters) {
-		return describe(false, formatters);
+	public final Description describe() {
+		return describe(false);
 	}
 
 	/**
@@ -202,7 +201,7 @@ public class WorldObject extends Thing {
 	 * @param carried Whether this object is being carried by the actor
 	 * @return Description
 	 */
-	public Description describe(boolean carried, ArgumentFormatter.Registry formatters) {
+	public Description describe(boolean carried) {
 		// Determine description key
 		final String key = key(carried);
 		final var builder = new Description.Builder(TextHelper.join("object", key));
@@ -217,14 +216,14 @@ public class WorldObject extends Thing {
 		// Add optional size
 		final Size size = this.size();
 		if(size == Size.NONE) {
-			builder.add("size", StringUtils.EMPTY, ArgumentFormatter.PLAIN);
+			builder.add("size", StringUtils.EMPTY);
 		}
 		else {
 			builder.add("size", TextHelper.prefix(size));
 		}
 
 		// Delegate to add sub-class properties
-		describe(carried, builder, formatters);
+		describe(carried, builder);
 
 		// Ensure optional arguments are defaulted to empty if not populated
 		ensure(KEY_STATE, builder);
@@ -238,9 +237,8 @@ public class WorldObject extends Thing {
 	 * Over-ridden in sub-classes to append description entries for this object.
 	 * @param carried 			Whether this object is being carried by the actor
 	 * @param builder 			Description builder
-	 * @param formatters		Argument formatters
 	 */
-	protected void describe(boolean carried, Description.Builder builder, ArgumentFormatter.Registry formatters) {
+	protected void describe(boolean carried, Description.Builder builder) {
 		// Does nowt
 	}
 

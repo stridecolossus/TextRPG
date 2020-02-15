@@ -55,9 +55,9 @@ public final class Area {
 	 * @param parent		Parent area
 	 * @param props			Default location properties for this area
 	 * @param resources		Loot-factories for resources in this area
+	 * @param views			Optional views from locations in this area
 	 * @param weather		Optional weather for this area
 	 * @param ambient		Optional ambient event in this area
-	 * @param view			Optional view from locations in this area
 	 * @param store			Name-store for this area
 	 */
 	private Area(String name, Area parent, Set<Property> props, Map<String, LootFactory> resources, Map<Direction, View> views, Weather weather, AmbientEvent ambient, NameStore store) {

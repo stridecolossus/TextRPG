@@ -59,6 +59,7 @@ public class Grid {
 	private class GridLocation extends Location {
 		private final Coordinates coords;
 		private final Contents contents = new Contents();
+		private ExitMap exits;
 
 		/**
 		 * Constructor.
@@ -66,7 +67,7 @@ public class Grid {
 		 * @param coords			Coordinates
 		 */
 		private GridLocation(Location.Descriptor descriptor, Coordinates coords) {
-			super(descriptor, null);
+			super(descriptor);
 			this.coords = notNull(coords);
 		}
 
@@ -298,7 +299,7 @@ public class Grid {
 		}
 
 		// Optimise exits
-		return ExitMap.of(exits);
+		return exits.compact();
 	}
 
 	@Override

@@ -71,10 +71,14 @@ public class CharacterEntity extends Entity {
 		}
 	}
 
-	private final FollowerModel follower = new FollowerModel();
-	private final LeaderModel leader = new LeaderModel();
+	private final FollowModel follow = new FollowModel() {
+		@Override
+		protected boolean isLeader() {
+			return true;
+		}
+	};
 
-	private MovementMode mode = super.movement();
+	private MovementMode mode = super.movement(); // TODO - urgh
 
 	/**
 	 * Constructor.
@@ -86,13 +90,8 @@ public class CharacterEntity extends Entity {
 	}
 
 	@Override
-	public FollowerModel follower() {
-		return follower;
-	}
-
-	@Override
-	public LeaderModel leader() {
-		return leader;
+	public FollowModel follower() {
+		return follow;
 	}
 
 	@Override

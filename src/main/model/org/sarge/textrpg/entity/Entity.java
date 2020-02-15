@@ -2,7 +2,10 @@ package org.sarge.textrpg.entity;
 
 import static org.sarge.lib.util.Check.notNull;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.sarge.textrpg.common.Actor;
 import org.sarge.textrpg.common.Damage;
@@ -23,10 +26,10 @@ import org.sarge.textrpg.world.Location;
 import org.sarge.textrpg.world.Trail;
 
 /**
- * Default entity.
+ * An <i>entity</i> is a sentient creature in the world.
  * @author Sarge
  */
-public class Entity extends Thing implements Actor, Parent, Follower, Leader {
+public class Entity extends Thing implements Actor, Parent {
 	/**
 	 * Location trigger activated by an entity.
 	 */
@@ -81,6 +84,94 @@ public class Entity extends Thing implements Actor, Parent, Follower, Leader {
 		}
 	}
 
+	/**
+	 * Follower/leader model for this entity.
+	 */
+	public class FollowModel {
+		private Entity leader;
+		private final List<Entity> followers = new ArrayList<>();
+
+		/**
+		 * @return Leader of this entity
+		 */
+		public Optional<Entity> leader() {
+			return Optional.ofNullable(leader);
+		}
+
+		/**
+		 * @return Followers of this entity
+		 */
+		public Stream<Entity> followers() {
+			return followers.stream();
+		}
+
+		/**
+		 * @return Whether this entity can be a leader (default is <tt>false</tt>)
+		 */
+		protected boolean isLeader() {
+			return false;
+		}
+
+		/**
+		 * Helper.
+		 * @param leader Leader
+		 * @return Whether this entity is following the given leader
+		 */
+		public boolean isFollowing(Entity leader) {
+			return this.leader == leader;
+		}
+
+		/**
+		 * Starts following the given entity.
+		 * @param leader Leader
+		 * @throws ActionException if this entity is already following or the leader cannot be followed
+		 * @see #isLeader()
+		 */
+		void follow(Entity leader) throws ActionException {
+			// Check can follow
+			if(this.leader == leader) throw ActionException.of("follow.already.following");
+			if(this.leader != null) throw ActionException.of("follow.already.other");
+			if(leader == Entity.this) throw ActionException.of("follow.cannot.self");
+
+			// Check leader allows followers
+			final FollowModel model = leader.follower();
+			if(!model.isLeader()) throw new ActionException(new Description("follow.cannot.follow", leader.name()));
+
+			// Follow leader
+			model.followers.add(Entity.this);
+			this.leader = leader;
+		}
+
+		/**
+		 * Stops following.
+		 * @return Previous leader
+		 * @throws ActionException if this entity is not following
+		 */
+		Entity stop() throws ActionException {
+			if(leader == null) throw ActionException.of("stop.not.following");
+			final Entity prev = leader;
+			remove();
+			return prev;
+		}
+
+		/**
+		 * Removes this entity as a follower if present.
+		 */
+		void clear() {
+			if(leader != null) {
+				remove();
+			}
+		}
+
+		/**
+		 * Stops following.
+		 */
+		private void remove() {
+			leader.follower().followers.remove(Entity.this);
+			leader = null;
+		}
+	}
+
 	private final EntityDescriptor descriptor;
 	private final EntityModel model;
 	private final EntityManager manager;
@@ -116,6 +207,15 @@ public class Entity extends Thing implements Actor, Parent, Follower, Leader {
 	 */
 	public EntityManager manager() {
 		return manager;
+	}
+
+	/**
+	 * @return Follower/leader model for this entity
+	 * @throws UnsupportedOperationException by default
+	 */
+	public FollowModel follower() {
+		// TODO - abstract?
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -214,16 +314,6 @@ public class Entity extends Thing implements Actor, Parent, Follower, Leader {
 			if(p.parent() == null) return (Location) p;
 			p = p.parent();
 		}
-	}
-
-	@Override
-	public FollowerModel follower() {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public LeaderModel leader() {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override

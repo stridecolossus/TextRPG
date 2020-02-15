@@ -119,10 +119,6 @@ public class FollowAction extends AbstractAction {
 	 */
 	@RequiresActor
 	public Response follow(CharacterEntity actor, CharacterEntity leader) throws ActionException {
-		// Check can follow
-		if(actor.follower().isFollowing(leader)) throw ActionException.of("follow.already.following");
-		if(actor.follower().isFollowing()) throw ActionException.of("follow.following.other");
-
 		// Check player allow followers
 		if(actor.isPlayer() && leader.isPlayer()) {
 			final PlayerCharacter player = (PlayerCharacter) leader;
@@ -132,7 +128,7 @@ public class FollowAction extends AbstractAction {
 		}
 
 		// Start following
-		Follower.follow(actor, leader);
+		actor.follower().follow(leader);
 		return AbstractAction.response("action.follow.entity", leader.name());
 	}
 
@@ -144,8 +140,7 @@ public class FollowAction extends AbstractAction {
 	 */
 	@RequiresActor
 	public Response follow(CharacterEntity actor) throws ActionException {
-		if(!actor.follower().isFollowing()) throw ActionException.of("stop.not.following");
-		final Leader prev = Follower.stop(actor);
+		final Entity prev = actor.follower().stop();
 		return AbstractAction.response("action.stop.follow", prev.name());
 	}
 }

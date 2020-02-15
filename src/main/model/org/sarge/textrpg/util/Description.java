@@ -1,7 +1,6 @@
 package org.sarge.textrpg.util;
 
 import static org.sarge.lib.util.Check.notEmpty;
-import static org.sarge.lib.util.Check.notNull;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,15 +9,12 @@ import org.sarge.lib.collection.StrictMap;
 import org.sarge.lib.util.AbstractEqualsObject;
 
 /**
- * Description of an object or entity.
- * <p>
- * A description is comprised of:
+ * A <i>description</i> is the textual representation of a location, object or entity comprising:
  * <ul>
- * <li>A <i>key</i> used to lookup the description template from a name-store</li>
- * <li>A set of none-or-more arguments that are injected into the description</li>
- * <li>A formatter for each argument that specifies how that argument is rendered</li>
+ * <li>The description <i>key</i> used to lookup the description template from the {@link NameStore}</li>
+ * <li>A set of none-or-more arguments that are injected into the template</li>
  * </ul>
- * @see ArgumentFormatter
+ * @see DescriptionFormatter
  * @author Sarge
  */
 public final class Description extends AbstractEqualsObject {
@@ -38,38 +34,6 @@ public final class Description extends AbstractEqualsObject {
 	public static final Description DISPLAY_LOCATION = new Description("display.location");
 
 	/**
-	 * Description argument entry.
-	 */
-	public static class Entry extends AbstractEqualsObject {
-		private final Object arg;
-		private final ArgumentFormatter formatter;
-
-		/**
-		 * Constructor.
-		 * @param arg			Argument
-		 * @param formatter		Formatter
-		 */
-		private Entry(Object arg, ArgumentFormatter formatter) {
-			this.arg = notNull(arg);
-			this.formatter = notNull(formatter);
-		}
-
-		/**
-		 * @return Formatter for this argument
-		 */
-		public ArgumentFormatter formatter() {
-			return formatter;
-		}
-
-		/**
-		 * @return Argument
-		 */
-		public Object argument() {
-			return arg;
-		}
-	}
-
-	/**
 	 * Creates a cached description without arguments.
 	 * @param key Description key
 	 * @return Description
@@ -79,26 +43,26 @@ public final class Description extends AbstractEqualsObject {
 	}
 
 	private final String key;
-	private final Map<String, Entry> args;
+	private final Map<String, Object> args;
 
 	/**
 	 * Constructor.
 	 * @param key		Formatting key
 	 * @param args		Arguments
 	 */
-	private Description(String key, Map<String, Entry> args) {
+	private Description(String key, Map<String, Object> args) {
 		this.key = notEmpty(key);
 		this.args = Map.copyOf(args);
 	}
 
 	/**
-	 * Convenience constructor for a description with a single token-replacement argument.
+	 * Convenience constructor for a description with a single argument.
 	 * @param key 		Formatting key
 	 * @param name		Argument name
 	 * @param arg 		Argument
 	 */
 	public Description(String key, String name, Object value) {
-		this(key, Map.of(name, new Entry(value, ArgumentFormatter.TOKEN)));
+		this(key, Map.of(name, value));
 	}
 
 	/**
@@ -130,7 +94,7 @@ public final class Description extends AbstractEqualsObject {
 	 * @param name Argument identifier
 	 * @return Argument entry or <tt>null</tt> if not present
 	 */
-	public Entry get(String name) {
+	public Object get(String name) {
 		return args.get(name);
 	}
 
@@ -139,7 +103,7 @@ public final class Description extends AbstractEqualsObject {
 	 */
 	public static class Builder {
 		private final String key;
-		private final Map<String, Entry> args = new StrictMap<>();
+		private final Map<String, Object> args = new StrictMap<>();
 
 		/**
 		 * Constructor.
@@ -154,34 +118,22 @@ public final class Description extends AbstractEqualsObject {
 		 * @param name Argument name
 		 * @return Value or <tt>null</tt> if not present
 		 */
-		public Entry get(String name) {
+		Object get(String name) {
 			return args.get(name);
 		}
 
 		/**
-		 * Adds a description argument with a specified formatter.
+		 * Adds a description argument.
 		 * @param name			Name
 		 * @param value			Value
-		 * @param formatter		Formatter
 		 */
-		public Builder add(String name, Object value, ArgumentFormatter formatter) {
-			args.put(name, new Entry(value, formatter));
+		public Builder add(String name, Object value) {
+			args.put(name, value);
 			return this;
 		}
 
 		/**
-		 * Adds a token-replacement description argument.
-		 * @param name		Name
-		 * @param value		Value
-		 * @see ArgumentFormatter#TOKEN
-		 */
-		public Builder add(String name, String value) {
-			add(name, value, ArgumentFormatter.TOKEN);
-			return this;
-		}
-
-		/**
-		 * Adds a <i>name</i> argument.
+		 * Helper - Adds a <i>name</i> argument.
 		 * @param name Name
 		 */
 		public Builder name(String name) {
@@ -190,24 +142,13 @@ public final class Description extends AbstractEqualsObject {
 		}
 
 		/**
-		 * Adds an integer argument rendered as a plain value.
-		 * @param name		Name
-		 * @param value		Integer value
-		 * @see ArgumentFormatter#PLAIN
-		 */
-		public Builder add(String name, int value) {
-			add(name, value, ArgumentFormatter.PLAIN);
-			return this;
-		}
-
-		/**
-		 * Adds an enumeration constant argument.
+		 * Helper - Adds an enumeration constant argument.
 		 * @param name		Name
 		 * @param value		Enumeration constant
 		 * @see TextHelper#prefix(Enum)
 		 */
 		public <E extends Enum<E>> Builder add(String name, E value) {
-			add(name, TextHelper.prefix(value), ArgumentFormatter.TOKEN);
+			add(name, TextHelper.prefix(value));
 			return this;
 		}
 

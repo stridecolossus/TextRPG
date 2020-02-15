@@ -11,7 +11,7 @@ import org.sarge.textrpg.util.Percentile;
 import org.sarge.textrpg.util.TextHelper;
 
 /**
- * Defines something that can be opened and optionally locked.
+ * An <i>openable</i> defines something that can be opened and optionally locked.
  * <p>
  * The {@link Model} for an openable has a {@link Lock} that specifies the key for the lock, whether it can be picked and its optional {@link Trap} descriptor.
  * <p>

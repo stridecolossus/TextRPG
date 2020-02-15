@@ -11,8 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.sarge.textrpg.common.ActionTestBase;
 import org.sarge.textrpg.common.Response;
 import org.sarge.textrpg.common.Size;
-import org.sarge.textrpg.entity.Follower.FollowerModel;
-import org.sarge.textrpg.entity.Leader.LeaderModel;
+import org.sarge.textrpg.entity.Entity.FollowModel;
 import org.sarge.textrpg.util.ActionException;
 import org.sarge.textrpg.util.Description;
 import org.sarge.textrpg.util.TestHelper;
@@ -23,25 +22,29 @@ public class MountActionTest extends ActionTestBase {
 
 	@BeforeEach
 	public void before() {
-		final FollowerModel follower = new FollowerModel();
 		mount = mock(Mount.class);
+		final FollowModel follower = mount.new FollowModel();
+
 		when(mount.name()).thenReturn("mount");
 		when(mount.follower()).thenReturn(follower);
 		when(mount.size()).thenReturn(Size.MEDIUM);
+
 		action = new MountAction();
 	}
 
 	/**
 	 * Leads a mount.
+	 * @throws ActionException
 	 */
-	private void add() {
-		Follower.follow(mount, actor);
+	private void add() throws ActionException {
+		mount.follower().follow(actor);
 	}
 
 	/**
 	 * Rides a mount.
+	 * @throws ActionException
 	 */
-	private void ride() {
+	private void ride() throws ActionException {
 		add();
 		final MountMovementMode mounted = mock(MountMovementMode.class);
 		when(mounted.mover()).thenReturn(mount);
@@ -65,8 +68,8 @@ public class MountActionTest extends ActionTestBase {
 	@Test
 	public void leadAlreadyFollowingOtherEntity() throws ActionException {
 		final CharacterEntity other = mock(CharacterEntity.class);
-		when(other.leader()).thenReturn(new LeaderModel());
-		Follower.follow(mount, other);
+		final FollowModel leader = other.new FollowModel();
+		when(other.follower()).thenReturn(leader);
 		TestHelper.expect("lead.following.other", () -> action.execute(actor, MountAction.Operation.LEAD, mount));
 	}
 

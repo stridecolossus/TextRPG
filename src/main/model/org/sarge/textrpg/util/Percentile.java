@@ -12,6 +12,8 @@ import org.sarge.lib.util.Converter;
  * @author Sarge
  */
 public final class Percentile extends Number implements Comparable<Percentile> {
+	private static final float ACCURACY = 0.0001f;
+
 	/**
 	 * Maximum integer percentile value.
 	 */
@@ -161,7 +163,7 @@ public final class Percentile extends Number implements Comparable<Percentile> {
 	 * @return Whether this percentile is zero
 	 */
 	public boolean isZero() {
-		return Float.floatToIntBits(value) == 0;
+		return Math.abs(value) < ACCURACY;
 	}
 
 	/**
@@ -193,7 +195,7 @@ public final class Percentile extends Number implements Comparable<Percentile> {
 	 * @return Minimum of this and the given percentile
 	 */
 	public Percentile min(Percentile that) {
-		return this.isLessThan(that) ? this : that;
+		return isLessThan(that) ? this : that;
 	}
 
 	/**
@@ -202,7 +204,7 @@ public final class Percentile extends Number implements Comparable<Percentile> {
 	 * @return Maximum of this and the given percentile
 	 */
 	public Percentile max(Percentile that) {
-		return this.isLessThan(that) ? that : this;
+		return isLessThan(that) ? that : this;
 	}
 
 	@Override
@@ -216,7 +218,7 @@ public final class Percentile extends Number implements Comparable<Percentile> {
 		if(that == null) return false;
 		if(that instanceof Percentile) {
 			final Percentile p = (Percentile) that;
-			return Float.floatToIntBits(this.value) == Float.floatToIntBits(p.value);
+			return Math.abs(this.value - p.value) < ACCURACY;
 		}
 		else {
 			return false;

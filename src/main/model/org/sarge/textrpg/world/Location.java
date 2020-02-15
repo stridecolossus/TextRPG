@@ -125,7 +125,7 @@ public abstract class Location extends AbstractEqualsObject implements Parent {
 	// Properties
 	private final Descriptor descriptor;
 	private transient Percentile light;
-	protected ExitMap exits;
+//	protected ExitMap exits;
 
 	// Contents
 	private final Contents contents = new Contents();
@@ -134,11 +134,11 @@ public abstract class Location extends AbstractEqualsObject implements Parent {
 	/**
 	 * Constructor.
 	 * @param descriptor		Descriptor
-	 * @param exits				Optional exits
+//	 * @param exits				Optional exits
 	 */
-	protected Location(Descriptor descriptor, ExitMap exits) {
+	protected Location(Descriptor descriptor) { // , ExitMap exits) {
 		this.descriptor = notNull(descriptor);
-		this.exits = exits;
+//		this.exits = exits;
 	}
 
 	/**
@@ -209,10 +209,9 @@ public abstract class Location extends AbstractEqualsObject implements Parent {
 	/**
 	 * @return Exits <b>from</b> this location
 	 */
-	public ExitMap exits() {
-		return exits;
-	}
+	public abstract ExitMap exits();
 
+<<<<<<< Updated upstream
 	/**
 	 * Adds an exit from this location.
 	 * @param exit Exit
@@ -227,7 +226,36 @@ public abstract class Location extends AbstractEqualsObject implements Parent {
 	 */
 	protected void complete() {
 		exits = ExitMap.of(exits);
+=======
+	protected abstract void add(Exit exit);
+
+	protected void compact() {
+
+>>>>>>> Stashed changes
 	}
+
+//	/**
+//	 * @return Exits <b>from</b> this location
+//	 */
+//	public ExitMap exits() {
+//		return exits;
+//	}
+//
+//	/**
+//	 * Adds an exit from this location.
+//	 * @param exit Exit
+//	 */
+//	protected void add(Exit exit) {
+////		exits.add(exit);
+//	}
+//
+//	/**
+//	 * Invoked on completion of the linkage phase for this location.
+//	 * @see Linker#link()
+//	 */
+//	protected void complete() {
+////		exits = ExitMap.of(exits);
+//	}
 
 	@Override
 	public Contents contents() {

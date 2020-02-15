@@ -40,7 +40,6 @@ public class CharacterEntityTest {
 		assertNotNull(entity.movement());
 		assertTrue(entity.movement() instanceof Entity.DefaultMovementMode);
 		assertNotNull(entity.follower());
-		assertNotNull(entity.leader());
 	}
 
 	@Test

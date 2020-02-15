@@ -9,8 +9,8 @@ import org.sarge.textrpg.util.Percentile;
  * @author Sarge
  * TODO - saddles, inventory? speed? movement cost modifier, ride difficulty?
  */
-public class Mount extends Entity implements Follower {
-	private final FollowerModel follower = new FollowerModel();
+public class Mount extends Entity {
+	private final FollowModel follower = new FollowModel();
 
 	/**
 	 * Constructor.
@@ -21,7 +21,7 @@ public class Mount extends Entity implements Follower {
 	}
 
 	@Override
-	public FollowerModel follower() {
+	public FollowModel follower() {
 		return follower;
 	}
 
@@ -48,7 +48,7 @@ public class Mount extends Entity implements Follower {
 
 	@Override
 	protected void destroy() {
-		Follower.clear(this);
+		follower.clear();
 		super.destroy();
 	}
 }

@@ -8,7 +8,7 @@ import org.sarge.textrpg.util.Description;
 import org.sarge.textrpg.util.TextHelper;
 
 /**
- * Descriptor for an exit from a location.
+ * An <i>exit</i> describes a connection to another location.
  * @author Sarge
  */
 public final class Exit extends AbstractEqualsObject {

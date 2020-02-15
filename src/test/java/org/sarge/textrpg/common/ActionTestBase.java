@@ -9,8 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.sarge.textrpg.common.SkillSet.MutableSkillSet;
 import org.sarge.textrpg.contents.Contents;
 import org.sarge.textrpg.entity.*;
-import org.sarge.textrpg.entity.Follower.FollowerModel;
-import org.sarge.textrpg.entity.Leader.LeaderModel;
+import org.sarge.textrpg.entity.Entity.FollowModel;
 import org.sarge.textrpg.entity.PlayerCharacter.PlayerModel;
 import org.sarge.textrpg.util.ActionException;
 import org.sarge.textrpg.util.EnumerationIntegerMap;
@@ -94,10 +93,8 @@ public abstract class ActionTestBase {
 		when(manager.handler()).thenReturn(handler);
 
 		// Init actor follower/leader model
-		final FollowerModel follower = new FollowerModel();
-		final LeaderModel leader = new LeaderModel();
+		final FollowModel follower = actor.new FollowModel();
 		when(actor.follower()).thenReturn(follower);
-		when(actor.leader()).thenReturn(leader);
 
 		// Init player-character
 		final PlayerModel player = mock(PlayerModel.class);

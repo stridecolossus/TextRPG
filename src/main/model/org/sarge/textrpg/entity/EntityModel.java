@@ -16,7 +16,7 @@ import org.sarge.textrpg.util.ValueModifier;
 import org.sarge.textrpg.world.Trail;
 
 /**
- * Model that maintains dynamic or transient properties of an entity.
+ * An <i>entity model </i> maintains the dynamic and transient properties of an entity.
  * @author Sarge
  */
 public class EntityModel extends AbstractObject implements ValueModifier.Source {

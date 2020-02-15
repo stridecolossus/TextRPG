@@ -1,5 +1,6 @@
 package org.sarge.textrpg.entity;
 
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.sarge.textrpg.common.ActionTestBase;
 import org.sarge.textrpg.common.Response;
-import org.sarge.textrpg.entity.Leader.LeaderModel;
+import org.sarge.textrpg.entity.Entity.FollowModel;
 import org.sarge.textrpg.util.ActionException;
 import org.sarge.textrpg.util.Description;
 import org.sarge.textrpg.util.Percentile;
@@ -29,8 +30,14 @@ public class FollowActionTest extends ActionTestBase {
 	public void before() {
 		// Create leader to follow
 		leader = mock(CharacterEntity.class);
+		final FollowModel follower = leader.new FollowModel() {
+			@Override
+			protected boolean isLeader() {
+				return true;
+			}
+		};
 		when(leader.name()).thenReturn("leader");
-		when(leader.leader()).thenReturn(mock(LeaderModel.class));
+		when(leader.follower()).thenReturn(follower);
 
 		// Create a destination to follow
 		dest = mock(Location.class);
@@ -49,8 +56,8 @@ public class FollowActionTest extends ActionTestBase {
 		assertEquals(Response.of(new Description("action.follow.entity", "leader")), response);
 
 		// Check following
-		verify(leader.leader()).add(actor);
 		assertEquals(true, actor.follower().isFollowing(leader));
+		verify(leader.follower()).followers().collect(toSet()).contains(actor);
 	}
 
 	@Test
@@ -62,8 +69,14 @@ public class FollowActionTest extends ActionTestBase {
 	@Test
 	public void followEntityFollowingOther() throws ActionException {
 		final CharacterEntity other = mock(CharacterEntity.class);
+		final FollowModel follower = leader.new FollowModel() {
+			@Override
+			protected boolean isLeader() {
+				return true;
+			}
+		};
 		when(other.name()).thenReturn("other");
-		when(other.leader()).thenReturn(mock(LeaderModel.class));
+		when(leader.follower()).thenReturn(follower);
 		action.follow(actor, other);
 		TestHelper.expect("follow.following.other", () -> action.follow(actor, leader));
 	}
@@ -73,7 +86,8 @@ public class FollowActionTest extends ActionTestBase {
 		action.follow(actor, leader);
 		final Response response = action.follow(actor);
 		assertEquals(Response.of(new Description("action.stop.follow", "leader")), response);
-		verify(leader.leader()).remove(actor);
+		assertEquals(false, actor.follower().isFollowing(leader));
+		assertEquals(0, leader.follower().followers().count());
 		assertEquals(false, actor.follower().isFollowing(leader));
 	}
 

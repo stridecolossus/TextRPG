@@ -31,6 +31,6 @@ public class IntangibleTest {
 	@Test
 	public void describe() {
 		final var expected = new Description("intangible.object", "name");
-		assertEquals(expected, intangible.describe(null));
+		assertEquals(expected, intangible.describe());
 	}
 }

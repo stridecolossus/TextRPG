@@ -4,11 +4,11 @@ import org.sarge.textrpg.object.Letter;
 import org.sarge.textrpg.util.ActionException;
 
 /**
- * Pet that can deliver letters.
+ * A <i>pet</i> is an entity that can deliver letters.
  * @author Sarge
  */
-public class Pet extends Entity implements Follower {
-	private final FollowerModel follower = new FollowerModel();
+public class Pet extends Entity {
+	private final FollowModel follower = new FollowModel();
 
 	private Letter letter;
 
@@ -17,14 +17,15 @@ public class Pet extends Entity implements Follower {
 	 * @param race		Pet race
 	 * @param owner		Owner
 	 */
-	public Pet(Race race, Leader owner) {
+	public Pet(Race race, Entity owner) {
 		super(new DefaultEntityDescriptor(race, null), null); // TODO
-		Follower.follow(this, owner);
-	}
 
-	@Override
-	public FollowerModel follower() {
-		return follower;
+		try {
+			follower.follow(owner);
+		}
+		catch(ActionException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/*
@@ -44,7 +45,7 @@ public class Pet extends Entity implements Follower {
 
 	@Override
 	protected void destroy() {
-		Follower.clear(this);
+		follower.clear();
 		super.destroy();
 	}
 }

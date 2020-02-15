@@ -9,7 +9,6 @@ import org.sarge.textrpg.common.Emission;
 import org.sarge.textrpg.common.Liquid;
 import org.sarge.textrpg.contents.Parent;
 import org.sarge.textrpg.util.ActionException;
-import org.sarge.textrpg.util.ArgumentFormatter;
 import org.sarge.textrpg.util.Description.Builder;
 import org.sarge.textrpg.util.Event;
 import org.sarge.textrpg.util.Percentile;
@@ -222,9 +221,9 @@ public class Light extends WorldObject {
 	}
 
 	@Override
-	protected void describe(boolean carried, Builder builder, ArgumentFormatter.Registry formatters) {
+	protected void describe(boolean carried, Builder builder) {
 		// Delegate
-		super.describe(carried, builder, formatters);
+		super.describe(carried, builder);
 
 		// Add lit flag
 		if(isActive()) {
@@ -234,7 +233,7 @@ public class Light extends WorldObject {
 		// Add remaining lifetime
 		if(carried) {
 			final float ratio = lifetime / (float) descriptor().lifetime;
-			builder.add("light.lifetime", new Percentile(ratio), formatters.get("light.lifetime"));
+			builder.add("light.lifetime", new BandingArgument(new Percentile(ratio), "light.lifetime"));
 		}
 	}
 

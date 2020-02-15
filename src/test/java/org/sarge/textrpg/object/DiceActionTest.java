@@ -9,7 +9,6 @@ import org.sarge.textrpg.common.ActionTestBase;
 import org.sarge.textrpg.common.Response;
 import org.sarge.textrpg.entity.PlayerSettings;
 import org.sarge.textrpg.util.ActionException;
-import org.sarge.textrpg.util.ArgumentFormatter;
 import org.sarge.textrpg.util.Description;
 import org.sarge.textrpg.util.TestHelper;
 
@@ -18,7 +17,7 @@ public class DiceActionTest extends ActionTestBase {
 
 	@BeforeEach
 	public void before() {
-		action = new DiceAction(ArgumentFormatter.PLAIN);
+		action = new DiceAction();
 	}
 
 	@Test

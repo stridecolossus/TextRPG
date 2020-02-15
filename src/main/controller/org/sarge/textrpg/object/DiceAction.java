@@ -1,7 +1,5 @@
 package org.sarge.textrpg.object;
 
-import static org.sarge.lib.util.Check.notNull;
-
 import org.sarge.textrpg.common.AbstractAction;
 import org.sarge.textrpg.common.RequiredObject;
 import org.sarge.textrpg.common.RequiresActor;
@@ -10,11 +8,10 @@ import org.sarge.textrpg.entity.PlayerCharacter;
 import org.sarge.textrpg.entity.PlayerSettings;
 import org.sarge.textrpg.entity.Stance;
 import org.sarge.textrpg.util.ActionException;
-import org.sarge.textrpg.util.ArgumentFormatter;
+import org.sarge.textrpg.util.ArgumentFormatter.PlainArgument;
 import org.sarge.textrpg.util.Description;
 import org.sarge.textrpg.util.Randomiser;
 import org.sarge.textrpg.util.TextHelper;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,15 +20,11 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class DiceAction extends AbstractAction {
-	private final ArgumentFormatter numeric;
-
 	/**
 	 * Constructor.
-	 * @param numeric Numeric argument formatter
 	 */
-	public DiceAction(@Qualifier(ArgumentFormatter.NUMERIC) ArgumentFormatter numeric) {
+	public DiceAction() {
 		super(Flag.OUTSIDE, Flag.BROADCAST);
-		this.numeric = notNull(numeric);
 	}
 
 	@Override
@@ -51,7 +44,7 @@ public class DiceAction extends AbstractAction {
 	@RequiredObject("dice")
 	public Response roll() {
 		final int side = 1 + Randomiser.range(6);
-		final Description response = new Description.Builder("action.roll.dice").add("side", side, numeric).build();
+		final Description response = new Description.Builder("action.roll.dice").add("side", new PlainArgument(side)).build();
 		return Response.of(response);
 	}
 

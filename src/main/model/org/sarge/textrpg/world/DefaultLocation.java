@@ -2,8 +2,6 @@ package org.sarge.textrpg.world;
 
 import static org.sarge.lib.util.Check.notNull;
 
-import org.sarge.textrpg.world.ExitMap.MutableExitMap;
-
 /**
  * A <i>default</li> location is a free-standing place in the world with custom exits.
  * <p>
@@ -25,7 +23,7 @@ public class DefaultLocation extends Location {
 	 * @param area				Area
 	 */
 	public DefaultLocation(Descriptor descriptor, Area area) {
-		super(descriptor, new MutableExitMap());
+		super(descriptor);
 		this.area = notNull(area);
 	}
 
@@ -81,12 +79,7 @@ public class DefaultLocation extends Location {
 
 			// Init orphans
 			if(orphan) {
-				loc.exits = new ExitMap.Empty() {
-					@Override
-					public void add(Exit exit) {
-						throw new IllegalArgumentException("Location is an orphan: " + loc);
-					}
-				};
+				loc.exits = ExitMap.EMPTY;
 			}
 
 			return loc;

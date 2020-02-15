@@ -1,15 +1,18 @@
 package org.sarge.textrpg.util;
 
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.sarge.lib.collection.StrictMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Formatter for a {@link Description}.
+ * The <i>description formatter</i> renders a {@link Description}.
  * @author Sarge
  */
 @Component
@@ -37,6 +40,18 @@ public class DescriptionFormatter {
 		}
 	}
 
+	@Autowired
+	private final Map<Class<?>, ArgumentFormatter> formatters = new StrictMap<>();
+
+	/**
+	 * Registers a formatter for a class of arguments.
+	 * @param type			Argument type
+	 * @param formatter		Formatter
+	 */
+	void add(Class<?> type, ArgumentFormatter formatter) {
+		formatters.put(type, formatter);
+	}
+
 	/**
 	 * Formats the given description.
 	 * @param description 		Description to format
@@ -58,25 +73,28 @@ public class DescriptionFormatter {
 			final String token = text.substring(start + 1, end - 1);
 
 			// Lookup argument
-			final Description.Entry entry = description.get(token);
-			if(entry == null) {
+			final Object arg = description.get(token);
+			if(arg == null) {
 				LOG.warn("Unknown description argument: {}", token);
 				current = end;
 				continue;
 			}
 
-			// Ignore empty arguments
-			if(StringUtils.EMPTY.equals(entry.argument())) {
-				text.delete(start, end);
-				current = start;
+			// Apply formatter
+			final ArgumentFormatter formatter = formatters.getOrDefault(arg.getClass(), ArgumentFormatter.DEFAULT);
+			final String value = formatter.format(arg, store);
+
+			// Check for invalid arguments
+			if(value == null) {
+				LOG.warn("NULL formatted argument: {} using {}", token, formatter);
+				current = end;
 				continue;
 			}
 
-			// Format argument
-			final String value = entry.formatter().format(entry.argument(), store);
-			if(value == null) {
-				LOG.warn("NULL formatted argument: {}", entry.toString());
-				current = end;
+			// Ignore empty arguments
+			if(value.isEmpty()) {
+				text.delete(start, end);
+				current = start;
 				continue;
 			}
 
